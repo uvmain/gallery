@@ -7,6 +7,9 @@ if (!fs.existsSync(serverConfiguration.databasePath)){
   console.info(`Creating ${serverConfiguration.databasePath} directory for database`)
   fs.mkdirSync(serverConfiguration.databasePath, { recursive: true });
 }
+else {
+  console.info(`Database directory at ${serverConfiguration.databasePath} already exists`)
+}
 
 const databasePath = path.join(process.cwd(), serverConfiguration.databasePath, 'db.sqlite')
 
