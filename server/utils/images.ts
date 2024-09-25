@@ -14,12 +14,14 @@ const IMAGE_TYPES = [
   '.webp'
 ]
 
-if (!fs.existsSync(serverConfiguration.imagePath)){
-  console.info(`Creating ${serverConfiguration.imagePath} directory for images`)
-  fs.mkdirSync(serverConfiguration.imagePath, { recursive: true })
+const imagesPath = path.resolve(serverConfiguration.imagePath)
+
+if (!fs.existsSync(imagesPath)){
+  console.info(`Creating ${imagesPath} directory for images`)
+  fs.mkdirSync(imagesPath, { recursive: true })
 }
 else {
-  console.info(`Image directory at ${serverConfiguration.imagePath} already exists`)
+  console.info(`Image directory at ${imagesPath} already exists`)
 }
 
 function exifDateToJavascriptDate(exifDate: ExifDateTime) {
@@ -28,7 +30,7 @@ function exifDateToJavascriptDate(exifDate: ExifDateTime) {
 
 export async function getImageDirectoryContents() {
   const imageFiles: any[] = []
-  const files = fs.readdirSync(serverConfiguration.imagePath) // No need for await with synchronous function
+  const files = fs.readdirSync(imagesPath)
   
   for (const file of files) {
     const ext = path.extname(file).toLowerCase()
@@ -36,7 +38,7 @@ export async function getImageDirectoryContents() {
     
     if (IMAGE_TYPES.includes(ext)) {
       try {
-        const tags: Tags = await exiftool.read(path.join(process.cwd(), serverConfiguration.imagePath, file))
+        const tags: Tags = await exiftool.read(path.resolve(path.join(imagesPath, file)))
 
         fileTags.aperture = tags.Aperture?.toString()
         fileTags.cameraModel = `${tags.Make} ${tags.Model}`

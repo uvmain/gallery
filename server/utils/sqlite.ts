@@ -1,5 +1,4 @@
 import sqlite3 from 'sqlite3'
-import process from 'node:process'
 import path from 'node:path'
 import fs from 'node:fs'
 
@@ -11,7 +10,7 @@ else {
   console.info(`Database directory at ${serverConfiguration.databasePath} already exists`)
 }
 
-const databasePath = path.join(process.cwd(), serverConfiguration.databasePath, 'db.sqlite')
+const databasePath = path.resolve(path.join(serverConfiguration.databasePath, 'db.sqlite'))
 
 export const db = new sqlite3.Database(databasePath, (err) => {
   if (err) {
