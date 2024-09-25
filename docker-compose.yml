@@ -1,7 +1,7 @@
 services:
   recipebook:
-    image: starter:latest
-    container_name: starter
+    image: gallery:latest
+    container_name: gallery
     ports:
       - "3000:3000"
     env_file:

@@ -4,7 +4,7 @@ useHead({
   htmlAttrs: {
     lang: 'en',
   },
-  title: 'Starter',
+  title: 'Gallery',
 })
 
 </script>

@@ -15,9 +15,15 @@ export default defineNuxtConfig({
       Poppins: true,
     }
   },
+  imports: {
+    dirs: [
+      './types'
+    ]
+  },
   runtimeConfig: {
-    adminUser: 'admin', // can be overridden by ADMIN_USER environment variable
-    adminPassword: 'password', // can be overridden by ADMIN_PASSWORD environment variable
-    sessionMaxAge: 86400 // cookie session length in seconds, can be overridden by SESSION_MAX_AGE environment variable
+    adminUser: 'admin', // can be overridden by NUXT_ADMIN_USER environment variable
+    adminPassword: 'password', // can be overridden by NUXT_ADMIN_PASSWORD environment variable
+    sessionMaxAge: 86400, // cookie session length in seconds, can be overridden by NUXT_SESSION_MAX_AGE environment variable
+    databasePath: './database' // location of sqlite.db, can be overridden by NUXT_DATABASE_PATH environment variable
   },
 });

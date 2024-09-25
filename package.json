@@ -1,5 +1,5 @@
 {
-  "name": "nuxt3-starter",
+  "name": "gallery",
   "private": true,
   "scripts": {
     "build": "nuxt build",
@@ -20,5 +20,8 @@
     "eslint": "^9.0.0",
     "nuxt": "^3.11.2",
     "nuxt-auth-utils": "^0.3.9"
+  },
+  "dependencies": {
+    "sqlite3": "^5.1.7"
   }
 }
