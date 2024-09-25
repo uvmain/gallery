@@ -5,13 +5,13 @@ export default defineEventHandler(async (event) => {
   console.log(session.user)
 
   try {
-    // if (!loggedIn) {
-    //   console.error("User not logged in")
-    //   return createError({
-    //     statusCode: 403,
-    //     statusMessage: "User is not authenticated",
-    //   })
-    // }
+    if (!session.user) {
+      console.error("User not logged in")
+      return createError({
+        statusCode: 401,
+        statusMessage: "User is not authenticated",
+      })
+    }
 
     const body = await readBody(event)
     if (!body) {
@@ -22,11 +22,7 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    insertImage(body)
-    return {
-      statusCode: 200,
-      statusMessage: "success"
-    }
+    return await insertImage(body)
   }
   catch (error) {
     console.error("Error handling image POST request:", error)
@@ -37,7 +33,7 @@ export default defineEventHandler(async (event) => {
   }
 })
 
-function insertImage(imageMetadata: ImageMetadata) {
+async function insertImage(imageMetadata: ImageMetadata): Promise<{ statusCode: number, statusMessage: string }> {
   const insertImageSql = `INSERT INTO metadata
     (fileName, title, dateTaken, dateUploaded, cameraModel, lensModel, aperture, shutterSpeed, flashStatus, focusLength, iso, exposureMode, whiteBalance)
     VALUES (
@@ -54,14 +50,31 @@ function insertImage(imageMetadata: ImageMetadata) {
     "${imageMetadata.iso}",
     "${imageMetadata.exposureMode}",
     "${imageMetadata.whiteBalance}"
-    );`
-  db.all(insertImageSql, [], (err) => {
-    if (err) {
-      console.error(`Failed to insert image to database; ${err.message}`)
-      console.info(insertImageSql)
-      return { outcome: err }
+    )`
+
+  try {
+    await new Promise((resolve, reject) => {
+      db.all(insertImageSql, [], (err) => {
+        if (err) {
+          console.error(`Failed to insert image to database: ${err.message}`)
+          console.info(insertImageSql)
+          reject(err)
+        }
+        else {
+          console.debug(`Inserted image ${imageMetadata.fileName}.`)
+          resolve(true)
+        }
+      })
+    })
+    return {
+      statusCode: 200,
+      statusMessage: 'success!',
     }
-    console.debug(`Inserted image ${imageMetadata.fileName}.`)
-    return { outcome: 'success' }
-  })
+  }
+  catch {
+    return {
+      statusCode: 400,
+      statusMessage: 'Failed to insert image to database',
+    }
+  }
 }

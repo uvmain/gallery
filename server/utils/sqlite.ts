@@ -3,14 +3,12 @@ import process from 'node:process'
 import path from 'node:path'
 import fs from 'node:fs'
 
-const config = useRuntimeConfig()
-
-if (!fs.existsSync(config.databasePath)){
-  console.info(`Creating ${config.databasePath} directory for database`)
-  fs.mkdirSync(config.databasePath, { recursive: true });
+if (!fs.existsSync(serverConfiguration.databasePath)){
+  console.info(`Creating ${serverConfiguration.databasePath} directory for database`)
+  fs.mkdirSync(serverConfiguration.databasePath, { recursive: true });
 }
 
-const databasePath = path.join(process.cwd(), config.databasePath, 'db.sqlite')
+const databasePath = path.join(process.cwd(), serverConfiguration.databasePath, 'db.sqlite')
 
 export const db = new sqlite3.Database(databasePath, (err) => {
   if (err) {

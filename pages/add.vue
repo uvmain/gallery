@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const postFailure = ref<string | null>()
+const postStatus = ref()
 
 async function post() {
   const imageMetadata: ImageMetadata = {
@@ -19,13 +19,14 @@ async function post() {
   }
 
   try {
-    await $fetch("/api/image", {
+    const status = await $fetch("/api/image", {
       method: "POST",
       body: imageMetadata
     })
+    postStatus.value = status
   }
   catch(error) {
-    postFailure.value = `${error}`
+    postStatus.value = `${error}`
     console.warn(error)
   }
 }
@@ -36,10 +37,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <p v-if="postFailure">
-    Failed to post: {{ postFailure }}
-  </p>
-  <p v-else>
-    success
-  </p>
+  <div>
+    {{ postStatus }}
+  </div>
 </template>

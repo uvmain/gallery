@@ -1,5 +1,3 @@
-const config = useRuntimeConfig()
-
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
@@ -21,7 +19,7 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    if (username != config.adminUser || password != config.adminPassword) {
+    if (username != serverConfiguration.adminUser || password != serverConfiguration.adminPassword) {
       console.error(`Invalid username or password for admin user: ${username}`)
       return createError({
         statusCode: 401,
@@ -30,10 +28,10 @@ export default defineEventHandler(async (event) => {
     }
     else {
       await setUserSession(event, {
-        user: config.adminUser,
+        user: serverConfiguration.adminUser,
         loggedInAt: new Date(),
       },{
-        maxAge: (config.sessionMaxAge || 0) as number
+        maxAge: (serverConfiguration.sessionMaxAge || 0) as number
       })
     }
 
