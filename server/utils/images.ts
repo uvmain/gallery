@@ -29,30 +29,31 @@ function exifDateToJavascriptDate(exifDate: ExifDateTime) {
 }
 
 export async function getImageDirectoryContents() {
-  const imageFiles: any[] = []
+  const imageFiles: string[] = []
   const files = fs.readdirSync(imagesPath)
   
   for (const file of files) {
     const ext = path.extname(file).toLowerCase()
-    const fileTags: ImageMetadata = {}
+    // const fileTags: ImageMetadata = {}
     
     if (IMAGE_TYPES.includes(ext)) {
       try {
-        const tags: Tags = await exiftool.read(path.resolve(path.join(imagesPath, file)))
+        // const tags: Tags = await exiftool.read(path.resolve(path.join(imagesPath, file)))
 
-        fileTags.aperture = tags.Aperture?.toString()
-        fileTags.cameraModel = `${tags.Make} ${tags.Model}`
-        fileTags.dateTaken = exifDateToJavascriptDate(tags.DateTimeOriginal as ExifDateTime)
-        fileTags.exposureMode = tags.ExposureProgram
-        fileTags.fileName = file
-        fileTags.flashStatus = tags.Flash
-        fileTags.focusLength = tags.FocalLength
-        fileTags.iso = tags.ISO?.toString()
-        fileTags.lensModel = tags.Lens
-        fileTags.shutterSpeed = tags.ShutterSpeed
-        fileTags.whiteBalance = tags.WhiteBalance
+        // fileTags.aperture = tags.Aperture?.toString()
+        // fileTags.cameraModel = `${tags.Make} ${tags.Model}`
+        // fileTags.dateTaken = exifDateToJavascriptDate(tags.DateTimeOriginal as ExifDateTime)
+        // fileTags.exposureMode = tags.ExposureProgram
+        // fileTags.fileName = file
+        // fileTags.flashStatus = tags.Flash
+        // fileTags.focusLength = tags.FocalLength
+        // fileTags.iso = tags.ISO?.toString()
+        // fileTags.lensModel = tags.Lens
+        // fileTags.shutterSpeed = tags.ShutterSpeed
+        // fileTags.whiteBalance = tags.WhiteBalance
 
-        imageFiles.push({ file, fileTags })
+        // imageFiles.push({ file, fileTags })
+        imageFiles.push(file)
       }
       catch (err) {
         console.error(`Error reading EXIF data for file ${file}:`, err)
