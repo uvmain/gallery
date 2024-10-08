@@ -5,14 +5,14 @@ const imageData = ref()
 
 async function getFullSizeImage() {
   if (loggedIn.value) {
-    const response = await fetch("/api/images/20240906-house-moth.jpg");
+    const response = await fetch("/api/images/20240906-house-moth.jpg")
     
     if (response.ok) {
-      const blob = await response.blob();
-      imageData.value = URL.createObjectURL(blob);
+      const blob = await response.blob()
+      imageData.value = URL.createObjectURL(blob)
     }
     else {
-      console.error("Failed to fetch image");
+      console.error("Failed to fetch image")
     }
   }
 }

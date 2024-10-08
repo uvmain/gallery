@@ -8,6 +8,7 @@ export default withNuxt(
       'no-console': 'off',
       'brace-style': ['error', 'stroustrup'],
       'curly': ['off'],
+      'semi': ['error', 'never'],
       'vue/multi-word-component-names': 'off',
       'vue/no-v-html': 'off'
     }
