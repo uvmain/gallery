@@ -12,15 +12,15 @@ const IMAGE_TYPES = [
   '.webp'
 ]
 
-export const imagesPath = path.resolve(serverConfiguration.imagePath)
+export const imagesDirectory = path.resolve(serverConfiguration.imagePath)
 
 export function createImagesDirectory() {
-  if (!fs.existsSync(imagesPath)){
-    console.info(`Creating ${imagesPath} directory for images`)
-    fs.mkdirSync(imagesPath, { recursive: true })
+  if (!fs.existsSync(imagesDirectory)){
+    console.info(`Creating ${imagesDirectory} directory for images`)
+    fs.mkdirSync(imagesDirectory, { recursive: true })
   }
   else {
-    console.info(`Image directory at ${imagesPath} already exists`)
+    console.info(`Image directory at ${imagesDirectory} already exists`)
   }
 }
 
@@ -37,7 +37,7 @@ export function getMimeType(filename: string) {
 
 export async function getImageDirectoryContents() {
   const imageFiles: string[] = []
-  const files = fs.readdirSync(imagesPath)
+  const files = fs.readdirSync(imagesDirectory)
   
   for (const file of files) {
     const ext = path.extname(file).toLowerCase() 

@@ -1,8 +1,6 @@
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
 
-const imagesPath = path.resolve(serverConfiguration.imagePath)
-
 export default defineEventHandler(async (event) => {
   const slug = event.context.params?.slug
 
@@ -13,7 +11,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const imagePath = path.resolve(path.join(imagesPath, slug))
+  const imagePath = path.resolve(path.join(imagesDirectory, slug))
 
   try {
     const fileBuffer = await fs.readFile(imagePath)

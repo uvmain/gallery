@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-export const thumbnailsPath = path.resolve(path.join(serverConfiguration.dataPath, 'database'))
+export const thumbnailsPath = path.resolve(path.join(serverConfiguration.dataPath, 'thumbnails'))
 
 export function createThumbnailsDirectory() {
   if (!fs.existsSync(thumbnailsPath)){

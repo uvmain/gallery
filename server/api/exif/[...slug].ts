@@ -31,7 +31,7 @@ function exifDateToJavascriptDate(exifDate: ExifDateTime) {
 export async function getExifForImage(imagePath: string) {
   const fileTags: ImageMetadata = {}
   try {
-    const tags: Tags = await exiftool.read(path.resolve(path.join(imagesPath, imagePath)))
+    const tags: Tags = await exiftool.read(path.resolve(path.join(imagesDirectory, imagePath)))
     fileTags.aperture = tags.Aperture?.toString()
     fileTags.cameraModel = `${tags.Make} ${tags.Model}`
     fileTags.dateTaken = exifDateToJavascriptDate(tags.DateTimeOriginal as ExifDateTime)

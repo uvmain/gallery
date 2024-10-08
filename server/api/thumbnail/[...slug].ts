@@ -1,7 +1,6 @@
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
-
-const imagesPath = path.resolve(serverConfiguration.imagePath)
+import sharp from 'sharp'
 
 export default defineEventHandler(async (event) => {
   const slug = event.context.params?.slug
@@ -13,18 +12,40 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const imagePath = path.resolve(path.join(imagesPath, slug))
+  const thumbnailPath = path.resolve(thumbnailsPath, slug)
 
   try {
-    const fileBuffer = await fs.readFile(imagePath)
-    const mimeType = getMimeType(slug)
-    setHeader(event, 'Content-Type', mimeType)
+    const fileBuffer = await fs.readFile(thumbnailPath)
+    console.info(`Returning thumbnail from file system: ${slug}`)
+    setHeader(event, 'Content-Type', 'image/webp')
     return fileBuffer
   }
-  catch (error) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: `${error}`,
-    })
+  catch {
+    try {
+      const imagePath = path.resolve(imagesDirectory, slug)
+      const fileBuffer = await fs.readFile(imagePath)
+
+      const resizedImageBuffer = await sharp(fileBuffer)
+        .resize({ 
+          width: serverConfiguration.thumbnailMaxPixels,
+          height: serverConfiguration.thumbnailMaxPixels,
+          fit: 'inside'
+        })
+        .webp()
+        .toBuffer()
+      
+      // Save the thumbnail as a webp file in the thumbnails directory
+      console.info(`Saving thumbnail to file system: ${slug}`)
+      await fs.writeFile(thumbnailPath, resizedImageBuffer)
+
+      setHeader(event, 'Content-Type', 'image/webp')
+      return resizedImageBuffer
+    }
+    catch(error) {
+      throw createError({
+        statusCode: 403,
+        statusMessage: `${error}`,
+      })
+    }
   }
 })
