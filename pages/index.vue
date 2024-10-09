@@ -4,28 +4,29 @@ const { loggedIn } = useUserSession()
 const imageData = ref()
 const imagesLastUpdated = useState('imagesLastUpdated')
 
-async function getFullSizeImage() {
-  if (loggedIn.value) {
-    const response = await fetch("/api/thumbnail/20240906-house-moth.jpg")
+// async function getFullSizeImage() {
+//   if (loggedIn.value) {
+//     const response = await fetch("/api/thumbnail/20240906-house-moth.jpg")
     
-    if (response.ok) {
-      const blob = await response.blob()
-      imageData.value = URL.createObjectURL(blob)
-    }
-    else {
-      console.error("Failed to fetch image")
-    }
-  }
-}
+//     if (response.ok) {
+//       const blob = await response.blob()
+//       imageData.value = URL.createObjectURL(blob)
+//     }
+//     else {
+//       console.error("Failed to fetch image")
+//     }
+//   }
+// }
 
-watch(loggedIn, (newValue) => {
-  if (newValue) {
-    getFullSizeImage()
-  }
-})
+// watch(loggedIn, (newValue) => {
+//   console.info(`loggedIn: ${newValue}`)
+//   if (newValue == true) {
+//     getFullSizeImage()
+//   }
+// })
 
 onBeforeMount(async () => {
-  getFullSizeImage()
+  // getFullSizeImage()
 })
 </script>
 

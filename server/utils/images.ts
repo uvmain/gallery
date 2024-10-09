@@ -26,7 +26,7 @@ export function createImagesDirectory() {
   }
 }
 
-export function getMimeType(filename: string) {
+export function getMimeType(filename: string): string {
   const ext = path.extname(filename).toLowerCase()
   switch (ext) {
     case '.jpg':
@@ -37,7 +37,7 @@ export function getMimeType(filename: string) {
   }
 }
 
-export async function getImageDirectoryContents() {
+export async function getImageDirectoryContents(): Promise<string[]> {
   const imageFiles: string[] = []
   const files = fs.readdirSync(imagesDirectory)
   
@@ -55,32 +55,40 @@ export async function getImageDirectoryContents() {
   return imageFiles
 }
 
-export async function getExifForImage(imagePath: string) {
-  const fileTags: ImageMetadata = {}
-  try {
-    const tags: Tags = await exiftool.read(path.resolve(path.join(imagesDirectory, imagePath)))
-    fileTags.aperture = tags.Aperture?.toString()
-    fileTags.cameraModel = `${tags.Make} ${tags.Model}`
-    fileTags.dateTaken = exifDateToJavascriptDate(tags.DateTimeOriginal as ExifDateTime)
-    fileTags.exposureMode = tags.ExposureProgram
-    fileTags.fileName = imagePath
-    fileTags.flashStatus = tags.Flash
-    fileTags.focusLength = tags.FocalLength
-    fileTags.iso = tags.ISO?.toString()
-    fileTags.lensModel = tags.Lens
-    fileTags.shutterSpeed = tags.ShutterSpeed
-    fileTags.whiteBalance = tags.WhiteBalance
-    return fileTags
+export async function getExifForImage(imagePath: string): Promise<ImageMetadata> {
+  const imageMetaData = await getMetadataByFileName(imagePath)
+
+  if (imageMetaData) {
+    return imageMetaData
   }
-  catch (error) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: `${error}`,
-    })
+  else {
+    const fileTags: ImageMetadata = {}
+    try {
+      const tags: Tags = await exiftool.read(path.resolve(path.join(imagesDirectory, imagePath)))
+      fileTags.aperture = tags.Aperture?.toString()
+      fileTags.cameraModel = `${tags.Make} ${tags.Model}`
+      fileTags.dateTaken = exifDateToJavascriptDate(tags.DateTimeOriginal as ExifDateTime)
+      fileTags.exposureMode = tags.ExposureProgram
+      fileTags.fileName = imagePath
+      fileTags.flashStatus = tags.Flash
+      fileTags.focusLength = tags.FocalLength
+      fileTags.iso = tags.ISO?.toString()
+      fileTags.lensModel = tags.Lens
+      fileTags.shutterSpeed = tags.ShutterSpeed
+      fileTags.whiteBalance = tags.WhiteBalance
+      insertMetadata(fileTags)
+      return fileTags
+    }
+    catch (error) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: `${error}`,
+      })
+    }
   }
 }
 
-function exifDateToJavascriptDate(exifDate: ExifDateTime) {
+function exifDateToJavascriptDate(exifDate: ExifDateTime): Date {
   return exifDate.toDate()
 }
 
@@ -94,7 +102,6 @@ export async function createThumbnailsForAllImages() {
 export async function createMetaDataForAllImages() {
   const filenames = await getImageDirectoryContents()
   for (const filename of filenames) {
-    const tags = await getExifForImage(filename)
-    await insertMetadata(tags)
+    await getExifForImage(filename)
   }
 }
