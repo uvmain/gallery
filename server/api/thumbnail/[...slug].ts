@@ -1,6 +1,5 @@
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
-import sharp from 'sharp'
 
 export default defineEventHandler(async (event) => {
   const slug = event.context.params?.slug
@@ -21,31 +20,8 @@ export default defineEventHandler(async (event) => {
     return fileBuffer
   }
   catch {
-    try {
-      const imagePath = path.resolve(imagesDirectory, slug)
-      const fileBuffer = await fs.readFile(imagePath)
-
-      const resizedImageBuffer = await sharp(fileBuffer)
-        .resize({ 
-          width: serverConfiguration.thumbnailMaxPixels,
-          height: serverConfiguration.thumbnailMaxPixels,
-          fit: 'inside'
-        })
-        .webp()
-        .toBuffer()
-      
-      // Save the thumbnail as a webp file in the thumbnails directory
-      console.info(`Saving thumbnail to file system: ${slug}`)
-      await fs.writeFile(thumbnailPath, resizedImageBuffer)
-
+      const resizedImageBuffer = await createThumbnail(slug)
       setHeader(event, 'Content-Type', 'image/webp')
       return resizedImageBuffer
     }
-    catch(error) {
-      throw createError({
-        statusCode: 403,
-        statusMessage: `${error}`,
-      })
-    }
-  }
 })

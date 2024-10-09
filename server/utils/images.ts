@@ -1,3 +1,5 @@
+import { exiftool } from "exiftool-vendored"
+import type { Tags, ExifDateTime } from "exiftool-vendored"
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -51,4 +53,48 @@ export async function getImageDirectoryContents() {
     }
   }
   return imageFiles
+}
+
+export async function getExifForImage(imagePath: string) {
+  const fileTags: ImageMetadata = {}
+  try {
+    const tags: Tags = await exiftool.read(path.resolve(path.join(imagesDirectory, imagePath)))
+    fileTags.aperture = tags.Aperture?.toString()
+    fileTags.cameraModel = `${tags.Make} ${tags.Model}`
+    fileTags.dateTaken = exifDateToJavascriptDate(tags.DateTimeOriginal as ExifDateTime)
+    fileTags.exposureMode = tags.ExposureProgram
+    fileTags.fileName = imagePath
+    fileTags.flashStatus = tags.Flash
+    fileTags.focusLength = tags.FocalLength
+    fileTags.iso = tags.ISO?.toString()
+    fileTags.lensModel = tags.Lens
+    fileTags.shutterSpeed = tags.ShutterSpeed
+    fileTags.whiteBalance = tags.WhiteBalance
+    return fileTags
+  }
+  catch (error) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: `${error}`,
+    })
+  }
+}
+
+function exifDateToJavascriptDate(exifDate: ExifDateTime) {
+  return exifDate.toDate()
+}
+
+export async function createThumbnailsForAllImages() {
+  const filenames = await getImageDirectoryContents()
+  for (const filename of filenames) {
+    createThumbnail(filename)
+  }
+}
+
+export async function createMetaDataForAllImages() {
+  const filenames = await getImageDirectoryContents()
+  for (const filename of filenames) {
+    const tags = await getExifForImage(filename)
+    await insertMetadata(tags)
+  }
 }

@@ -21,6 +21,11 @@ const createMetadataTableSql = `CREATE TABLE metadata (
   whiteBalance TEXT
 );`
 
+const insertMetadataSql = `INSERT INTO metadata (
+  fileName, title, dateTaken, dateUploaded, cameraModel, lensModel, 
+  aperture, shutterSpeed, flashStatus, focusLength, iso, exposureMode, whiteBalance
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
+
 export function createDatabaseDirectory() {
   if (!fs.existsSync(databaseDirectory)){
     console.info(`Creating ${databaseDirectory} directory for database`)
@@ -52,4 +57,35 @@ export function createMetadataTable() {
     console.info('Created metadata table.')
     return { outcome: 'success' }
   })
+}
+
+export async function insertMetadata(metadata: ImageMetadata) {
+  try {
+    await db.run(insertMetadataSql, [
+      metadata.fileName,
+      metadata.title,
+      metadata.dateTaken?.toISOString(),
+      metadata.dateUploaded?.toISOString(),
+      metadata.cameraModel,
+      metadata.lensModel,
+      metadata.aperture,
+      metadata.shutterSpeed,
+      metadata.flashStatus,
+      metadata.focusLength,
+      metadata.iso,
+      metadata.exposureMode,
+      metadata.whiteBalance
+    ], (err: Error) => {
+      if (err.message == "SQLITE_CONSTRAINT: UNIQUE constraint failed: metadata.fileName")
+        console.info(`Metadata already exists for file: ${metadata.fileName}`)
+      else 
+        console.info(`Inserted metadata for file: ${metadata.fileName}`)
+    })
+  }
+  catch (error) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: `${error}`,
+    })
+  }
 }
