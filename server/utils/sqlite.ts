@@ -28,6 +28,8 @@ const insertMetadataSql = `INSERT INTO metadata (
 
 const selectMetadataSql = `SELECT * FROM metadata WHERE fileName = ?;`
 
+const selectAllMetadataSql = `SELECT * FROM metadata;`
+
 export function createDatabaseDirectory() {
   if (!fs.existsSync(databaseDirectory)){
     console.info(`Creating ${databaseDirectory} directory for database`)
@@ -116,6 +118,30 @@ export async function getMetadataByFileName(fileName: string): Promise<ImageMeta
         }
         else {
           console.warn(`No metadata found for file: ${fileName}`)
+          resolve(null)
+        }
+      }
+    })
+  })
+}
+
+export async function getAllMetadata(): Promise<any | null> {
+  return new Promise((resolve, reject) => {
+    db.get(selectAllMetadataSql, (err: Error, rows) => {
+      if (err) {
+        console.error(`Failed to retrieve all metadata; ${err.message}`)
+        reject({
+          statusCode: 500,
+          statusMessage: `Error retrieving metadata: ${err.message}`,
+        })
+      }
+      else {
+        if (rows) {
+          console.info('Retrieved all metadata from database')
+          resolve(rows)
+        }
+        else {
+          console.warn('No metadata found')
           resolve(null)
         }
       }

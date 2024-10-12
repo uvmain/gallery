@@ -1,40 +1,36 @@
 <script setup lang="ts">
 const { loggedIn } = useUserSession()
 
-const imageData = ref()
-const imagesLastUpdated = useState('imagesLastUpdated')
+const thumbnailPaths = ref<string[]>([])
 
-// async function getFullSizeImage() {
-//   if (loggedIn.value) {
-//     const response = await fetch("/api/thumbnail/20240906-house-moth.jpg")
-    
-//     if (response.ok) {
-//       const blob = await response.blob()
-//       imageData.value = URL.createObjectURL(blob)
-//     }
-//     else {
-//       console.error("Failed to fetch image")
-//     }
-//   }
-// }
-
-// watch(loggedIn, (newValue) => {
-//   console.info(`loggedIn: ${newValue}`)
-//   if (newValue == true) {
-//     getFullSizeImage()
-//   }
-// })
+async function getThumbnailPaths() {
+  if (loggedIn.value) {
+    try {
+      const response = await $fetch<string[]>("/api/thumbnails")
+        .catch((error) => {
+          console.error(`Failed to fetch data: ${JSON.stringify(error.data)}`)
+        })
+      if (response) {
+        thumbnailPaths.value = response
+      }
+    }
+    catch (error) {
+      console.error('Failed to fetch thumbnails:', error)
+    }
+  }
+}
 
 onBeforeMount(async () => {
-  // getFullSizeImage()
+  getThumbnailPaths()
 })
 </script>
 
 <template>
   <div class="flex flex-col gap-2 items-center justify-center">
-    <div v-if="loggedIn">
-      {{ imagesLastUpdated }}
-      <img v-if="imageData" :src="imageData" >
+    <div v-if="loggedIn" class="flex flex-wrap gap-2 justify-start lg:max-w-8/10">
+      <div v-for="(thumbnailPath, index) in thumbnailPaths" :key="index">
+        <img :src="thumbnailPath" :alt="thumbnailPath" class="size-20vh object-cover">
+      </div>
     </div>
     <p v-else>
       Please log in
