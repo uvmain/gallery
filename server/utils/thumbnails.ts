@@ -19,6 +19,8 @@ export async function createThumbnail(filename: string) {
     const thumbnailPath = path.resolve(thumbnailsPath, filename)
     const imagePath = path.resolve(imagesDirectory, filename)
 
+    console.info(`creating thumbnail ${thumbnailPath} for image ${imagePath}`)
+
     // Check if the thumbnail already exists
     try {
       await fs.promises.access(thumbnailPath, fs.constants.F_OK)

@@ -4,13 +4,12 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 const IMAGE_TYPES = [
-  'avif',
+  '.avif',
   '.bmp',
   '.gif',
   '.jpg',
   '.jpeg',
   '.png',
-  'tiff',
   '.webp'
 ]
 
@@ -37,22 +36,29 @@ export function getMimeType(filename: string): string {
   }
 }
 
-export async function getImageDirectoryContents(): Promise<string[]> {
-  const imageFiles: string[] = []
-  const files = fs.readdirSync(imagesDirectory)
-  
-  for (const file of files) {
-    const ext = path.extname(file).toLowerCase() 
-    if (IMAGE_TYPES.includes(ext)) {
-      try {
-        imageFiles.push(file)
-      }
-      catch (err) {
-        console.error(`Error reading EXIF data for file ${file}:`, err)
-      }
-    }
+export async function getImageDirectoryContents(): Promise<string[]> {  
+  try {
+    const files = await fs.promises.readdir(imagesDirectory, {recursive: false})
+    console.info('directory has been listed')
+    const filteredFiles = await Promise.all(
+      files.map(async (file) => {
+        const ext = path.extname(file).toLowerCase()
+        if (IMAGE_TYPES.includes(ext)) {
+          console.info(`Found image: ${file}`)
+          return file
+        }
+        else {
+          console.info(`File ${file} has been filtered out`)
+        }
+      })
+    )
+
+    return filteredFiles.filter(Boolean) as string[]
   }
-  return imageFiles
+ catch (err) {
+    console.error('Error reading directory:', err)
+    return []
+  }
 }
 
 export async function getExifForImage(imagePath: string): Promise<ImageMetadata> {
@@ -92,12 +98,46 @@ function exifDateToJavascriptDate(exifDate: ExifDateTime): Date {
   return exifDate.toDate()
 }
 
-export async function createThumbnailsForAllImages() {
-  const filenames = await getImageDirectoryContents()
-  for (const filename of filenames) {
-    createThumbnail(filename)
-  }
+export async function createThumbnailsForAllImages(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    // Fetch filenames from the database
+    db.all('SELECT filename FROM metadata;', async (err: Error, rows: { fileName: string }[]) => {
+      if (err) {
+        console.error(`Failed to retrieve all filenames; ${err.message}`)
+        reject({
+          statusCode: 500,
+          statusMessage: `Error retrieving filenames: ${err.message}`,
+        })
+      }
+      else {
+        if (rows && rows.length > 0) {
+          console.info('Retrieved all filenames from database')
+          console.info(rows)
+          // Create thumbnail for each file
+          try {
+            const promises = rows.map(row => createThumbnail(`/api/thumbnail/${row.fileName}`))
+            // Wait for all thumbnails to be created
+            await Promise.all(promises)
+            console.info('Thumbnails created successfully')
+            resolve()
+          }
+          catch (error) {
+            console.error(`Error creating thumbnails: ${error}`)
+            reject({
+              statusCode: 500,
+              statusMessage: `Error creating thumbnails: ${error}`,
+            })
+          }
+        }
+        else {
+          console.warn('No metadata found')
+          resolve()
+        }
+      }
+    })
+  })
 }
+
 
 export async function createMetaDataForAllImages() {
   const filenames = await getImageDirectoryContents()
