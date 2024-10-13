@@ -1,9 +1,7 @@
-import type { ExifDateTime } from "exiftool-vendored"
-
 export interface ImageMetadata {
   fileName?: string
   title?: string
-  dateTaken?: string | ExifDateTime
+  dateTaken?: string
   dateUploaded?: Date
   cameraModel?: string
   lensModel?: string

@@ -10,7 +10,7 @@ export default defineEventHandler(async () => {
 
 export async function getThumbnailPaths(): Promise<string[] | null> {
   return new Promise((resolve, reject) => {
-    db.all('SELECT filename FROM metadata;', (err: Error, rows: { fileName: string }[]) => {
+    db.all('SELECT filename FROM metadata ORDER BY dateTaken DESC;', (err: Error, rows: { fileName: string }[]) => {
       if (err) {
         console.error(`Failed to retrieve all filenames; ${err.message}`)
         reject({

@@ -56,3 +56,16 @@ export async function createThumbnail(filename: string) {
     })
   }
 }
+
+export async function removeThumbnailsForRemovedFiles() {
+  const imageFiles = getCachedDirectoryListing()
+  const thumbnailFiles = await toArray(ls(thumbnailsPath))
+  for (const thumbnailFile of thumbnailFiles) {
+    if (!imageFiles.includes(path.basename(thumbnailFile))) {
+      const thumbnailPath = path.resolve(thumbnailsPath, thumbnailFile)
+      console.info(`Removing thumbnail for ${thumbnailFile}`)
+      fs.promises.unlink(thumbnailPath)
+    }
+  }
+  return thumbnailFiles
+}

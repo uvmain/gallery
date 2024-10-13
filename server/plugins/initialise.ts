@@ -6,4 +6,6 @@ export default defineNitroPlugin(async() => {
   await createMetadataTable()
   await createMetaDataForAllImages()
   await createThumbnailsForAllImages()
+  await removeMetadataForRemovedFiles()
+  await removeThumbnailsForRemovedFiles()
 })

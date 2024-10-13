@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const { loggedIn } = useUserSession()
-
 const thumbnailPaths = ref<string[]>([])
 
 async function getThumbnailPaths() {
@@ -27,7 +26,7 @@ onBeforeMount(async () => {
 
 <template>
   <div class="flex flex-col gap-2 items-center justify-center">
-    <div v-if="loggedIn" class="flex flex-wrap gap-2 justify-start lg:max-w-8/10 p-4">
+    <div v-if="loggedIn" class="flex flex-wrap gap-2 justify-start lg:max-w-8/10">
       <div v-for="(thumbnailPath, index) in thumbnailPaths" :key="index">
         <img :src="thumbnailPath" :alt="thumbnailPath" class="h-20vh object-cover">
       </div>
@@ -37,3 +36,4 @@ onBeforeMount(async () => {
     </p>
   </div>
 </template>
+

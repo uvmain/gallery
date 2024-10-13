@@ -1,17 +1,7 @@
-import { exiftool } from "exiftool-vendored"
-import type { Tags } from "exiftool-vendored"
 import fs from 'node:fs'
 import path from 'node:path'
-
-const IMAGE_TYPES = [
-  '.avif',
-  '.bmp',
-  '.gif',
-  '.jpg',
-  '.jpeg',
-  '.png',
-  '.webp'
-]
+import { exiftool } from "exiftool-vendored"
+import type { ExifDateTime, Tags } from "exiftool-vendored"
 
 export const imagesDirectory = path.resolve(serverConfiguration.imagePath)
 
@@ -67,33 +57,8 @@ export async function getImageDirectoryContents(): Promise<string[]> {
   }
 }
 
-export async function* ls(filePath: string = imagesDirectory): AsyncGenerator<string> {
-  yield filePath
-  for (const dirent of await fs.promises.readdir(filePath, { withFileTypes: true })) {
-    if (dirent.isDirectory()) {
-      yield* ls(path.join(filePath, dirent.name))
-    }
-    else {
-      yield path.join(filePath, dirent.name)
-    }
-  }
-}
-
-async function toArray<T>(iter: AsyncIterable<T>): Promise<T[]> {
-  const result: T[] = []
-  for await (const x of iter) {
-    const ext = path.extname(x as string).toLowerCase()
-    if (IMAGE_TYPES.includes(ext)) {
-      const parsedFilename = `${x}`.replace(`${imagesDirectory}\\`,'')
-      console.info(`Found image: ${parsedFilename}`)
-      result.push(parsedFilename as T)
-    }
-  }
-  return result
-}
-
 export async function getImageDirectoryListing(): Promise<string[]> {
-  directoryListing = await toArray(ls())
+  directoryListing = await toArray(ls(imagesDirectory))
   return directoryListing
 }
 
@@ -109,7 +74,7 @@ export async function getExifForImage(imagePath: string): Promise<ImageMetadata>
       const tags: Tags = await exiftool.read(path.resolve(path.join(imagesDirectory, imagePath)))
       fileTags.aperture = tags.Aperture?.toString()
       fileTags.cameraModel = `${tags.Make} ${tags.Model}`
-      fileTags.dateTaken = tags.DateTimeDigitized
+      fileTags.dateTaken = ((tags.DigitalCreationDateTime || tags.DateTimeDigitized || tags.FileCreateDate || tags.DateTimeOriginal || tags.DateTimeCreated) as ExifDateTime).toISOString()
       fileTags.exposureMode = tags.ExposureProgram
       fileTags.fileName = imagePath
       fileTags.flashStatus = tags.Flash
@@ -175,4 +140,28 @@ export async function createMetaDataForAllImages() {
     console.info(`Getting exif for ${filename}`)
     await getExifForImage(filename)
   }
+}
+
+export async function removeMetadataForRemovedFiles() {
+  const filenames = getCachedDirectoryListing()
+
+  db.all('SELECT filename FROM metadata;', (err: Error, rows: { fileName: string }[]) => {
+    if (err) {
+      console.error(`Failed to retrieve all filenames; ${err.message}`)
+    }
+    else {
+      const metadataFilenames = rows.map(row => row.fileName)
+
+      for (const filename of metadataFilenames) {
+        if (!filenames.includes(filename)) {
+          console.info(`Deleting metadata for removed image ${filename}`)
+          db.run('DELETE FROM metadata WHERE filename = ?', [filename], (deleteErr: Error) => {
+            if (deleteErr) {
+              console.error(`Failed to delete metadata for file ${filename}; ${deleteErr.message}`)
+            }
+          })
+        }
+      }
+    }
+  })
 }
