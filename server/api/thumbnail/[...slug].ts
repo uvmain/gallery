@@ -2,7 +2,7 @@ import { promises as fs } from 'node:fs'
 import path from 'node:path'
 
 export default defineEventHandler(async (event) => {
-  const slug = event.context.params?.slug
+  let slug = event.context.params?.slug
 
   if (!slug) {
     throw createError({
@@ -10,6 +10,8 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'Missing slug parameter',
     })
   }
+
+  slug = decodeURIComponent(slug)
 
   const thumbnailPath = path.resolve(thumbnailsPath, slug)
 

@@ -21,7 +21,6 @@ export async function getThumbnailPaths(): Promise<string[] | null> {
       else {
         if (rows && rows.length > 0) {
           console.info('Retrieved all filenames from database')
-          console.info(rows)
           const filenames = rows.map(row => `/api/thumbnail/${row.fileName}`)
           resolve(filenames)
         }

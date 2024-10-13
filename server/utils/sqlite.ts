@@ -30,17 +30,18 @@ const selectMetadataSql = `SELECT * FROM metadata WHERE fileName = ?;`
 
 const selectAllMetadataSql = `SELECT * FROM metadata;`
 
-export function createDatabaseDirectory() {
-  if (!fs.existsSync(databaseDirectory)){
-    console.info(`Creating ${databaseDirectory} directory for database`)
-    fs.mkdirSync(databaseDirectory, { recursive: true })
-  }
-  else {
+export async function createDatabaseDirectory(): Promise<void> {
+  try {
+    await fs.promises.access(databaseDirectory)
     console.info(`Database directory at ${databaseDirectory} already exists`)
+  }
+  catch {
+    console.info(`Creating ${databaseDirectory} directory for database`)
+    await fs.promises.mkdir(databaseDirectory, { recursive: true })
   }
 }
 
-export const db = new sqlite3.Database(databasePath, (err) => {
+export const db: sqlite3.Database = new sqlite3.Database(databasePath, (err) => {
   if (err) {
     console.error(err.message)
   }
@@ -74,8 +75,8 @@ export async function insertMetadata(metadata: ImageMetadata) {
     await db.run(insertMetadataSql, [
       metadata.fileName,
       metadata.title,
-      metadata.dateTaken?.toISOString(),
-      metadata.dateUploaded?.toISOString(),
+      metadata.dateTaken,
+      metadata.dateUploaded,
       metadata.cameraModel,
       metadata.lensModel,
       metadata.aperture,
@@ -88,8 +89,8 @@ export async function insertMetadata(metadata: ImageMetadata) {
     ], (err) => {
       if (`${err}` == "SQLITE_CONSTRAINT: UNIQUE constraint failed: metadata.fileName")
         console.info(`Metadata already exists for file: ${metadata.fileName}`)
-      else 
-      console.info(`Metadata insert for ${metadata.fileName} failed: ${err}`)
+      else if (err?.message.length)
+        console.info(`Metadata insert for ${metadata.fileName} failed: ${err.message}`)
     })
     console.info(`Inserted metadata for file: ${metadata.fileName}`)
   }
@@ -101,7 +102,7 @@ export async function insertMetadata(metadata: ImageMetadata) {
   }
 }
 
-export async function getMetadataByFileName(fileName: string): Promise<ImageMetadata | null> {
+export async function getMetadataByFileName(fileName: string, logError = true): Promise<ImageMetadata | null> {
   return new Promise((resolve, reject) => {
     db.get(selectMetadataSql, [fileName], (err: Error, row: ImageMetadata) => {
       if (err) {
@@ -117,7 +118,9 @@ export async function getMetadataByFileName(fileName: string): Promise<ImageMeta
           resolve(row)
         }
         else {
-          console.warn(`No metadata found for file: ${fileName}`)
+          if (logError) {
+            console.warn(`No metadata found for file: ${fileName}`)
+          }
           resolve(null)
         }
       }
@@ -125,9 +128,9 @@ export async function getMetadataByFileName(fileName: string): Promise<ImageMeta
   })
 }
 
-export async function getAllMetadata(): Promise<any | null> {
+export async function getAllMetadata(): Promise<ImageMetadata[] | null> {
   return new Promise((resolve, reject) => {
-    db.get(selectAllMetadataSql, (err: Error, rows) => {
+    db.all(selectAllMetadataSql, (err: Error, rows: ImageMetadata[]) => {
       if (err) {
         console.error(`Failed to retrieve all metadata; ${err.message}`)
         reject({

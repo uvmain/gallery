@@ -1,5 +1,5 @@
 import { exiftool } from "exiftool-vendored"
-import type { Tags, ExifDateTime } from "exiftool-vendored"
+import type { Tags } from "exiftool-vendored"
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -14,6 +14,12 @@ const IMAGE_TYPES = [
 ]
 
 export const imagesDirectory = path.resolve(serverConfiguration.imagePath)
+
+let directoryListing: string[] = []
+
+export function getCachedDirectoryListing(): string[] {
+  return directoryListing
+}
 
 export function createImagesDirectory() {
   if (!fs.existsSync(imagesDirectory)){
@@ -61,8 +67,38 @@ export async function getImageDirectoryContents(): Promise<string[]> {
   }
 }
 
+export async function* ls(filePath: string = imagesDirectory): AsyncGenerator<string> {
+  yield filePath
+  for (const dirent of await fs.promises.readdir(filePath, { withFileTypes: true })) {
+    if (dirent.isDirectory()) {
+      yield* ls(path.join(filePath, dirent.name))
+    }
+    else {
+      yield path.join(filePath, dirent.name)
+    }
+  }
+}
+
+async function toArray<T>(iter: AsyncIterable<T>): Promise<T[]> {
+  const result: T[] = []
+  for await (const x of iter) {
+    const ext = path.extname(x as string).toLowerCase()
+    if (IMAGE_TYPES.includes(ext)) {
+      const parsedFilename = `${x}`.replace(`${imagesDirectory}\\`,'')
+      console.info(`Found image: ${parsedFilename}`)
+      result.push(parsedFilename as T)
+    }
+  }
+  return result
+}
+
+export async function getImageDirectoryListing(): Promise<string[]> {
+  directoryListing = await toArray(ls())
+  return directoryListing
+}
+
 export async function getExifForImage(imagePath: string): Promise<ImageMetadata> {
-  const imageMetaData = await getMetadataByFileName(imagePath)
+  const imageMetaData = await getMetadataByFileName(imagePath, false)
 
   if (imageMetaData) {
     return imageMetaData
@@ -73,7 +109,7 @@ export async function getExifForImage(imagePath: string): Promise<ImageMetadata>
       const tags: Tags = await exiftool.read(path.resolve(path.join(imagesDirectory, imagePath)))
       fileTags.aperture = tags.Aperture?.toString()
       fileTags.cameraModel = `${tags.Make} ${tags.Model}`
-      fileTags.dateTaken = exifDateToJavascriptDate(tags.DateTimeOriginal as ExifDateTime)
+      fileTags.dateTaken = tags.DateTimeDigitized
       fileTags.exposureMode = tags.ExposureProgram
       fileTags.fileName = imagePath
       fileTags.flashStatus = tags.Flash
@@ -94,10 +130,6 @@ export async function getExifForImage(imagePath: string): Promise<ImageMetadata>
   }
 }
 
-function exifDateToJavascriptDate(exifDate: ExifDateTime): Date {
-  return exifDate.toDate()
-}
-
 export async function createThumbnailsForAllImages(): Promise<void> {
   return new Promise((resolve, reject) => {
     // Fetch filenames from the database
@@ -112,10 +144,9 @@ export async function createThumbnailsForAllImages(): Promise<void> {
       else {
         if (rows && rows.length > 0) {
           console.info('Retrieved all filenames from database')
-          console.info(rows)
           // Create thumbnail for each file
           try {
-            const promises = rows.map(row => createThumbnail(`/api/thumbnail/${row.fileName}`))
+            const promises = rows.map(row => createThumbnail(row.fileName))
             // Wait for all thumbnails to be created
             await Promise.all(promises)
             console.info('Thumbnails created successfully')
@@ -138,10 +169,10 @@ export async function createThumbnailsForAllImages(): Promise<void> {
   })
 }
 
-
 export async function createMetaDataForAllImages() {
-  const filenames = await getImageDirectoryContents()
+  const filenames = getCachedDirectoryListing()
   for (const filename of filenames) {
+    console.info(`Getting exif for ${filename}`)
     await getExifForImage(filename)
   }
 }

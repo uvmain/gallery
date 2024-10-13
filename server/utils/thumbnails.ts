@@ -4,22 +4,23 @@ import sharp from 'sharp'
 
 export const thumbnailsPath = path.resolve(path.join(serverConfiguration.dataPath, 'thumbnails'))
 
-export function createThumbnailsDirectory() {
-  if (!fs.existsSync(thumbnailsPath)){
-    console.info(`Creating ${thumbnailsPath} directory for images`)
-    fs.mkdirSync(thumbnailsPath, { recursive: true })
-  }
-  else {
+export async function createThumbnailsDirectory(): Promise<void> {
+  try {
+    await fs.promises.access(thumbnailsPath)
     console.info(`Thumbnails directory at ${thumbnailsPath} already exists`)
   }
-};
+  catch {
+    console.info(`Creating ${thumbnailsPath} directory for thumbnails`)
+    await fs.promises.mkdir(thumbnailsPath, { recursive: true })
+  }
+}
 
 export async function createThumbnail(filename: string) {
   try {
     const thumbnailPath = path.resolve(thumbnailsPath, filename)
     const imagePath = path.resolve(imagesDirectory, filename)
 
-    console.info(`creating thumbnail ${thumbnailPath} for image ${imagePath}`)
+    console.info(`Creating thumbnail ${thumbnailPath} for image ${imagePath}`)
 
     // Check if the thumbnail already exists
     try {
