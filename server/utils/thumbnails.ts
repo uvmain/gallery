@@ -17,7 +17,7 @@ export async function createThumbnailsDirectory(): Promise<void> {
 
 export async function createThumbnail(filename: string) {
   try {
-    const thumbnailPath = path.resolve(thumbnailsPath, filename)
+    const thumbnailPath = path.resolve(thumbnailsPath, filename.replace('\\', '-').replace('/', '-'))
     const imagePath = path.resolve(imagesDirectory, filename)
 
     console.info(`Creating thumbnail ${thumbnailPath} for image ${imagePath}`)
