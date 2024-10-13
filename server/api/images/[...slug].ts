@@ -2,7 +2,7 @@ import { promises as fs } from 'node:fs'
 import path from 'node:path'
 
 export default defineEventHandler(async (event) => {
-  const slug = event.context.params?.slug
+  let slug = event.context.params?.slug
 
   if (!slug) {
     throw createError({
@@ -11,7 +11,31 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const imagePath = path.resolve(path.join(imagesDirectory, slug))
+  slug = decodeURIComponent(slug)
+
+  const filename = await new Promise<string | null>((resolve, reject) => {
+    db.get(
+      `SELECT fileName FROM metadata WHERE slug = ?`,
+      [slug],
+      (err: Error, row: { fileName: string } | null) => {
+        if (err) {
+          reject(err)
+        }
+        else {
+          resolve(row ? row.fileName : null)
+        }
+      }
+    )
+  })
+
+  if (!filename) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'File not found',
+    })
+  }
+
+  const imagePath = path.resolve(path.join(imagesDirectory, filename))
 
   try {
     const fileBuffer = await fs.readFile(imagePath)
@@ -22,7 +46,8 @@ export default defineEventHandler(async (event) => {
   catch (error) {
     throw createError({
       statusCode: 404,
-      statusMessage: `${error}`,
+      statusMessage: `File not found: ${error}`,
     })
   }
 })
+

@@ -1,12 +1,14 @@
 import sqlite3 from 'sqlite3'
 import path from 'node:path'
 import fs from 'node:fs'
+import { toSlug } from './files'
 
 const databaseDirectory = path.resolve(path.join(serverConfiguration.dataPath, 'database'))
 const databasePath = path.resolve(path.join(databaseDirectory, 'db.sqlite'))
 
 const createMetadataTableSql = `CREATE TABLE metadata (
-  fileName TEXT PRIMARY KEY,
+  slug TEXT PRIMARY KEY,
+  fileName TEXT,
   title TEXT,
   dateTaken DATETIME,
   dateUploaded DATETIME,
@@ -22,13 +24,15 @@ const createMetadataTableSql = `CREATE TABLE metadata (
 );`
 
 const insertMetadataSql = `INSERT INTO metadata (
-  fileName, title, dateTaken, dateUploaded, cameraModel, lensModel, 
+  slug, fileName, title, dateTaken, dateUploaded, cameraModel, lensModel, 
   aperture, shutterSpeed, flashStatus, focusLength, iso, exposureMode, whiteBalance
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
 
 const selectMetadataSql = `SELECT * FROM metadata WHERE fileName = ?;`
 
 const selectAllMetadataSql = `SELECT * FROM metadata;`
+
+const selectAllSlugsSql = `SELECT slug FROM metadata;`
 
 export async function createDatabaseDirectory(): Promise<void> {
   try {
@@ -51,7 +55,7 @@ export const db: sqlite3.Database = new sqlite3.Database(databasePath, (err) => 
 
 export async function createMetadataTable() {
   return new Promise((resolve) => {
-    db.all(createMetadataTableSql, [], (err) => {
+    db.run(createMetadataTableSql, [], (err) => {
       if (err) {
         if (err.message === "SQLITE_ERROR: table metadata already exists") {
           console.info('Metadata table already exists.')
@@ -73,6 +77,7 @@ export async function createMetadataTable() {
 export async function insertMetadata(metadata: ImageMetadata) {
   try {
     await db.run(insertMetadataSql, [
+      toSlug(metadata.fileName),
       metadata.fileName,
       metadata.title,
       metadata.dateTaken,
@@ -144,6 +149,31 @@ export async function getAllMetadata(): Promise<ImageMetadata[] | null> {
           resolve(rows)
         }
         else {
+          console.warn('No metadata found')
+          resolve(null)
+        }
+      }
+    })
+  })
+}
+
+export async function getAllSlugs(): Promise<string[] | null> {
+  return new Promise((resolve, reject) => {
+    db.all(selectAllSlugsSql, (err: Error, rows: { slug: string }[]) => {
+      if (err) {
+        console.error(`Failed to retrieve all slugs; ${err.message}`)
+        reject({
+          statusCode: 500,
+          statusMessage: `Error retrieving slugs: ${err.message}`,
+        })
+      }
+      else {
+        if (rows && rows.length > 0) {
+          console.info('Retrieved all slugs from database')
+          const filenames = rows.map(row => row.slug)
+          resolve(filenames)
+        }
+      else {
           console.warn('No metadata found')
           resolve(null)
         }

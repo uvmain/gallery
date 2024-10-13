@@ -35,3 +35,7 @@ export async function toArray<T>(iter: AsyncIterable<T>): Promise<T[]> {
   }
   return result
 }
+
+export function toSlug(filename?: string) {
+  return filename?.replaceAll('\\','-').replaceAll('/','-')
+}

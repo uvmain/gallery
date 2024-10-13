@@ -54,7 +54,7 @@ async function insertImage(imageMetadata: ImageMetadata): Promise<{ statusCode: 
 
   try {
     await new Promise((resolve, reject) => {
-      db.all(insertImageSql, [], (err) => {
+      db.run(insertImageSql, [], (err) => {
         if (err) {
           console.error(`Failed to insert image to database: ${err.message}`)
           console.info(insertImageSql)

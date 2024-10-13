@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
 
   slug = decodeURIComponent(slug)
 
-  const thumbnailPath = path.resolve(thumbnailsPath, slug.replace('\\', '-').replace('/', '-'))
+  const thumbnailPath = path.resolve(thumbnailsPath, toSlug(slug))
 
   try {
     const fileBuffer = await fs.readFile(thumbnailPath)

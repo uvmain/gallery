@@ -17,7 +17,7 @@ export async function createThumbnailsDirectory(): Promise<void> {
 
 export async function createThumbnail(filename: string) {
   try {
-    const thumbnailPath = path.resolve(thumbnailsPath, filename.replace('\\', '-').replace('/', '-'))
+    const thumbnailPath = path.resolve(thumbnailsPath, toSlug(filename))
     const imagePath = path.resolve(imagesDirectory, filename)
 
     console.info(`Creating thumbnail ${thumbnailPath} for image ${imagePath}`)
@@ -58,10 +58,10 @@ export async function createThumbnail(filename: string) {
 }
 
 export async function removeThumbnailsForRemovedFiles() {
-  const imageFiles = getCachedDirectoryListing()
+  const slugs = await getAllSlugs() || []
   const thumbnailFiles = await toArray(ls(thumbnailsPath))
   for (const thumbnailFile of thumbnailFiles) {
-    if (!imageFiles.includes(path.basename(thumbnailFile))) {
+    if (!slugs.includes(path.basename(thumbnailFile))) {
       const thumbnailPath = path.resolve(thumbnailsPath, thumbnailFile)
       console.info(`Removing thumbnail for ${thumbnailFile}`)
       fs.promises.unlink(thumbnailPath)

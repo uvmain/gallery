@@ -1,6 +1,6 @@
 export default defineEventHandler(async () => {
   try {
-    const metaData = await getThumbnailPaths()
+    const metaData = await getSlugs()
     return metaData
   }
   catch {
@@ -8,9 +8,9 @@ export default defineEventHandler(async () => {
   }
 })
 
-export async function getThumbnailPaths(): Promise<string[] | null> {
+export async function getSlugs(): Promise<string[] | null> {
   return new Promise((resolve, reject) => {
-    db.all('SELECT filename FROM metadata ORDER BY dateTaken DESC;', (err: Error, rows: { fileName: string }[]) => {
+    db.all('SELECT slug FROM metadata ORDER BY dateTaken DESC;', (err: Error, rows: { slug: string }[]) => {
       if (err) {
         console.error(`Failed to retrieve all filenames; ${err.message}`)
         reject({
@@ -21,7 +21,7 @@ export async function getThumbnailPaths(): Promise<string[] | null> {
       else {
         if (rows && rows.length > 0) {
           console.info('Retrieved all filenames from database')
-          const filenames = rows.map(row => `/api/thumbnail/${row.fileName}`)
+          const filenames = rows.map(row => row.slug)
           resolve(filenames)
         }
       else {
