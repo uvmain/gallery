@@ -6,5 +6,6 @@ export const serverConfiguration = {
   dataPath: env.DATA_PATH || './data',
   sessionMaxAge: Number(env.SESSION_MAX_AGE) || 86400,
   imagePath: env.IMAGE_PATH || './data/images',
-  thumbnailMaxPixels: Number(env.THUMBNAIL_MAX_PIXELS) || 400
+  thumbnailMaxPixels: Number(env.THUMBNAIL_MAX_PIXELS) || 400,
+  imageMaxPixels: Number(env.IMAGE_MAX_PIXELS) || 1080
 }

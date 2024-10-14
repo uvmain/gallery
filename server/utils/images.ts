@@ -74,7 +74,7 @@ export async function getExifForImage(imagePath: string): Promise<ImageMetadata>
       const tags: Tags = await exiftool.read(path.resolve(path.join(imagesDirectory, imagePath)))
       fileTags.aperture = tags.Aperture?.toString()
       fileTags.cameraModel = `${tags.Make} ${tags.Model}`
-      fileTags.dateTaken = ((tags.DigitalCreationDateTime || tags.DateTimeDigitized || tags.FileCreateDate || tags.DateTimeOriginal || tags.DateTimeCreated) as ExifDateTime).toISOString()
+      fileTags.dateTaken = ((tags.DateTimeOriginal ?? tags.DateTimeCreated ?? tags.DigitalCreationDateTime ?? tags.DateTimeDigitized ?? tags.MetadataDate ?? tags.ModifyDate ?? tags.FileCreateDate) as ExifDateTime).toISOString()
       fileTags.exposureMode = tags.ExposureProgram
       fileTags.fileName = imagePath
       fileTags.flashStatus = tags.Flash

@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
+    "predev": "go run godirlist.go ./ ./data/output.json",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",

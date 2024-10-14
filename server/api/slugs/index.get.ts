@@ -1,4 +1,6 @@
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+  // const limit = Number.parseInt(event.context.params?.limit as string) || 10
+  // const offset = Number.parseInt(event.context.params?.offset as string) || 20
   try {
     const metaData = await getSlugs()
     return metaData

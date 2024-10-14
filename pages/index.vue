@@ -49,9 +49,11 @@ onBeforeMount(async () => {
 <template>
   <div class="flex flex-col gap-2 items-center justify-center">
     <div v-if="loggedIn" class="flex flex-wrap gap-2 justify-start lg:max-w-8/10">
+
       <div v-for="(slug, index) in slugs" :key="index">
-        <img :src="getThumbnailPath(slug)" :alt="slug" class="h-20vh object-cover cursor-pointer" @click="openModal(getImagePath(slug))" >
+        <img :src="getThumbnailPath(slug)" :alt="slug" class="min-h-200px h-20vh cursor-pointer" @click="openModal(getImagePath(slug))" >
       </div>
+
         <!-- Modal -->
       <div v-if="showModal" class="inset-0 fixed bg-black bg-opacity-75 flex items-center justify-center z-50">
         <div class="relative bg-white p-4 rounded-lg">

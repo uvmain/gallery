@@ -1,5 +1,6 @@
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
+import sharp from 'sharp'
 
 export default defineEventHandler(async (event) => {
   let slug = event.context.params?.slug
@@ -38,9 +39,7 @@ export default defineEventHandler(async (event) => {
   const imagePath = path.resolve(path.join(imagesDirectory, filename))
 
   try {
-    const fileBuffer = await fs.readFile(imagePath)
-    const mimeType = getMimeType(slug)
-    setHeader(event, 'Content-Type', mimeType)
+    const fileBuffer = await createOptimisedImage(imagePath)
     return fileBuffer
   }
   catch (error) {
@@ -51,3 +50,25 @@ export default defineEventHandler(async (event) => {
   }
 })
 
+export async function createOptimisedImage(imagePath: string) {
+  try {
+    const fileBuffer = await fs.readFile(imagePath)
+    const resizedImageBuffer = await sharp(fileBuffer)
+      .rotate()
+      .resize({
+        width: serverConfiguration.imageMaxPixels,
+        height: serverConfiguration.imageMaxPixels,
+        fit: 'outside'
+      })
+      .webp()
+      .toBuffer()
+
+    return resizedImageBuffer
+  }
+  catch (error) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: `${error}`,
+    })
+  }
+}

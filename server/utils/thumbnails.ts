@@ -22,7 +22,6 @@ export async function createThumbnail(filename: string) {
 
     console.info(`Creating thumbnail ${thumbnailPath} for image ${imagePath}`)
 
-    // Check if the thumbnail already exists
     try {
       await fs.promises.access(thumbnailPath, fs.constants.F_OK)
       console.info(`Thumbnail already exists: ${filename}`)
@@ -35,10 +34,11 @@ export async function createThumbnail(filename: string) {
     const fileBuffer = await fs.promises.readFile(imagePath)
 
     const resizedImageBuffer = await sharp(fileBuffer)
+      .rotate() // Automatically adjust orientation based on EXIF data
       .resize({
         width: serverConfiguration.thumbnailMaxPixels,
         height: serverConfiguration.thumbnailMaxPixels,
-        fit: 'inside'
+        fit: 'outside'
       })
       .webp()
       .toBuffer()
