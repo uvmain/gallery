@@ -1,8 +1,0 @@
-services:
-  recipebook:
-    image: gallery:latest
-    container_name: gallery
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env
