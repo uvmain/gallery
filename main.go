@@ -26,10 +26,8 @@ func main() {
 	ImageExtensions = strings.Split(os.Getenv("IMAGE_FILES"), ",")
 
 	Database = InitialiseDatabase()
-	CreateMetadataTable()
 	CreateThumbnailsDir()
 	GetImageDirContents()
-
 }
 
 func loadEnv() {

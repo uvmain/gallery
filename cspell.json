@@ -2,9 +2,11 @@
   "version": "0.2",
   "language": "en-GB",
   "words": [
-    "DATETIME",
-    "godotenv",
-    "gorm"
+    "godotenv"
   ],
+  "ignoreWords": [
+    "modernc"
+  ],
+  "allowCompoundWords": true,
   "flagWords": []
 }

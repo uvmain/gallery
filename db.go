@@ -42,10 +42,35 @@ func InitialiseDatabase() *sql.DB {
 		log.Println("Database file opened")
 	}
 
+	CreateAlbumsTable(db)
+	CreateMetadataTable(db)
+
 	return db
 }
 
-func CreateMetadataTable() {
+func CreateAlbumsTable(db *sql.DB) {
+	query := `CREATE TABLE IF NOT EXISTS albums (
+		name TEXT PRIMARY KEY
+	);`
+
+	checkQuery := "SELECT name FROM sqlite_master WHERE type='table' AND name='albums'"
+
+	var name string
+	checkError := db.QueryRow(checkQuery).Scan(&name)
+
+	if checkError == nil {
+		log.Println("Albums table already exists")
+	} else {
+		_, err := db.Exec(query)
+		if err != nil {
+			log.Fatalf("Error creating albums table: %s", err)
+		} else {
+			log.Println("Albums table created")
+		}
+	}
+}
+
+func CreateMetadataTable(db *sql.DB) {
 	query := `CREATE TABLE IF NOT EXISTS metadata (
 		slug TEXT PRIMARY KEY,
 		path TEXT,
@@ -61,18 +86,18 @@ func CreateMetadataTable() {
 		focusLength TEXT,
 		iso TEXT,
 		exposureMode TEXT,
-		whiteBalance TEXT
+		whiteBalance TEXT,
+		albums TEXT
 	);`
 
 	checkQuery := "SELECT name FROM sqlite_master WHERE type='table' AND name='metadata'"
 	var name string
-	checkError := Database.QueryRow(checkQuery).Scan(&name)
+	checkError := db.QueryRow(checkQuery).Scan(&name)
 
 	if checkError == nil {
 		log.Println("Metadata table already exists")
 	} else {
-		_, err := Database.Query(query)
-
+		_, err := db.Exec(query)
 		if err != nil {
 			log.Fatalf("Error creating metadata table: %s", err)
 		} else {
