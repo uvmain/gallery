@@ -2,7 +2,8 @@
   "version": "0.2",
   "language": "en-GB",
   "words": [
-    "godotenv"
+    "godotenv",
+    "Lanczos"
   ],
   "ignoreWords": [
     "modernc"

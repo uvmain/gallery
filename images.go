@@ -35,6 +35,7 @@ func GetImageDirContents() ([]string, error) {
 	var photoInt int = 0
 	log.Printf(`Found: %s`, FoundFiles[photoInt])
 	getExif(FoundFiles[photoInt])
+	GenerateThumbnail(FoundFiles[photoInt], GetUnixTimeString())
 
 	return foundFiles, err
 }
