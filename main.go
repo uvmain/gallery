@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -22,4 +23,9 @@ func main() {
 	Database = InitialiseDatabase()
 	CreateThumbnailsDir()
 	GetImageDirContents()
+
+	var photoInt int = 1200
+	log.Printf(`Found: %s`, FoundFiles[photoInt])
+	exifData := GetExifForImagePath(FoundFiles[photoInt])
+	GenerateThumbnail(FoundFiles[photoInt], exifData.slug)
 }

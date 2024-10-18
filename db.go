@@ -78,12 +78,14 @@ func CreateMetadataTable(db *sql.DB) {
 		title TEXT,
 		dateTaken DATETIME,
 		dateUploaded DATETIME,
+		cameraMake TEXT,
 		cameraModel TEXT,
+		lensMake TEXT,
 		lensModel TEXT,
-		aperture TEXT,
+		fStop TEXT,
 		shutterSpeed TEXT,
 		flashStatus TEXT,
-		focusLength TEXT,
+		focalLength TEXT,
 		iso TEXT,
 		exposureMode TEXT,
 		whiteBalance TEXT,
@@ -105,3 +107,24 @@ func CreateMetadataTable(db *sql.DB) {
 		}
 	}
 }
+
+// func AddImageToMetadataTable(imagePath string) {
+// 	imageDirectory := filepath.Dir(imagePath)
+// 	imageFile := filepath.Base(imagePath)
+
+// 	checkQuery := "`SELECT * FROM metadata WHERE path = ? and fileName = ?;`"
+// 	var slug string
+// 	checkError := Database.QueryRow(checkQuery, imageDirectory, imageFile).Scan(&slug)
+
+// 	if checkError == nil {
+// 		log.Printf("Image metadata for %s already exists", imagePath)
+// 	} else {
+// 		log.Printf("Creating image metadata for %s", imagePath)
+// 		_, err := Database.Exec(checkQuery, imageDirectory, imageFile)
+// 		if err != nil {
+// 			log.Fatalf("Error creating metadata table: %s", err)
+// 		} else {
+// 			log.Printf("Metadata row for %s created", imagePath)
+// 		}
+// 	}
+// }
