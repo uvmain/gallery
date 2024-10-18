@@ -23,7 +23,7 @@ func CreateThumbnailsDir() {
 	}
 }
 
-func GenerateThumbnail(imageFile string, destinationFilename string) error {
+func GenerateThumbnail(imageFile string, slug string) error {
 	source, err := imaging.Open(imageFile)
 	if err != nil {
 		log.Fatalf("Failed to open image: %v", err)
@@ -39,7 +39,7 @@ func GenerateThumbnail(imageFile string, destinationFilename string) error {
 		height = 0
 	}
 
-	thumbnailPath := filepath.Join(ThumbnailDirectory, destinationFilename) + ".jpeg"
+	thumbnailPath := filepath.Join(ThumbnailDirectory, slug) + ".jpeg"
 
 	thumbnailImage := imaging.Resize(source, width, height, imaging.Lanczos)
 
@@ -50,3 +50,14 @@ func GenerateThumbnail(imageFile string, destinationFilename string) error {
 	}
 	return nil
 }
+
+// func GenerateThumbnails() error {
+// 	filesToCheck := GetExistingMetadataFilePaths()
+// 	for _, imagePath := range  {
+// 		if ext == validExt {
+// 			foundFiles = append(foundFiles, path)
+// 			break
+// 		}
+// 	}
+// 	return nil
+// }

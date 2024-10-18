@@ -28,7 +28,7 @@ var ExposureModes = map[int]string{
 
 type ImageMetadata struct {
 	slug         string
-	path         string
+	filePath     string
 	fileName     string
 	title        string
 	dateTaken    time.Time
@@ -66,13 +66,11 @@ func GetImageDirContents() ([]string, error) {
 		}
 		return nil
 	})
-	log.Printf("Found: %d images", len(foundFiles))
 	FoundFiles = foundFiles
-
 	return foundFiles, err
 }
 
-func GetExifForImagePath(imagePath string) *ImageMetadata {
+func GetSourceMetadataForImagePath(imagePath string) ImageMetadata {
 
 	f, err := os.Open(imagePath)
 	if err != nil {
@@ -199,9 +197,9 @@ func GetExifForImagePath(imagePath string) *ImageMetadata {
 		whiteBalance = tag.String()
 	}
 
-	imageMetadata := &ImageMetadata{
+	imageMetadata := ImageMetadata{
 		slug:         GenerateSlug(),
-		path:         filePath,
+		filePath:     filePath,
 		fileName:     fileName,
 		title:        fileTitle,
 		dateTaken:    dateTaken,
@@ -219,8 +217,6 @@ func GetExifForImagePath(imagePath string) *ImageMetadata {
 		whiteBalance: whiteBalance,
 		albums:       "[test, test2]",
 	}
-
-	log.Printf("%+v\n", imageMetadata)
 
 	return imageMetadata
 }

@@ -23,9 +23,13 @@ func main() {
 	Database = InitialiseDatabase()
 	CreateThumbnailsDir()
 	GetImageDirContents()
+	GetExistingMetadataFilePaths()
 
 	var photoInt int = 1200
-	log.Printf(`Found: %s`, FoundFiles[photoInt])
-	exifData := GetExifForImagePath(FoundFiles[photoInt])
-	GenerateThumbnail(FoundFiles[photoInt], exifData.slug)
+	log.Printf("Found: %d source images", len(FoundFiles))
+	log.Printf(`Found: %d metadata rows`, len(FoundMetadataFiles))
+
+	imageMetadata := GetSourceMetadataForImagePath(FoundFiles[photoInt])
+	InsertMetadataRow(imageMetadata)
+	GenerateThumbnail(FoundFiles[photoInt], imageMetadata.slug)
 }
