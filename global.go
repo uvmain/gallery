@@ -11,9 +11,11 @@ import (
 var Database *sql.DB
 var DatabaseDirectory string
 var ThumbnailDirectory string
+var OptimisedDirectory string
 var ImagePath string
 var ImageExtensions []string
 var ThumbnailMaxPixels uint
+var OptimisedMaxPixels uint
 
 func LoadEnv() {
 	err := godotenv.Load()

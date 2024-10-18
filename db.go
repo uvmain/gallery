@@ -115,8 +115,8 @@ func CreateMetadataTable(db *sql.DB) {
 	}
 }
 
-func GetExistingMetadataFilePaths() {
-	FoundMetadataFiles = []MetadataFile{}
+func GetExistingMetadataFilePaths() []MetadataFile {
+	foundMetadataFiles := []MetadataFile{}
 
 	query := "SELECT filePath, fileName FROM metadata"
 	rows, err := Database.Query(query)
@@ -137,44 +137,7 @@ func GetExistingMetadataFilePaths() {
 			fileName: fileName,
 		}
 
-		FoundMetadataFiles = append(FoundMetadataFiles, rowResult)
+		foundMetadataFiles = append(foundMetadataFiles, rowResult)
 	}
-}
-
-func InsertMetadataRow(imageMetadata ImageMetadata) error {
-	checkQuery := `SELECT COUNT(*) FROM metadata WHERE filePath = ? AND fileName = ?;`
-	var count int
-	err := Database.QueryRow(checkQuery, imageMetadata.filePath, imageMetadata.fileName).Scan(&count)
-	if err != nil {
-		log.Printf("error checking existing row for %s: %v", imageMetadata.fileName, err)
-		return err
-	}
-
-	if count > 0 {
-		log.Printf("Metadata row already exists, skipping insert: %s\n", imageMetadata.fileName)
-		return nil
-	}
-
-	insertQuery := `INSERT INTO metadata (
-			slug, filePath, fileName, title, dateTaken, dateUploaded,
-			cameraMake, cameraModel, lensMake, lensModel, fStop, shutterSpeed,
-			flashStatus, focalLength, iso, exposureMode, whiteBalance, albums
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
-
-	_, err = Database.Exec(
-		insertQuery,
-		imageMetadata.slug, imageMetadata.filePath, imageMetadata.fileName,
-		imageMetadata.title, imageMetadata.dateTaken, imageMetadata.dateUploaded,
-		imageMetadata.cameraMake, imageMetadata.cameraModel, imageMetadata.lensMake,
-		imageMetadata.lensModel, imageMetadata.fStop, imageMetadata.shutterSpeed,
-		imageMetadata.flashStatus, imageMetadata.focalLength, imageMetadata.iso,
-		imageMetadata.exposureMode, imageMetadata.whiteBalance, imageMetadata.albums,
-	)
-	if err != nil {
-		log.Printf("error inserting metadata row: %s", err)
-		return err
-	}
-
-	log.Printf("Metadata row inserted successfully for %s", imageMetadata.fileName)
-	return nil
+	return foundMetadataFiles
 }
