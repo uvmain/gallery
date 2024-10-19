@@ -9,8 +9,7 @@ import (
 
 func InitialiseMetadata() {
 
-	FoundMetadataFiles = GetExistingMetadataFilePaths()
-
+	GetExistingMetadataFilePaths()
 	PopulateMetadata()
 
 	DeleteExtraneousMetadata()
