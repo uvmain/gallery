@@ -34,6 +34,10 @@ func main() {
 
 	InitialiseAllMetadata()
 
+	extras := GetMetadataRowsToDelete()
+
+	log.Println(extras)
+
 	// imageMetadata := GetSourceMetadataForImagePath(FoundFiles[50])
 	// InsertMetadataRow(imageMetadata)
 	// GenerateThumbnail(FoundFiles[photoInt], imageMetadata.slug)
