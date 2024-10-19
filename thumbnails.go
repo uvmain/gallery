@@ -51,7 +51,7 @@ func GenerateThumbnail(imageFile string, slug string) error {
 	return nil
 }
 
-// func GenerateThumbnails() error {
+// func GenerateThumbnails() {
 // 	filesToCheck := GetExistingMetadataFilePaths()
 // 	for _, imagePath := range  {
 // 		if ext == validExt {

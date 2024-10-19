@@ -35,7 +35,7 @@ func DeleteMetadataRowBySlug(slug string) error {
 	return nil
 }
 
-func GetMetadataRowsToDelete() []MetadataFile {
+func getMetadataRowsToDelete() []MetadataFile {
 	results := []MetadataFile{}
 
 	filesMap := make(map[string]bool)
@@ -55,4 +55,14 @@ func GetMetadataRowsToDelete() []MetadataFile {
 	}
 
 	return results
+}
+
+func DeleteExtraneousMetadata() {
+	metadataToDelete := getMetadataRowsToDelete()
+
+	for _, file := range metadataToDelete {
+		filePath := file.fileName
+		fileName := file.filePath
+		DeleteMetadataRowByFile(filePath, fileName)
+	}
 }

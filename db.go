@@ -51,7 +51,7 @@ func InitialiseDatabase() *sql.DB {
 
 	CreateAlbumsTable(db)
 	CreateMetadataTable(db)
-
+	Database = db
 	return db
 }
 
@@ -139,5 +139,7 @@ func GetExistingMetadataFilePaths() []MetadataFile {
 
 		foundMetadataFiles = append(foundMetadataFiles, rowResult)
 	}
+
+	FoundMetadataFiles = foundMetadataFiles
 	return foundMetadataFiles
 }

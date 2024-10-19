@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -23,22 +22,12 @@ func main() {
 	value, _ = strconv.ParseUint(os.Getenv("OPTIMISED_MAX_PIXELS"), 10, 64)
 	OptimisedMaxPixels = uint(value)
 
-	Database = InitialiseDatabase()
+	InitialiseDatabase()
+	GetImageDirContents()
+	InitialiseMetadata()
+
 	CreateThumbnailsDir()
 	CreateOptimisedDir()
-	FoundFiles, _ = GetImageDirContents()
-	FoundMetadataFiles = GetExistingMetadataFilePaths()
 
-	log.Printf("Found: %d source images", len(FoundFiles))
-	log.Printf(`Found: %d metadata rows`, len(FoundMetadataFiles))
-
-	InitialiseAllMetadata()
-
-	extras := GetMetadataRowsToDelete()
-
-	log.Println(extras)
-
-	// imageMetadata := GetSourceMetadataForImagePath(FoundFiles[50])
-	// InsertMetadataRow(imageMetadata)
 	// GenerateThumbnail(FoundFiles[photoInt], imageMetadata.slug)
 }

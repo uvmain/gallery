@@ -7,22 +7,13 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-func InitialiseAllMetadata() {
-	for _, file := range FoundFiles {
-		checkQuery := `SELECT COUNT(*) FROM metadata WHERE filePath = ? AND fileName = ?;`
-		filePath := filepath.Dir(file)
-		fileName := filepath.Base(file)
-		var count int
-		err := Database.QueryRow(checkQuery, filePath, fileName).Scan(&count)
-		if err != nil {
-			log.Printf("error checking existing row for %s: %v", fileName, err)
-		} else if count > 0 {
-			log.Printf("Metadata row already exists, skipping insert: %s\n", fileName)
-		} else {
-			imageMetadata := GetSourceMetadataForImagePath(file)
-			InsertMetadataRow(imageMetadata)
-		}
-	}
+func InitialiseMetadata() {
+
+	FoundMetadataFiles = GetExistingMetadataFilePaths()
+
+	PopulateMetadata()
+
+	DeleteExtraneousMetadata()
 }
 
 func InsertMetadataRow(imageMetadata ImageMetadata) error {
@@ -49,4 +40,22 @@ func InsertMetadataRow(imageMetadata ImageMetadata) error {
 
 	log.Printf("Metadata row inserted successfully for %s", imageMetadata.fileName)
 	return nil
+}
+
+func PopulateMetadata() {
+	for _, file := range FoundFiles {
+		checkQuery := `SELECT COUNT(*) FROM metadata WHERE filePath = ? AND fileName = ?;`
+		filePath := filepath.Dir(file)
+		fileName := filepath.Base(file)
+		var count int
+		err := Database.QueryRow(checkQuery, filePath, fileName).Scan(&count)
+		if err != nil {
+			log.Printf("error checking existing row for %s: %v", fileName, err)
+		} else if count > 0 {
+			log.Printf("Metadata row already exists, skipping insert: %s\n", fileName)
+		} else {
+			imageMetadata := GetSourceMetadataForImagePath(file)
+			InsertMetadataRow(imageMetadata)
+		}
+	}
 }
