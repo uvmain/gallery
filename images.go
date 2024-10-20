@@ -12,8 +12,6 @@ import (
 	"github.com/rwcarlsen/goexif/tiff"
 )
 
-var FoundFiles []string
-
 var ExposureModes = map[int]string{
 	0: "unknown",
 	1: "Manual",

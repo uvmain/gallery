@@ -6,10 +6,11 @@ import (
 	"path/filepath"
 
 	"github.com/disintegration/imaging"
+	"github.com/gen2brain/webp"
 	_ "modernc.org/sqlite"
 )
 
-func CreateThumbnailsDir() {
+func createThumbnailsDir() {
 	if _, err := os.Stat(ThumbnailDirectory); os.IsNotExist(err) {
 		log.Println("Creating thumbnails directory")
 		err := os.MkdirAll(ThumbnailDirectory, 0755)
@@ -23,7 +24,21 @@ func CreateThumbnailsDir() {
 	}
 }
 
-func GenerateThumbnail(imageFile string, slug string) error {
+func thumbnailAlreadyExists(slug string) bool {
+
+	thumbnailPath := filepath.Join(ThumbnailDirectory, (slug + "." + ImageFormat))
+	if _, err := os.Stat(thumbnailPath); os.IsNotExist(err) {
+		return false
+	}
+	return true
+}
+
+func generateThumbnail(imageFile string, slug string) {
+
+	if thumbnailAlreadyExists(slug) {
+		return
+	}
+
 	source, err := imaging.Open(imageFile)
 	if err != nil {
 		log.Fatalf("Failed to open image: %v", err)
@@ -39,25 +54,59 @@ func GenerateThumbnail(imageFile string, slug string) error {
 		height = 0
 	}
 
-	thumbnailPath := filepath.Join(ThumbnailDirectory, slug) + ".jpeg"
+	var thumbnailPath string
 
-	thumbnailImage := imaging.Resize(source, width, height, imaging.Lanczos)
+	if ImageFormat == "jpeg" || ImageFormat == "jpg" {
+		thumbnailPath = filepath.Join(ThumbnailDirectory, slug) + ".jpeg"
+		thumbnailImage := imaging.Resize(source, width, height, imaging.Lanczos)
+		err = imaging.Save(thumbnailImage, thumbnailPath)
+	} else if ImageFormat == "webp" {
+		thumbnailPath = filepath.Join(ThumbnailDirectory, slug) + ".webp"
+		thumbnailImage := imaging.Resize(source, width, height, imaging.Lanczos)
 
-	err = imaging.Save(thumbnailImage, thumbnailPath)
-	if err != nil {
-		log.Fatalf("Error creating thumbnail: %s", err)
-		return err
+		f, _ := os.Create(thumbnailPath)
+		defer f.Close()
+
+		webp.Encode(f, thumbnailImage)
 	}
-	return nil
+
+	if err != nil {
+		log.Printf("Error creating thumbnail: %s", err)
+	}
+	log.Printf("Thumbnail created for %s: %s", imageFile, thumbnailPath)
 }
 
-// func GenerateThumbnails() {
-// 	filesToCheck := GetExistingMetadataFilePaths()
-// 	for _, imagePath := range  {
-// 		if ext == validExt {
-// 			foundFiles = append(foundFiles, path)
-// 			break
-// 		}
-// 	}
-// 	return nil
-// }
+func getThumbnailDirContents() ([]string, error) {
+	var foundThumbnails []string
+
+	err := filepath.Walk(ThumbnailDirectory, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			log.Fatalf("Error opening Thumbnails directory: %s", err)
+			return err
+		}
+		if !info.IsDir() {
+			foundThumbnails = append(foundThumbnails, path)
+		}
+		return nil
+	})
+	FoundThumbnails = foundThumbnails
+	log.Printf("Found %d thumbnails", len(foundThumbnails))
+	return foundThumbnails, err
+}
+
+func populateThumbnails() {
+	for _, row := range GetExistingMetadataFilePaths() {
+		slug := row.slug
+		filePath := row.filePath
+		fileName := row.fileName
+		imageFullPath := filepath.Join(filePath, fileName)
+		generateThumbnail(imageFullPath, slug)
+	}
+}
+
+func InitialiseThumbnails() {
+	createThumbnailsDir()
+	getThumbnailDirContents()
+	populateThumbnails()
+	// deleteExtraneousThumbnails()
+}

@@ -10,11 +10,10 @@ import (
 )
 
 type MetadataFile struct {
+	slug     string
 	filePath string
 	fileName string
 }
-
-var FoundMetadataFiles []MetadataFile = []MetadataFile{}
 
 func InitialiseDatabase() *sql.DB {
 	dbPath := filepath.Join(DatabaseDirectory, "sqlite.db")
@@ -118,21 +117,23 @@ func CreateMetadataTable(db *sql.DB) {
 func GetExistingMetadataFilePaths() []MetadataFile {
 	foundMetadataFiles := []MetadataFile{}
 
-	query := "SELECT filePath, fileName FROM metadata"
+	query := "SELECT slug, filePath, fileName FROM metadata"
 	rows, err := Database.Query(query)
 	if err != nil {
 		log.Fatalf("Failed to fetch rows from metadata table: %s", err)
 	}
 
 	for rows.Next() {
+		var slug string
 		var filePath string
 		var fileName string
-		err = rows.Scan(&filePath, &fileName)
+		err = rows.Scan(&slug, &filePath, &fileName)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		rowResult := MetadataFile{
+			slug:     slug,
 			filePath: filePath,
 			fileName: fileName,
 		}

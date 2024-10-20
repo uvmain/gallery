@@ -7,15 +7,62 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-func InitialiseMetadata() {
+func deleteMetadataRowByFile(filePath string, fileName string) error {
 
-	GetExistingMetadataFilePaths()
-	PopulateMetadata()
+	deleteStatement := `DELETE FROM metadata where filePath = ? AND fileName = ?;`
 
-	DeleteExtraneousMetadata()
+	fullFilePath := filepath.Join(filePath, fileName)
+
+	_, err := Database.Exec(deleteStatement, filePath, fileName)
+	if err != nil {
+		log.Printf("Error deleting metadata for %s: %s", fullFilePath, err)
+		return err
+	}
+
+	log.Printf("Metadata row deleted successfully for %s", fullFilePath)
+	return nil
 }
 
-func InsertMetadataRow(imageMetadata ImageMetadata) error {
+func getMetadataRowsToDelete() []MetadataFile {
+	results := []MetadataFile{}
+
+	filesMap := make(map[string]bool)
+	for _, v := range FoundFiles {
+		filesMap[v] = true
+	}
+
+	for _, v := range FoundMetadataFiles {
+		fullFilePath := filepath.Join(v.filePath, v.fileName)
+		if !filesMap[fullFilePath] {
+			result := MetadataFile{
+				slug:     v.slug,
+				filePath: v.filePath,
+				fileName: v.fileName,
+			}
+			results = append(results, result)
+		}
+	}
+
+	return results
+}
+
+func deleteExtraneousMetadata() {
+	metadataToDelete := getMetadataRowsToDelete()
+
+	for _, file := range metadataToDelete {
+		filePath := file.filePath
+		fileName := file.fileName
+		deleteMetadataRowByFile(filePath, fileName)
+	}
+}
+
+func InitialiseMetadata() {
+	GetExistingMetadataFilePaths()
+	populateMetadata()
+	deleteExtraneousMetadata()
+}
+
+func insertMetadataRow(imageMetadata ImageMetadata) error {
 
 	insertQuery := `INSERT INTO metadata (
 			slug, filePath, fileName, title, dateTaken, dateUploaded,
@@ -41,7 +88,7 @@ func InsertMetadataRow(imageMetadata ImageMetadata) error {
 	return nil
 }
 
-func PopulateMetadata() {
+func populateMetadata() {
 	for _, file := range FoundFiles {
 		checkQuery := `SELECT COUNT(*) FROM metadata WHERE filePath = ? AND fileName = ?;`
 		filePath := filepath.Dir(file)
@@ -54,7 +101,7 @@ func PopulateMetadata() {
 			log.Printf("Metadata row already exists, skipping insert: %s\n", fileName)
 		} else {
 			imageMetadata := GetSourceMetadataForImagePath(file)
-			InsertMetadataRow(imageMetadata)
+			insertMetadataRow(imageMetadata)
 		}
 	}
 }
