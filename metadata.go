@@ -105,3 +105,34 @@ func populateMetadata() {
 		}
 	}
 }
+
+func GetMetadataBySlug(slug string) (*ImageMetadata, error) {
+	var row ImageMetadata
+	checkQuery := `SELECT slug, filePath, fileName, title, dateTaken, dateUploaded, cameraMake, cameraModel, lensMake, lensModel, fStop, shutterSpeed, flashStatus, focalLength, iso, exposureMode, whiteBalance, albums FROM metadata WHERE slug = ?;`
+
+	err := Database.QueryRow(checkQuery, slug).Scan(
+		&row.slug,
+		&row.filePath,
+		&row.fileName,
+		&row.title,
+		&row.dateTaken,
+		&row.dateUploaded,
+		&row.cameraMake,
+		&row.cameraModel,
+		&row.lensMake,
+		&row.lensModel,
+		&row.fStop,
+		&row.shutterSpeed,
+		&row.flashStatus,
+		&row.focalLength,
+		&row.iso,
+		&row.exposureMode,
+		&row.whiteBalance,
+		&row.albums,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &row, nil
+}

@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/disintegration/imaging"
 	"github.com/gen2brain/webp"
@@ -95,7 +96,8 @@ func getThumbnailDirContents() ([]string, error) {
 }
 
 func populateThumbnails() {
-	for _, row := range GetExistingMetadataFilePaths() {
+	metadataFiles := GetExistingMetadataFilePaths()
+	for _, row := range metadataFiles {
 		slug := row.slug
 		filePath := row.filePath
 		fileName := row.fileName
@@ -104,9 +106,35 @@ func populateThumbnails() {
 	}
 }
 
+func deleteExtraneousThumbnails() {
+	thumbnailDirContents, _ := getThumbnailDirContents()
+	for _, thumbnail := range thumbnailDirContents {
+		ext := strings.Split(filepath.Ext(thumbnail), ".")[1]
+		if ext != ImageFormat {
+			deleteThumbnailByFilename(thumbnail)
+		} else {
+			slug := strings.TrimSuffix(filepath.Base(thumbnail), filepath.Ext(thumbnail))
+			metadata, err := GetMetadataBySlug(slug)
+			if err != nil || metadata == nil {
+				log.Println(slug)
+				deleteThumbnailByFilename(thumbnail)
+			}
+		}
+	}
+}
+
+func deleteThumbnailByFilename(filename string) {
+	err := os.Remove(filename)
+	if err != nil {
+		log.Printf("Error deleting thumbnail %s: %s", filename, err)
+		return
+	}
+	log.Printf("Thumbnail %s deleted", filename)
+}
+
 func InitialiseThumbnails() {
 	createThumbnailsDir()
 	getThumbnailDirContents()
 	populateThumbnails()
-	// deleteExtraneousThumbnails()
+	deleteExtraneousThumbnails()
 }
