@@ -84,7 +84,7 @@ func populateThumbnails() {
 		filePath := row.filePath
 		fileName := row.fileName
 		imageFullPath := filepath.Join(filePath, fileName)
-		go generateThumbnail(imageFullPath, slug)
+		generateThumbnail(imageFullPath, slug)
 	}
 }
 
