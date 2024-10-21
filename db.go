@@ -89,12 +89,13 @@ func CreateMetadataTable(db *sql.DB) {
 		lensMake TEXT,
 		lensModel TEXT,
 		fStop TEXT,
-		shutterSpeed TEXT,
+		exposureTime TEXT,
 		flashStatus TEXT,
 		focalLength TEXT,
 		iso TEXT,
 		exposureMode TEXT,
 		whiteBalance TEXT,
+		WhiteBalanceMode TEXT,
 		albums TEXT
 	);`
 

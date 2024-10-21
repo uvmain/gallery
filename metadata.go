@@ -66,18 +66,19 @@ func insertMetadataRow(imageMetadata ImageMetadata) error {
 
 	insertQuery := `INSERT INTO metadata (
 			slug, filePath, fileName, title, dateTaken, dateUploaded,
-			cameraMake, cameraModel, lensMake, lensModel, fStop, shutterSpeed,
-			flashStatus, focalLength, iso, exposureMode, whiteBalance, albums
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
+			cameraMake, cameraModel, lensMake, lensModel, fStop, exposureTime,
+			flashStatus, focalLength, iso, exposureMode, whiteBalance, WhiteBalanceMode, albums
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
 
 	_, err := Database.Exec(
 		insertQuery,
 		imageMetadata.Slug, imageMetadata.FilePath, imageMetadata.FileName,
 		imageMetadata.Title, imageMetadata.DateTaken, imageMetadata.DateUploaded,
 		imageMetadata.CameraMake, imageMetadata.CameraModel, imageMetadata.LensMake,
-		imageMetadata.LensModel, imageMetadata.FStop, imageMetadata.ShutterSpeed,
+		imageMetadata.LensModel, imageMetadata.FStop, imageMetadata.ExposureTime,
 		imageMetadata.FlashStatus, imageMetadata.FocalLength, imageMetadata.ISO,
-		imageMetadata.ExposureMode, imageMetadata.WhiteBalance, imageMetadata.Albums,
+		imageMetadata.ExposureMode, imageMetadata.WhiteBalance, imageMetadata.WhiteBalanceMode,
+		imageMetadata.Albums,
 	)
 	if err != nil {
 		log.Printf("error inserting metadata row: %s", err)
@@ -108,7 +109,7 @@ func populateMetadata() {
 
 func GetMetadataBySlug(slug string) (ImageMetadata, error) {
 	var row ImageMetadata
-	checkQuery := `SELECT slug, filePath, fileName, title, dateTaken, dateUploaded, cameraMake, cameraModel, lensMake, lensModel, fStop, shutterSpeed, flashStatus, focalLength, iso, exposureMode, whiteBalance, albums FROM metadata WHERE slug = ?;`
+	checkQuery := `SELECT slug, filePath, fileName, title, dateTaken, dateUploaded, cameraMake, cameraModel, lensMake, lensModel, fStop, exposureTime, flashStatus, focalLength, iso, exposureMode, whiteBalance, whiteBalanceMode, albums FROM metadata WHERE slug = ?;`
 
 	err := Database.QueryRow(checkQuery, slug).Scan(
 		&row.Slug,
@@ -122,12 +123,13 @@ func GetMetadataBySlug(slug string) (ImageMetadata, error) {
 		&row.LensMake,
 		&row.LensModel,
 		&row.FStop,
-		&row.ShutterSpeed,
+		&row.ExposureTime,
 		&row.FlashStatus,
 		&row.FocalLength,
 		&row.ISO,
 		&row.ExposureMode,
 		&row.WhiteBalance,
+		&row.WhiteBalanceMode,
 		&row.Albums,
 	)
 	if err != nil {

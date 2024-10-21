@@ -24,25 +24,80 @@ var ExposureModes = map[int]string{
 	8: "Landscape mode",
 }
 
+var WhiteBalanceModes = map[int]string{
+	0:   "Unknown",
+	1:   "Daylight",
+	2:   "Fluorescent",
+	3:   "Tungsten",
+	4:   "Flash",
+	9:   "Fine Weather",
+	10:  "Cloudy Weather",
+	11:  "Shade",
+	12:  "Daylight Fluorescent",
+	13:  "Day White Fluorescent",
+	14:  "Cool White Fluorescent",
+	15:  "White Fluorescent",
+	17:  "Standard Light A",
+	18:  "Standard Light B",
+	19:  "Standard Light C",
+	20:  "D55",
+	21:  "D65",
+	22:  "D75",
+	23:  "D50",
+	24:  "ISO Studio Tungsten",
+	255: "Other Light Source",
+}
+
+var FlashModes = map[int]string{
+	0:  "No Flash",
+	1:  "Fired",
+	5:  "Fired, Return not detected",
+	7:  "Fired, Return detected",
+	8:  "On, Did not fire",
+	9:  "On, Fired",
+	11: "On, Return not detected",
+	15: "On, Return detected",
+	16: "Off, Did not fire",
+	20: "Off, Did not fire, Return not detected",
+	24: "Auto, Did not fire",
+	25: "Auto, Fired",
+	29: "Auto, Fired, Return not detected",
+	31: "Auto, Fired, Return detected",
+	32: "No flash function",
+	48: "Off, No flash function",
+	65: "Fired, Red-eye reduction",
+	69: "Fired, Red-eye reduction, Return not detected",
+	71: "Fired, Red-eye reduction, Return detected",
+	73: "On, Red-eye reduction",
+	77: "On, Red-eye reduction, Return not detected",
+	79: "On, Red-eye reduction, Return detected",
+	80: "Off, Red-eye reduction",
+	88: "Auto, Did not fire, Red-eye reduction",
+	89: "Auto, Fired, Red-eye reduction",
+	93: "Auto, Fired, Red-eye reduction, Return not detected",
+	95: "Auto, Fired, Red-eye reduction, Return detected",
+}
+
 type ImageMetadata struct {
-	Slug         string    `json:"slug"`
-	FilePath     string    `json:"filePath"`
-	FileName     string    `json:"fileName"`
-	Title        string    `json:"title"`
-	DateTaken    time.Time `json:"dateTaken"`
-	DateUploaded time.Time `json:"dateUploaded"`
-	CameraMake   string    `json:"cameraMake"`
-	CameraModel  string    `json:"cameraModel"`
-	LensMake     string    `json:"lensMake"`
-	LensModel    string    `json:"lensModel"`
-	FStop        string    `json:"fStop"`
-	ShutterSpeed string    `json:"shutterSpeed"`
-	FlashStatus  string    `json:"flashStatus"`
-	FocalLength  string    `json:"focalLength"`
-	ISO          string    `json:"iso"`
-	ExposureMode string    `json:"exposureMode"`
-	WhiteBalance string    `json:"whiteBalance"`
-	Albums       string    `json:"albums"`
+	Slug             string    `json:"slug"`
+	FilePath         string    `json:"filePath"`
+	FileName         string    `json:"fileName"`
+	Title            string    `json:"title"`
+	DateTaken        time.Time `json:"dateTaken"`
+	DateUploaded     time.Time `json:"dateUploaded"`
+	CameraMake       string    `json:"cameraMake"`
+	CameraModel      string    `json:"cameraModel"`
+	LensMake         string    `json:"lensMake"`
+	LensModel        string    `json:"lensModel"`
+	FStop            string    `json:"fStop"`
+	ExposureTime     string    `json:"exposureTime"`
+	FlashStatus      string    `json:"flashStatus"`
+	FocalLength      string    `json:"focalLength"`
+	ISO              string    `json:"iso"`
+	ExposureMode     string    `json:"exposureMode"`
+	WhiteBalance     string    `json:"whiteBalance"`
+	WhiteBalanceMode string    `json:"whiteBalanceMode"`
+	Albums           string    `json:"albums"`
 }
 
 func GetImageDirContents() ([]string, error) {
@@ -76,6 +131,8 @@ func GetSourceMetadataForImagePath(imagePath string) ImageMetadata {
 	}
 	defer f.Close()
 
+	var tag *tiff.Tag
+
 	filePath := filepath.Dir(imagePath)
 	fileName := filepath.Base(imagePath)
 	fileTitle := strings.TrimSuffix(fileName, filepath.Ext(fileName))
@@ -88,11 +145,40 @@ func GetSourceMetadataForImagePath(imagePath string) ImageMetadata {
 	}
 
 	var exposureMode string
-	tag := getExifTag(exifData, exif.ExposureProgram)
+	tag = getExifTag(exifData, exif.ExposureProgram)
 	if tag != nil {
 		exposureMode = ExposureModes[getTagIntOrDefault(tag, 0)]
 	} else {
 		exposureMode = ExposureModes[0]
+	}
+
+	var whiteBalance string
+	tag = getExifTag(exifData, exif.WhiteBalance)
+	if tag != nil {
+		tagString := tag.String()
+		if tagString == "1" {
+			whiteBalance = "Manual"
+		} else if tagString == "0" {
+			whiteBalance = "Auto"
+		}
+	} else {
+		whiteBalance = "unknown"
+	}
+
+	var flashStatus string
+	tag = getExifTag(exifData, exif.Flash)
+	if tag != nil {
+		flashStatus = FlashModes[getTagIntOrDefault(tag, 0)]
+	} else {
+		flashStatus = "unknown"
+	}
+
+	var whiteBalanceMode string
+	tag = getExifTag(exifData, exif.LightSource)
+	if tag != nil {
+		whiteBalanceMode = WhiteBalanceModes[getTagIntOrDefault(tag, 0)]
+	} else {
+		whiteBalanceMode = WhiteBalanceModes[0]
 	}
 
 	dateTaken, _ := getExifDate(exifData)
@@ -104,30 +190,30 @@ func GetSourceMetadataForImagePath(imagePath string) ImageMetadata {
 
 	fStop := getExifStringOrDefault(exifData, exif.FNumber, "unknown")
 	shutterSpeed := getExifStringOrDefault(exifData, exif.ShutterSpeedValue, "unknown")
-	flashStatus := getExifStringOrDefault(exifData, exif.Flash, "unknown")
+	exposureTime := getExifStringOrDefault(exifData, exif.ExposureTime, shutterSpeed)
 	focalLength := getExifStringOrDefault(exifData, exif.FocalLength, "unknown")
 	iso := getExifStringOrDefault(exifData, exif.ISOSpeedRatings, "unknown")
-	whiteBalance := getExifStringOrDefault(exifData, exif.WhiteBalance, "unknown")
 
 	imageMetadata := ImageMetadata{
-		Slug:         GenerateSlug(),
-		FilePath:     filePath,
-		FileName:     fileName,
-		Title:        fileTitle,
-		DateTaken:    dateTaken,
-		DateUploaded: dateUploaded,
-		CameraMake:   cameraMake,
-		CameraModel:  cameraModel,
-		LensMake:     lensMake,
-		LensModel:    lensModel,
-		FStop:        fStop,
-		ShutterSpeed: shutterSpeed,
-		FlashStatus:  flashStatus,
-		FocalLength:  focalLength,
-		ISO:          iso,
-		ExposureMode: exposureMode,
-		WhiteBalance: whiteBalance,
-		Albums:       "[]",
+		Slug:             GenerateSlug(),
+		FilePath:         filePath,
+		FileName:         fileName,
+		Title:            fileTitle,
+		DateTaken:        dateTaken,
+		DateUploaded:     dateUploaded,
+		CameraMake:       cameraMake,
+		CameraModel:      cameraModel,
+		LensMake:         lensMake,
+		LensModel:        lensModel,
+		FStop:            fStop,
+		ExposureTime:     exposureTime,
+		FlashStatus:      flashStatus,
+		FocalLength:      focalLength,
+		ISO:              iso,
+		ExposureMode:     exposureMode,
+		WhiteBalance:     whiteBalance,
+		WhiteBalanceMode: whiteBalanceMode,
+		Albums:           "[]",
 	}
 
 	return imageMetadata
@@ -155,7 +241,8 @@ func getExifStringOrDefault(exifData *exif.Exif, field exif.FieldName, defaultVa
 	if tag == nil {
 		return defaultValue
 	}
-	tagString, _ := tag.StringVal()
+	tagString := tag.String()
+	tagString = strings.ReplaceAll(tagString, "\"", "")
 	return tagString
 }
 
@@ -178,23 +265,24 @@ func getExifDate(exifData *exif.Exif) (time.Time, error) {
 
 func defaultImageMetadata(filePath, fileName, fileTitle string, dateUploaded time.Time) ImageMetadata {
 	return ImageMetadata{
-		Slug:         GenerateSlug(),
-		FilePath:     filePath,
-		FileName:     fileName,
-		Title:        fileTitle,
-		DateTaken:    dateUploaded,
-		DateUploaded: dateUploaded,
-		CameraMake:   "unknown",
-		CameraModel:  "unknown",
-		LensMake:     "unknown",
-		LensModel:    "unknown",
-		FStop:        "unknown",
-		ShutterSpeed: "unknown",
-		FlashStatus:  "unknown",
-		FocalLength:  "unknown",
-		ISO:          "unknown",
-		ExposureMode: "unknown",
-		WhiteBalance: "unknown",
-		Albums:       "[]",
+		Slug:             GenerateSlug(),
+		FilePath:         filePath,
+		FileName:         fileName,
+		Title:            fileTitle,
+		DateTaken:        dateUploaded,
+		DateUploaded:     dateUploaded,
+		CameraMake:       "unknown",
+		CameraModel:      "unknown",
+		LensMake:         "unknown",
+		LensModel:        "unknown",
+		FStop:            "unknown",
+		ExposureTime:     "unknown",
+		FlashStatus:      "unknown",
+		FocalLength:      "unknown",
+		ISO:              "unknown",
+		ExposureMode:     "unknown",
+		WhiteBalance:     "unknown",
+		WhiteBalanceMode: "unknown",
+		Albums:           "[]",
 	}
 }
