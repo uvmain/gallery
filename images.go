@@ -25,24 +25,24 @@ var ExposureModes = map[int]string{
 }
 
 type ImageMetadata struct {
-	slug         string
-	filePath     string
-	fileName     string
-	title        string
-	dateTaken    time.Time
-	dateUploaded time.Time
-	cameraMake   string
-	cameraModel  string
-	lensMake     string
-	lensModel    string
-	fStop        string
-	shutterSpeed string
-	flashStatus  string
-	focalLength  string
-	iso          string
-	exposureMode string
-	whiteBalance string
-	albums       string
+	Slug         string    `json:"slug"`
+	FilePath     string    `json:"filePath"`
+	FileName     string    `json:"fileName"`
+	Title        string    `json:"title"`
+	DateTaken    time.Time `json:"dateTaken"`
+	DateUploaded time.Time `json:"dateUploaded"`
+	CameraMake   string    `json:"cameraMake"`
+	CameraModel  string    `json:"cameraModel"`
+	LensMake     string    `json:"lensMake"`
+	LensModel    string    `json:"lensModel"`
+	FStop        string    `json:"fStop"`
+	ShutterSpeed string    `json:"shutterSpeed"`
+	FlashStatus  string    `json:"flashStatus"`
+	FocalLength  string    `json:"focalLength"`
+	ISO          string    `json:"iso"`
+	ExposureMode string    `json:"exposureMode"`
+	WhiteBalance string    `json:"whiteBalance"`
+	Albums       string    `json:"albums"`
 }
 
 func GetImageDirContents() ([]string, error) {
@@ -95,7 +95,7 @@ func GetSourceMetadataForImagePath(imagePath string) ImageMetadata {
 		exposureMode = ExposureModes[0]
 	}
 
-	dateTaken := getExifDateOrDefault(exifData, dateUploaded)
+	dateTaken, _ := getExifDate(exifData)
 
 	cameraMake := getExifStringOrDefault(exifData, exif.Make, "unknown")
 	cameraModel := getExifStringOrDefault(exifData, exif.Model, "unknown")
@@ -110,24 +110,24 @@ func GetSourceMetadataForImagePath(imagePath string) ImageMetadata {
 	whiteBalance := getExifStringOrDefault(exifData, exif.WhiteBalance, "unknown")
 
 	imageMetadata := ImageMetadata{
-		slug:         GenerateSlug(),
-		filePath:     filePath,
-		fileName:     fileName,
-		title:        fileTitle,
-		dateTaken:    dateTaken,
-		dateUploaded: dateUploaded,
-		cameraMake:   cameraMake,
-		cameraModel:  cameraModel,
-		lensMake:     lensMake,
-		lensModel:    lensModel,
-		fStop:        fStop,
-		shutterSpeed: shutterSpeed,
-		flashStatus:  flashStatus,
-		focalLength:  focalLength,
-		iso:          iso,
-		exposureMode: exposureMode,
-		whiteBalance: whiteBalance,
-		albums:       "[]",
+		Slug:         GenerateSlug(),
+		FilePath:     filePath,
+		FileName:     fileName,
+		Title:        fileTitle,
+		DateTaken:    dateTaken,
+		DateUploaded: dateUploaded,
+		CameraMake:   cameraMake,
+		CameraModel:  cameraModel,
+		LensMake:     lensMake,
+		LensModel:    lensModel,
+		FStop:        fStop,
+		ShutterSpeed: shutterSpeed,
+		FlashStatus:  flashStatus,
+		FocalLength:  focalLength,
+		ISO:          iso,
+		ExposureMode: exposureMode,
+		WhiteBalance: whiteBalance,
+		Albums:       "[]",
 	}
 
 	return imageMetadata
@@ -155,43 +155,46 @@ func getExifStringOrDefault(exifData *exif.Exif, field exif.FieldName, defaultVa
 	if tag == nil {
 		return defaultValue
 	}
-	return tag.String()
+	tagString, _ := tag.StringVal()
+	return tagString
 }
 
-func getExifDateOrDefault(exifData *exif.Exif, defaultValue time.Time) time.Time {
+func getExifDate(exifData *exif.Exif) (time.Time, error) {
 	dateTaken, err := exifData.DateTime()
 	if err != nil {
 		tag := getExifTag(exifData, exif.DateTime)
 		if tag == nil {
-			return defaultValue
+			log.Printf("no valid DateTime tag found")
+			return time.Time{}, err
 		}
 		dateTaken, err = time.Parse(time.RFC1123, tag.String())
 		if err != nil {
-			return defaultValue
+			log.Printf("failed to parse DateTime: %v", err)
+			return time.Time{}, err
 		}
 	}
-	return dateTaken
+	return dateTaken, nil
 }
 
 func defaultImageMetadata(filePath, fileName, fileTitle string, dateUploaded time.Time) ImageMetadata {
 	return ImageMetadata{
-		slug:         GenerateSlug(),
-		filePath:     filePath,
-		fileName:     fileName,
-		title:        fileTitle,
-		dateTaken:    dateUploaded,
-		dateUploaded: dateUploaded,
-		cameraMake:   "unknown",
-		cameraModel:  "unknown",
-		lensMake:     "unknown",
-		lensModel:    "unknown",
-		fStop:        "unknown",
-		shutterSpeed: "unknown",
-		flashStatus:  "unknown",
-		focalLength:  "unknown",
-		iso:          "unknown",
-		exposureMode: "unknown",
-		whiteBalance: "unknown",
-		albums:       "[]",
+		Slug:         GenerateSlug(),
+		FilePath:     filePath,
+		FileName:     fileName,
+		Title:        fileTitle,
+		DateTaken:    dateUploaded,
+		DateUploaded: dateUploaded,
+		CameraMake:   "unknown",
+		CameraModel:  "unknown",
+		LensMake:     "unknown",
+		LensModel:    "unknown",
+		FStop:        "unknown",
+		ShutterSpeed: "unknown",
+		FlashStatus:  "unknown",
+		FocalLength:  "unknown",
+		ISO:          "unknown",
+		ExposureMode: "unknown",
+		WhiteBalance: "unknown",
+		Albums:       "[]",
 	}
 }

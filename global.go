@@ -24,6 +24,7 @@ var OptimisedMaxPixels uint
 var FoundMetadataFiles []MetadataFile
 var FoundFiles []string
 var FoundThumbnails []string
+var FoundOptimised []string
 var WorkerCount int
 
 func LoadEnv() {

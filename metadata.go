@@ -72,19 +72,19 @@ func insertMetadataRow(imageMetadata ImageMetadata) error {
 
 	_, err := Database.Exec(
 		insertQuery,
-		imageMetadata.slug, imageMetadata.filePath, imageMetadata.fileName,
-		imageMetadata.title, imageMetadata.dateTaken, imageMetadata.dateUploaded,
-		imageMetadata.cameraMake, imageMetadata.cameraModel, imageMetadata.lensMake,
-		imageMetadata.lensModel, imageMetadata.fStop, imageMetadata.shutterSpeed,
-		imageMetadata.flashStatus, imageMetadata.focalLength, imageMetadata.iso,
-		imageMetadata.exposureMode, imageMetadata.whiteBalance, imageMetadata.albums,
+		imageMetadata.Slug, imageMetadata.FilePath, imageMetadata.FileName,
+		imageMetadata.Title, imageMetadata.DateTaken, imageMetadata.DateUploaded,
+		imageMetadata.CameraMake, imageMetadata.CameraModel, imageMetadata.LensMake,
+		imageMetadata.LensModel, imageMetadata.FStop, imageMetadata.ShutterSpeed,
+		imageMetadata.FlashStatus, imageMetadata.FocalLength, imageMetadata.ISO,
+		imageMetadata.ExposureMode, imageMetadata.WhiteBalance, imageMetadata.Albums,
 	)
 	if err != nil {
 		log.Printf("error inserting metadata row: %s", err)
 		return err
 	}
 
-	log.Printf("Metadata row inserted successfully for %s", imageMetadata.fileName)
+	log.Printf("Metadata row inserted successfully for %s", imageMetadata.FileName)
 	return nil
 }
 
@@ -106,33 +106,61 @@ func populateMetadata() {
 	}
 }
 
-func GetMetadataBySlug(slug string) (*ImageMetadata, error) {
+func GetMetadataBySlug(slug string) (ImageMetadata, error) {
 	var row ImageMetadata
 	checkQuery := `SELECT slug, filePath, fileName, title, dateTaken, dateUploaded, cameraMake, cameraModel, lensMake, lensModel, fStop, shutterSpeed, flashStatus, focalLength, iso, exposureMode, whiteBalance, albums FROM metadata WHERE slug = ?;`
 
 	err := Database.QueryRow(checkQuery, slug).Scan(
-		&row.slug,
-		&row.filePath,
-		&row.fileName,
-		&row.title,
-		&row.dateTaken,
-		&row.dateUploaded,
-		&row.cameraMake,
-		&row.cameraModel,
-		&row.lensMake,
-		&row.lensModel,
-		&row.fStop,
-		&row.shutterSpeed,
-		&row.flashStatus,
-		&row.focalLength,
-		&row.iso,
-		&row.exposureMode,
-		&row.whiteBalance,
-		&row.albums,
+		&row.Slug,
+		&row.FilePath,
+		&row.FileName,
+		&row.Title,
+		&row.DateTaken,
+		&row.DateUploaded,
+		&row.CameraMake,
+		&row.CameraModel,
+		&row.LensMake,
+		&row.LensModel,
+		&row.FStop,
+		&row.ShutterSpeed,
+		&row.FlashStatus,
+		&row.FocalLength,
+		&row.ISO,
+		&row.ExposureMode,
+		&row.WhiteBalance,
+		&row.Albums,
 	)
 	if err != nil {
+		return ImageMetadata{}, err
+	}
+
+	return row, nil
+}
+
+func GetSlugsOrderedByDateTaken() ([]string, error) {
+	var slugs []string
+
+	query := `SELECT slug FROM metadata ORDER BY dateTaken DESC;`
+	rows, err := Database.Query(query)
+	if err != nil {
+		log.Printf("Query failed: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var slug string
+		if err := rows.Scan(&slug); err != nil {
+			log.Printf("Failed to scan row: %v", err)
+			return nil, err
+		}
+		slugs = append(slugs, slug)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Printf("Rows iteration error: %v", err)
 		return nil, err
 	}
 
-	return &row, nil
+	return slugs, nil
 }

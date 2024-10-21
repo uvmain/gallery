@@ -1,17 +1,12 @@
 package main
 
-import (
-	_ "modernc.org/sqlite"
-)
-
 func main() {
 	LoadEnv()
 	InitialiseDatabase()
 	GetImageDirContents()
 	InitialiseMetadata()
 	InitialiseThumbnails()
+	InitialiseOptimised()
 
-	CreateOptimisedDir()
-
-	// GenerateThumbnail(FoundFiles[photoInt], imageMetadata.slug)
+	StartServer()
 }

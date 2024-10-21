@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+	"os"
 	"strconv"
 	"time"
 
@@ -21,4 +23,18 @@ func GenerateSlug() string {
 func ToTitle(inputString string) string {
 	toTitle := cases.Title(language.English)
 	return toTitle.String(inputString)
+}
+
+func CreateDir(directoryPath string) {
+	if _, err := os.Stat(directoryPath); os.IsNotExist(err) {
+		log.Printf("Creating directory: %s", directoryPath)
+		err := os.MkdirAll(directoryPath, 0755)
+		if err != nil {
+			log.Fatalf("Error creating directory%s: %s", directoryPath, err)
+		} else {
+			log.Printf("Directory created: %s", directoryPath)
+		}
+	} else {
+		log.Printf("Directory already exists: %s", directoryPath)
+	}
 }

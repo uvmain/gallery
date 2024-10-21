@@ -4,26 +4,26 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/disintegration/imaging"
-	_ "modernc.org/sqlite"
+	"github.com/gen2brain/webp"
 )
 
-func CreateOptimisedDir() {
-	if _, err := os.Stat(OptimisedDirectory); os.IsNotExist(err) {
-		log.Println("Creating Optimised directory")
-		err := os.MkdirAll(OptimisedDirectory, 0755)
-		if err != nil {
-			log.Fatalf("Error creating Optimised directory %s", err)
-		} else {
-			log.Println("Optimised directory created")
-		}
-	} else {
-		log.Println("Optimised directory already exists")
+func optimisedAlreadyExists(slug string) bool {
+	optimisedPath := filepath.Join(OptimisedDirectory, (slug + "." + ImageFormat))
+	if _, err := os.Stat(optimisedPath); os.IsNotExist(err) {
+		return false
 	}
+	return true
 }
 
-func GenerateOptimised(imageFile string, slug string) error {
+func generateOptimised(imageFile string, slug string) {
+
+	if optimisedAlreadyExists(slug) {
+		return
+	}
+
 	source, err := imaging.Open(imageFile)
 	if err != nil {
 		log.Fatalf("Failed to open image: %v", err)
@@ -39,25 +39,85 @@ func GenerateOptimised(imageFile string, slug string) error {
 		height = 0
 	}
 
-	OptimisedPath := filepath.Join(OptimisedDirectory, slug) + ".jpeg"
+	var optimisedPath string
 
-	OptimisedImage := imaging.Resize(source, width, height, imaging.Lanczos)
+	if ImageFormat == "jpeg" || ImageFormat == "jpg" {
+		optimisedPath = filepath.Join(OptimisedDirectory, slug) + ".jpeg"
+		optimisedImage := imaging.Resize(source, width, height, imaging.Lanczos)
+		err = imaging.Save(optimisedImage, optimisedPath)
+	} else if ImageFormat == "webp" {
+		optimisedPath = filepath.Join(OptimisedDirectory, slug) + ".webp"
+		optimisedImage := imaging.Resize(source, width, height, imaging.Lanczos)
 
-	err = imaging.Save(OptimisedImage, OptimisedPath)
-	if err != nil {
-		log.Fatalf("Error creating Optimised: %s", err)
-		return err
+		f, _ := os.Create(optimisedPath)
+		defer f.Close()
+
+		webp.Encode(f, optimisedImage)
 	}
-	return nil
+
+	if err != nil {
+		log.Printf("Error creating optimised: %s", err)
+	}
+	log.Printf("Optimised created for %s: %s", imageFile, optimisedPath)
 }
 
-// func GenerateOptimised() error {
-// 	filesToCheck := GetExistingMetadataFilePaths()
-// 	for _, imagePath := range  {
-// 		if ext == validExt {
-// 			foundFiles = append(foundFiles, path)
-// 			break
-// 		}
-// 	}
-// 	return nil
-// }
+func getOptimisedDirContents() ([]string, error) {
+	var foundOptimised []string
+
+	err := filepath.Walk(OptimisedDirectory, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			log.Fatalf("Error opening Optimised directory: %s", err)
+			return err
+		}
+		if !info.IsDir() {
+			foundOptimised = append(foundOptimised, path)
+		}
+		return nil
+	})
+	FoundOptimised = foundOptimised
+	log.Printf("Found %d optimised", len(foundOptimised))
+	return foundOptimised, err
+}
+
+func populateOptimised() {
+	for _, row := range GetExistingMetadataFilePaths() {
+		slug := row.slug
+		filePath := row.filePath
+		fileName := row.fileName
+		imageFullPath := filepath.Join(filePath, fileName)
+		generateOptimised(imageFullPath, slug)
+	}
+}
+
+func deleteExtraneousOptimised() {
+	optimisedDirContents, _ := getOptimisedDirContents()
+	for _, optimised := range optimisedDirContents {
+		ext := strings.Split(filepath.Ext(optimised), ".")[1]
+		if ext != ImageFormat {
+			deleteOptimisedByFilename(optimised)
+		} else {
+			slug := strings.TrimSuffix(filepath.Base(optimised), filepath.Ext(optimised))
+			_, err := GetMetadataBySlug(slug)
+			if err != nil {
+				log.Println(slug)
+				deleteOptimisedByFilename(optimised)
+			}
+		}
+	}
+}
+
+func deleteOptimisedByFilename(filename string) {
+	err := os.Remove(filename)
+	if err != nil {
+		log.Printf("Error deleting optimised %s: %s", filename, err)
+		return
+	}
+	log.Printf("Optimised %s deleted", filename)
+}
+
+func InitialiseOptimised() {
+	CreateDir(OptimisedDirectory)
+	getOptimisedDirContents()
+	populateOptimised()
+	deleteExtraneousOptimised()
+}

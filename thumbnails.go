@@ -8,25 +8,9 @@ import (
 
 	"github.com/disintegration/imaging"
 	"github.com/gen2brain/webp"
-	_ "modernc.org/sqlite"
 )
 
-func createThumbnailsDir() {
-	if _, err := os.Stat(ThumbnailDirectory); os.IsNotExist(err) {
-		log.Println("Creating thumbnails directory")
-		err := os.MkdirAll(ThumbnailDirectory, 0755)
-		if err != nil {
-			log.Fatalf("Error creating thumbnails directory %s", err)
-		} else {
-			log.Println("Thumbnails directory created")
-		}
-	} else {
-		log.Println("Thumbnail directory already exists")
-	}
-}
-
 func thumbnailAlreadyExists(slug string) bool {
-
 	thumbnailPath := filepath.Join(ThumbnailDirectory, (slug + "." + ImageFormat))
 	if _, err := os.Stat(thumbnailPath); os.IsNotExist(err) {
 		return false
@@ -35,7 +19,6 @@ func thumbnailAlreadyExists(slug string) bool {
 }
 
 func generateThumbnail(imageFile string, slug string) {
-
 	if thumbnailAlreadyExists(slug) {
 		return
 	}
@@ -96,13 +79,12 @@ func getThumbnailDirContents() ([]string, error) {
 }
 
 func populateThumbnails() {
-	metadataFiles := GetExistingMetadataFilePaths()
-	for _, row := range metadataFiles {
+	for _, row := range GetExistingMetadataFilePaths() {
 		slug := row.slug
 		filePath := row.filePath
 		fileName := row.fileName
 		imageFullPath := filepath.Join(filePath, fileName)
-		generateThumbnail(imageFullPath, slug)
+		go generateThumbnail(imageFullPath, slug)
 	}
 }
 
@@ -114,8 +96,8 @@ func deleteExtraneousThumbnails() {
 			deleteThumbnailByFilename(thumbnail)
 		} else {
 			slug := strings.TrimSuffix(filepath.Base(thumbnail), filepath.Ext(thumbnail))
-			metadata, err := GetMetadataBySlug(slug)
-			if err != nil || metadata == nil {
+			_, err := GetMetadataBySlug(slug)
+			if err != nil {
 				log.Println(slug)
 				deleteThumbnailByFilename(thumbnail)
 			}
@@ -133,7 +115,7 @@ func deleteThumbnailByFilename(filename string) {
 }
 
 func InitialiseThumbnails() {
-	createThumbnailsDir()
+	CreateDir(ThumbnailDirectory)
 	getThumbnailDirContents()
 	populateThumbnails()
 	deleteExtraneousThumbnails()
