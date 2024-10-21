@@ -114,6 +114,23 @@ func deleteThumbnailByFilename(filename string) {
 	log.Printf("Thumbnail %s deleted", filename)
 }
 
+func GetThumbnailBySlug(slug string) ([]byte, error) {
+	thumbnailPath := filepath.Join(ThumbnailDirectory, slug+"."+ImageFormat)
+
+	if _, err := os.Stat(thumbnailPath); os.IsNotExist(err) {
+		return nil, err
+	}
+
+	thumbnailBlob, err := os.ReadFile(thumbnailPath)
+
+	if err != nil {
+		log.Printf("Error reading thumbnail for slug %s: %s", slug, err)
+		return nil, err
+	}
+
+	return thumbnailBlob, nil
+}
+
 func InitialiseThumbnails() {
 	CreateDir(ThumbnailDirectory)
 	getThumbnailDirContents()

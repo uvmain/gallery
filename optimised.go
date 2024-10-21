@@ -115,6 +115,20 @@ func deleteOptimisedByFilename(filename string) {
 	log.Printf("Optimised %s deleted", filename)
 }
 
+func GetOptimisedBySlug(slug string) ([]byte, error) {
+	optimisedPath := filepath.Join(OptimisedDirectory, slug+"."+ImageFormat)
+	if _, err := os.Stat(optimisedPath); os.IsNotExist(err) {
+		log.Printf("Optimised file does not exist: %s", optimisedPath)
+		return nil, err
+	}
+	optimisedBlob, err := os.ReadFile(optimisedPath)
+	if err != nil {
+		log.Printf("Error reading optimised for slug %s: %s", slug, err)
+		return nil, err
+	}
+	return optimisedBlob, nil
+}
+
 func InitialiseOptimised() {
 	CreateDir(OptimisedDirectory)
 	getOptimisedDirContents()
