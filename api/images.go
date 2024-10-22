@@ -285,3 +285,19 @@ func defaultImageMetadata(filePath, fileName, fileTitle string, dateUploaded tim
 		Albums:           "[]",
 	}
 }
+
+func GetOriginalImageBySlug(slug string) ([]byte, error) {
+	metadata, _ := GetMetadataBySlug(slug)
+	filePath, _ := filepath.Abs(filepath.Join(metadata.FilePath, metadata.FileName))
+
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		log.Printf("Original file does not exist: %s:  %s", filePath, err)
+		return nil, err
+	}
+	blob, err := os.ReadFile(filePath)
+	if err != nil {
+		log.Printf("Error reading original image for slug %s: %s", slug, err)
+		return nil, err
+	}
+	return blob, nil
+}

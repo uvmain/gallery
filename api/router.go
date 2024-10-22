@@ -14,10 +14,11 @@ func StartServer() {
 	router.HandleFunc("GET /api/metadata/{slug}", handleGetMetadataBySlug)
 	router.HandleFunc("GET /api/thumbnail/{slug}", handleGetThumbnailBySlug)
 	router.HandleFunc("GET /api/optimised/{slug}", handleGetOptimisedBySlug)
+	router.HandleFunc("GET /api/original/{slug}", handleGetOriginalImageBySlug)
 
 	handler := cors.AllowAll().Handler(router)
 
-	http.ListenAndServe(":8080", handler)
+	http.ListenAndServe("localhost:8080", handler)
 }
 
 func handleGetSlugs(w http.ResponseWriter, r *http.Request) {
@@ -63,4 +64,18 @@ func handleGetOptimisedBySlug(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/webp")
 	w.WriteHeader(http.StatusOK)
 	w.Write(optimised)
+}
+
+func handleGetOriginalImageBySlug(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("slug")
+	imageBlob, err := GetOriginalImageBySlug(slug)
+
+	if err != nil {
+		http.Error(w, "Optimised not found", http.StatusNotFound)
+		return
+	}
+	mimeType := http.DetectContentType(imageBlob)
+	w.Header().Set("Content-Type", mimeType)
+	w.WriteHeader(http.StatusOK)
+	w.Write(imageBlob)
 }
