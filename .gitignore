@@ -1,10 +1,5 @@
 node_modules
-*.log*
-.nuxt
-.nitro
-.cache
-.output
-.dist
-.env
-.DS_Store
-data
+api/data
+api/.env
+frontend/node_modules
+frontend/dist

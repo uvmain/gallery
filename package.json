@@ -1,30 +1,15 @@
 {
-  "name": "gallery",
+  "type": "module",
   "private": true,
   "scripts": {
-    "build": "nuxt build",
-    "predev": "go run godirlist.go ./ ./data/output.json",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
-    "lint": "eslint \"**/*.{vue,ts,js,json}\"",
-    "lint:fix": "eslint \"**/*.{vue,ts,js,json}\" --fix",
-    "cspell": "cspell \"**/*.{ts,js}\""
+    "api": "cd api && go run .",
+    "prefrontend": "cd frontend && npm i",
+    "frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run api\" \"npm run frontend\"",
+    "cspell": "cspell \"**/*.{go,ts,js,vue}\""
   },
   "devDependencies": {
-    "@nuxt/eslint": "^0.5.7",
-    "@nuxt/icon": "^1.0.0",
-    "@nuxtjs/google-fonts": "^3.2.0",
-    "@unocss/nuxt": "^0.62.4",
-    "cspell": "^8.8.3",
-    "eslint": "^9.0.0",
-    "nuxt": "^3.11.2",
-    "nuxt-auth-utils": "^0.3.9"
-  },
-  "dependencies": {
-    "exiftool-vendored": "^28.3.0",
-    "sharp": "^0.33.5",
-    "sqlite3": "^5.1.7"
+    "concurrently": "^9.0.1",
+    "cspell": "^8.15.4"
   }
 }

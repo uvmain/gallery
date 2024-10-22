@@ -1,9 +1,8 @@
 {
   "version": "0.2",
   "ignorePaths": [
-    ".output/**",
-    ".nuxt**",
-    "node_modules"
+    "./frontend/dist/**",
+    "./frontend/node_modules/**"
   ],
   "dictionaryDefinitions": [],
   "dictionaries": [],
@@ -11,18 +10,22 @@
   "language": "en-GB,en",
   "minWordLength": 4,
   "words": [
-    "antfu",
-    "iconify",
-    "icontains",
-    "lucide",
-    "nuxt",
-    "nuxtjs",
-    "poppins",
-    "stroustrup",
-    "tabler",
-    "unsign",
-    "vueuse"
+    "Lanczos",
+    "tsbuildinfo",
+    "unplugin",
+    "uvite",
+    "webp"
   ],
-  "ignoreWords": [],
+  "ignoreWords": [
+    "antfu",
+    "Attributify",
+    "modernc",
+    "pinia",
+    "stroustrup",
+    "godotenv",
+    "goexif",
+    "joho",
+    "rwcarlsen"
+  ],
   "import": []
 }
