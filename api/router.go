@@ -2,9 +2,10 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
+
+	"github.com/rs/cors"
 )
 
 func StartServer() {
@@ -14,13 +15,9 @@ func StartServer() {
 	router.HandleFunc("GET /api/thumbnail/{slug}", handleGetThumbnailBySlug)
 	router.HandleFunc("GET /api/optimised/{slug}", handleGetOptimisedBySlug)
 
-	server := http.Server{
-		Addr:    ":8080",
-		Handler: router,
-	}
+	handler := cors.AllowAll().Handler(router)
 
-	fmt.Println("Server listening on port :8080")
-	server.ListenAndServe()
+	http.ListenAndServe(":8080", handler)
 }
 
 func handleGetSlugs(w http.ResponseWriter, r *http.Request) {
