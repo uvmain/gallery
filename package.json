@@ -6,11 +6,10 @@
     "prefrontend": "cd frontend && npm i",
     "frontend": "cd frontend && npm run dev",
     "dev": "concurrently \"npm run api\" \"npm run frontend\"",
-    "lint": "eslint \"**/*.{vue,ts,js,json,yml}\"",
-    "lint:fix": "eslint \"**/*.{vue,ts,js,json,yml}\" --fix",
     "cspell": "cspell \"**/*.{go,ts,js,vue}\""
   },
   "devDependencies": {
-    "concurrently": "^9.0.1"
+    "concurrently": "^9.0.1",
+    "cspell": "^8.15.4"
   }
 }

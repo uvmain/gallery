@@ -1,14 +1,31 @@
 {
   "version": "0.2",
-  "language": "en-GB",
+  "ignorePaths": [
+    "./frontend/dist/**",
+    "./frontend/node_modules/**"
+  ],
+  "dictionaryDefinitions": [],
+  "dictionaries": [],
+  "allowCompoundWords": true,
+  "language": "en-GB,en",
+  "minWordLength": 4,
   "words": [
-    "godotenv",
     "Lanczos",
+    "tsbuildinfo",
+    "unplugin",
+    "uvite",
     "webp"
   ],
   "ignoreWords": [
-    "modernc"
+    "antfu",
+    "Attributify",
+    "modernc",
+    "pinia",
+    "stroustrup",
+    "godotenv",
+    "goexif",
+    "joho",
+    "rwcarlsen"
   ],
-  "allowCompoundWords": true,
-  "flagWords": []
+  "import": []
 }
