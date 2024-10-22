@@ -1,18 +1,21 @@
 package main
 
 import (
+	"image/jpeg"
 	"log"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
+	"sync"
 
 	"github.com/disintegration/imaging"
-	"github.com/gen2brain/webp"
 )
 
+var wgOptimised sync.WaitGroup
+
 func optimisedAlreadyExists(slug string) bool {
-	optimisedPath := filepath.Join(OptimisedDirectory, (slug + ".webp"))
+	optimisedPath := filepath.Join(OptimisedDirectory, (slug + ".jpeg"))
 	if _, err := os.Stat(optimisedPath); os.IsNotExist(err) {
 		return false
 	}
@@ -20,6 +23,8 @@ func optimisedAlreadyExists(slug string) bool {
 }
 
 func generateOptimised(imageFile string, slug string) {
+
+	defer wgOptimised.Done()
 
 	if optimisedAlreadyExists(slug) {
 		return
@@ -45,7 +50,7 @@ func generateOptimised(imageFile string, slug string) {
 		height = 0
 	}
 
-	optimisedPath := filepath.Join(OptimisedDirectory, slug) + ".webp"
+	optimisedPath := filepath.Join(OptimisedDirectory, slug) + ".jpeg"
 	optimisedImage := imaging.Resize(source, width, height, imaging.Lanczos)
 
 	f, err := os.Create(optimisedPath)
@@ -54,7 +59,7 @@ func generateOptimised(imageFile string, slug string) {
 	}
 	defer f.Close()
 
-	err = webp.Encode(f, optimisedImage)
+	jpeg.Encode(f, optimisedImage, nil)
 	if err != nil {
 		log.Printf("Error encoding image: %s", err)
 	}
@@ -80,20 +85,32 @@ func getOptimisedDirContents() ([]string, error) {
 }
 
 func populateOptimised() {
-	for _, row := range GetExistingMetadataFilePaths() {
-		slug := row.slug
-		filePath := row.filePath
-		fileName := row.fileName
-		imageFullPath := filepath.Join(filePath, fileName)
-		generateOptimised(imageFullPath, slug)
+	numWorkers := runtime.NumCPU() / 2 // Use half the available CPU cores
+	if numWorkers < 1 {
+		numWorkers = 1
 	}
+	workerPool := make(chan struct{}, numWorkers)
+	for _, row := range GetExistingMetadataFilePaths() {
+		workerPool <- struct{}{} // Block if the pool is full
+		wgOptimised.Add(1)
+		go func(row MetadataFile) {
+			defer func() { <-workerPool }()
+			slug := row.slug
+			filePath := row.filePath
+			fileName := row.fileName
+			imageFullPath := filepath.Join(filePath, fileName)
+			generateOptimised(imageFullPath, slug)
+		}(row)
+	}
+
+	wgOptimised.Wait()
 }
 
 func deleteExtraneousOptimised() {
 	optimisedDirContents, _ := getOptimisedDirContents()
 	for _, optimised := range optimisedDirContents {
 		ext := strings.Split(filepath.Ext(optimised), ".")[1]
-		if ext != "webp" {
+		if ext != "jpeg" {
 			deleteOptimisedByFilename(optimised)
 		} else {
 			slug := strings.TrimSuffix(filepath.Base(optimised), filepath.Ext(optimised))
@@ -116,7 +133,7 @@ func deleteOptimisedByFilename(filename string) {
 }
 
 func GetOptimisedBySlug(slug string) ([]byte, error) {
-	optimisedPath := filepath.Join(OptimisedDirectory, slug+".webp")
+	optimisedPath := filepath.Join(OptimisedDirectory, slug+".jpeg")
 	if _, err := os.Stat(optimisedPath); os.IsNotExist(err) {
 		log.Printf("Optimised file does not exist: %s", optimisedPath)
 		return nil, err

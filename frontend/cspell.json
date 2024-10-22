@@ -1,0 +1,22 @@
+{
+  "version": "0.2",
+  "ignorePaths": [
+    "./dist/**"
+  ],
+  "dictionaryDefinitions": [],
+  "dictionaries": [],
+  "allowCompoundWords": true,
+  "language": "en-GB,en",
+  "minWordLength": 4,
+  "words": [
+    "antfu",
+    "Attributify",
+    "pinia",
+    "stroustrup",
+    "tsbuildinfo",
+    "unplugin",
+    "uvite"
+  ],
+  "ignoreWords": [],
+  "import": []
+}
