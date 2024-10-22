@@ -142,6 +142,5 @@ func GetExistingMetadataFilePaths() []MetadataFile {
 		foundMetadataFiles = append(foundMetadataFiles, rowResult)
 	}
 
-	FoundMetadataFiles = foundMetadataFiles
 	return foundMetadataFiles
 }

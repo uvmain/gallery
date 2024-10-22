@@ -119,8 +119,7 @@ func GetImageDirContents() ([]string, error) {
 		}
 		return nil
 	})
-	FoundFiles = foundFiles
-	log.Printf("Found: %d source images", len(FoundFiles))
+	log.Printf("Found: %d source images", len(foundFiles))
 	return foundFiles, err
 }
 

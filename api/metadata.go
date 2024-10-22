@@ -27,11 +27,13 @@ func getMetadataRowsToDelete() []MetadataFile {
 	results := []MetadataFile{}
 
 	filesMap := make(map[string]bool)
-	for _, v := range FoundFiles {
+	foundFiles, _ := GetImageDirContents()
+	for _, v := range foundFiles {
 		filesMap[v] = true
 	}
 
-	for _, v := range FoundMetadataFiles {
+	foundMetadataFiles := GetExistingMetadataFilePaths()
+	for _, v := range foundMetadataFiles {
 		fullFilePath := filepath.Join(v.filePath, v.fileName)
 		if !filesMap[fullFilePath] {
 			result := MetadataFile{
@@ -90,7 +92,8 @@ func insertMetadataRow(imageMetadata ImageMetadata) error {
 }
 
 func populateMetadata() {
-	for _, file := range FoundFiles {
+	foundFiles, _ := GetImageDirContents()
+	for _, file := range foundFiles {
 		checkQuery := `SELECT COUNT(*) FROM metadata WHERE filePath = ? AND fileName = ?;`
 		filePath := filepath.Dir(file)
 		fileName := filepath.Base(file)

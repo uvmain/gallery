@@ -51,14 +51,7 @@ func handleGetThumbnailBySlug(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Thumbnail not found", http.StatusNotFound)
 		return
 	}
-	if ImageFormat == "webp" {
-		w.Header().Set("Content-Type", "image/webp")
-	} else if ImageFormat == "jpeg" || ImageFormat == "jpg" {
-		w.Header().Set("Content-Type", "image/jpeg")
-	} else {
-		http.Error(w, "Unsupported image format", http.StatusInternalServerError)
-		return
-	}
+	w.Header().Set("Content-Type", "image/webp")
 	w.WriteHeader(http.StatusOK)
 	w.Write(thumbnail)
 }
@@ -70,14 +63,7 @@ func handleGetOptimisedBySlug(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Optimised not found", http.StatusNotFound)
 		return
 	}
-	if ImageFormat == "webp" {
-		w.Header().Set("Content-Type", "image/webp")
-	} else if ImageFormat == "jpeg" || ImageFormat == "jpg" {
-		w.Header().Set("Content-Type", "image/jpeg")
-	} else {
-		http.Error(w, "Unsupported image format", http.StatusInternalServerError)
-		return
-	}
+	w.Header().Set("Content-Type", "image/webp")
 	w.WriteHeader(http.StatusOK)
 	w.Write(optimised)
 }

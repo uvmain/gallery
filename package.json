@@ -1,0 +1,10 @@
+{
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "api": "cd api && go run .",
+    "lint": "eslint \"**/*.{vue,ts,js,json,yml}\"",
+    "lint:fix": "eslint \"**/*.{vue,ts,js,json,yml}\" --fix",
+    "cspell": "cspell \"**/*.{go,ts,js,vue}\""
+  }
+}

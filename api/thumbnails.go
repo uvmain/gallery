@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/disintegration/imaging"
@@ -11,7 +12,7 @@ import (
 )
 
 func thumbnailAlreadyExists(slug string) bool {
-	thumbnailPath := filepath.Join(ThumbnailDirectory, (slug + "." + ImageFormat))
+	thumbnailPath := filepath.Join(ThumbnailDirectory, (slug + ".webp"))
 	if _, err := os.Stat(thumbnailPath); os.IsNotExist(err) {
 		return false
 	}
@@ -19,6 +20,7 @@ func thumbnailAlreadyExists(slug string) bool {
 }
 
 func generateThumbnail(imageFile string, slug string) {
+
 	if thumbnailAlreadyExists(slug) {
 		return
 	}
@@ -27,6 +29,11 @@ func generateThumbnail(imageFile string, slug string) {
 	if err != nil {
 		log.Fatalf("Failed to open image: %v", err)
 	}
+
+	defer func() {
+		source = nil
+		runtime.GC()
+	}()
 
 	width, height := 0, 0
 
@@ -38,25 +45,20 @@ func generateThumbnail(imageFile string, slug string) {
 		height = 0
 	}
 
-	var thumbnailPath string
+	thumbnailPath := filepath.Join(ThumbnailDirectory, slug) + ".webp"
+	thumbnailImage := imaging.Resize(source, width, height, imaging.Lanczos)
 
-	if ImageFormat == "jpeg" || ImageFormat == "jpg" {
-		thumbnailPath = filepath.Join(ThumbnailDirectory, slug) + ".jpeg"
-		thumbnailImage := imaging.Resize(source, width, height, imaging.Lanczos)
-		err = imaging.Save(thumbnailImage, thumbnailPath)
-	} else if ImageFormat == "webp" {
-		thumbnailPath = filepath.Join(ThumbnailDirectory, slug) + ".webp"
-		thumbnailImage := imaging.Resize(source, width, height, imaging.Lanczos)
-
-		f, _ := os.Create(thumbnailPath)
-		defer f.Close()
-
-		webp.Encode(f, thumbnailImage)
-	}
-
+	f, err := os.Create(thumbnailPath)
 	if err != nil {
-		log.Printf("Error creating thumbnail: %s", err)
+		log.Fatalf("Error creating file: %v", err)
 	}
+	defer f.Close()
+
+	err = webp.Encode(f, thumbnailImage)
+	if err != nil {
+		log.Printf("Error encoding image: %s", err)
+	}
+
 	log.Printf("Thumbnail created for %s: %s", imageFile, thumbnailPath)
 }
 
@@ -73,7 +75,6 @@ func getThumbnailDirContents() ([]string, error) {
 		}
 		return nil
 	})
-	FoundThumbnails = foundThumbnails
 	log.Printf("Found %d thumbnails", len(foundThumbnails))
 	return foundThumbnails, err
 }
@@ -92,7 +93,7 @@ func deleteExtraneousThumbnails() {
 	thumbnailDirContents, _ := getThumbnailDirContents()
 	for _, thumbnail := range thumbnailDirContents {
 		ext := strings.Split(filepath.Ext(thumbnail), ".")[1]
-		if ext != ImageFormat {
+		if ext != "webp" {
 			deleteThumbnailByFilename(thumbnail)
 		} else {
 			slug := strings.TrimSuffix(filepath.Base(thumbnail), filepath.Ext(thumbnail))
@@ -115,7 +116,7 @@ func deleteThumbnailByFilename(filename string) {
 }
 
 func GetThumbnailBySlug(slug string) ([]byte, error) {
-	thumbnailPath := filepath.Join(ThumbnailDirectory, slug+"."+ImageFormat)
+	thumbnailPath := filepath.Join(ThumbnailDirectory, slug+".webp")
 
 	if _, err := os.Stat(thumbnailPath); os.IsNotExist(err) {
 		return nil, err
@@ -133,7 +134,6 @@ func GetThumbnailBySlug(slug string) ([]byte, error) {
 
 func InitialiseThumbnails() {
 	CreateDir(ThumbnailDirectory)
-	getThumbnailDirContents()
-	populateThumbnails()
 	deleteExtraneousThumbnails()
+	populateThumbnails()
 }
