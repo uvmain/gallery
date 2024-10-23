@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { useIntersectionObserver } from '@vueuse/core'
 import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const observerTarget = ref(null)
-
 const slugs = ref<string[]>([])
-const showModal = ref(false)
-const selectedSlug = ref<string | null>(null)
-
 const limit = ref(20)
 const offset = ref(0)
 const loading = ref(false)
@@ -51,22 +49,8 @@ async function getSlugs() {
   }
 }
 
-function openModal(slug: string) {
-  selectedSlug.value = slug
-  showModal.value = true
-}
-
-function closeModal() {
-  showModal.value = false
-  selectedSlug.value = null
-}
-
 function getThumbnailPath(slug: string) {
   return `http://localhost:8080/api/thumbnail/${slug}`
-}
-
-function getOptimisedPath(slug: string) {
-  return `http://localhost:8080/api/optimised/${slug}`
 }
 
 const loadingStatus = computed(() => {
@@ -79,12 +63,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <div ref="scrollElement" class="flex flex-col items-center overflow-y-auto p-8">
-    <div class="flex flex-wrap lg:max-w-8/10 gap-x-2 gap-y-1">
+  <div ref="scrollElement" class="flex flex-col items-center overflow-y-auto p-6">
+    <div class="flex flex-wrap gap-x-1 lg:max-w-8/10">
       <div v-for="(slug, index) in slugs" :key="index" class="flex-1 basis-auto">
-        <img :src="getThumbnailPath(slug)" :alt="slug" class="min-h-10vh max-h-15vh cursor-pointer object-cover h-full w-full max-w-30vw" @click="openModal(slug)">
+        <img :src="getThumbnailPath(slug)" :alt="slug" class="h-full max-h-25vh max-w-50vw min-h-20vh w-full cursor-pointer object-cover" @click="router.push(`/${slug}`)">
       </div>
-      <div class="flex flex-2" />
+      <div class="flex-2 flex" />
     </div>
     <div v-if="loading" class="py-4 text-center">
       <p>
@@ -95,19 +79,6 @@ onMounted(() => {
           <animateTransform attributeName="transform" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12" />
         </path>
       </svg>
-    </div>
-    <div v-if="showModal" class="fixed z-50 max-h-80vh flex items-center justify-center bg-black bg-opacity-75">
-      <div class="bg-white p-4">
-        <button class="absolute right-2 top-2 size-6 rounded bg-red-500 text-white" @click="closeModal">
-          X
-        </button>
-        <img
-          v-if="selectedSlug"
-          :src="getOptimisedPath(selectedSlug)"
-          alt="Selected Image"
-          class="max-h-screen max-w-full"
-        >
-      </div>
     </div>
     <div ref="observerTarget" />
   </div>

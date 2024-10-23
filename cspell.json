@@ -14,6 +14,7 @@
     "tsbuildinfo",
     "unplugin",
     "uvite",
+    "vueuse",
     "webp"
   ],
   "ignoreWords": [

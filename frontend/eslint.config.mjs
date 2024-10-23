@@ -13,5 +13,6 @@ export default antfu({
     'no-console': 'off',
     'brace-style': ['error', 'stroustrup'],
     'curly': ['off'],
+    'vue/html-self-closing': 'off',
   },
 })
