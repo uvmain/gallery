@@ -35,7 +35,7 @@ export default defineConfig({
         // auto import icons
         // https://github.com/antfu/unplugin-icons
         IconsResolver({
-          prefix: false,
+          prefix: 'icon',
           // enabledCollections: ['carbon']
         }),
       ],

@@ -10,6 +10,7 @@
   "language": "en-GB,en",
   "minWordLength": 4,
   "words": [
+    "iconify",
     "Lanczos",
     "tsbuildinfo",
     "unplugin",
