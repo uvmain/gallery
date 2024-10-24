@@ -1,5 +1,7 @@
 node_modules
+data
 api/data
+*.db
 api/.env
 frontend/node_modules
 frontend/dist

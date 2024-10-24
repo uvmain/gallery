@@ -27,7 +27,8 @@
     "godotenv",
     "goexif",
     "joho",
-    "rwcarlsen"
+    "rwcarlsen",
+    "tabler"
   ],
   "import": []
 }
