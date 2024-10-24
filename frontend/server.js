@@ -8,6 +8,8 @@ const app = express()
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+const PORT = process.env.PORT || 5173
+
 app.use(express.static(path.join(__dirname, 'dist')))
 
 app.get('*', (req, res) => {
@@ -15,6 +17,6 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/index.html'))
 })
 
-app.listen(process.env.PORT, () => {
-  console.log(`Static server started and listening on port ${process.env.PORT}`)
+app.listen(PORT, () => {
+  console.log(`Static server started and listening on port ${PORT}`)
 })

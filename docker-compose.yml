@@ -1,0 +1,10 @@
+services:
+  gallery:
+    image: gallery:latest
+    container_name: gallery
+    environment:
+      - IMAGE_PATH=/photos
+    volumes:
+      - /mnt//photography:/photos
+    ports:
+      - "5173:5173"
