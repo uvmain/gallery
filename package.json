@@ -5,11 +5,12 @@
     "api": "cd api && go run .",
     "prefrontend": "cd frontend && npm i",
     "frontend": "cd frontend && npm run dev",
-    "dev": "concurrently \"npm run frontend\" \"npm run api\"",
+    "dev": "env-cmd concurrently \"npm run frontend\" \"npm run api\"",
     "cspell": "cspell \"**/*.{go,ts,js,vue}\""
   },
   "devDependencies": {
     "concurrently": "^9.0.1",
-    "cspell": "^8.15.4"
+    "cspell": "^8.15.4",
+    "env-cmd": "^10.1.0"
   }
 }
