@@ -34,4 +34,3 @@ EXPOSE 5173
 
 # Run both the Go backend and Node.js frontend together
 CMD ["npx", "concurrently", "./backend", "node server.js"]
-
