@@ -18,7 +18,7 @@ async function getSlugs() {
 
   loading.value = true
   try {
-    const response = await fetch(`http://localhost:8080/api/slugs?offset=${offset.value}&limit=${limit.value}`)
+    const response = await fetch(`/api/slugs?offset=${offset.value}&limit=${limit.value}`)
     if (response.status === 204) {
       endOfSlugs.value = true
     }
@@ -50,7 +50,7 @@ async function getSlugs() {
 }
 
 function getThumbnailPath(slug: string) {
-  return `http://localhost:8080/api/thumbnail/${slug}`
+  return `/api/thumbnail/${slug}`
 }
 
 const loadingStatus = computed(() => {

@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "postbuild": "cpy dist ../",
     "preview": "vite preview",
     "cspell": "cspell \"**/*.{ts,js,vue}\"",
     "lint": "eslint .",
@@ -31,6 +32,7 @@
     "@unocss/eslint-plugin": "^0.62.4",
     "@vitejs/plugin-vue": "^5.0.5",
     "@vue/tsconfig": "^0.5.1",
+    "cpy-cli": "^5.0.0",
     "cspell": "^8.14.4",
     "eslint": "^9.10.0",
     "typescript": "^5.6.2",

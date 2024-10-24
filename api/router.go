@@ -10,6 +10,11 @@ import (
 
 func StartServer() {
 	router := http.NewServeMux()
+
+	distDir := http.Dir("../dist")
+	fileServer := http.FileServer(distDir)
+	router.Handle("/", http.StripPrefix("/", fileServer))
+
 	router.HandleFunc("GET /api/slugs", handleGetSlugs)
 	router.HandleFunc("GET /api/metadata/{slug}", handleGetMetadataBySlug)
 	router.HandleFunc("GET /api/thumbnail/{slug}", handleGetThumbnailBySlug)
@@ -23,8 +28,14 @@ func StartServer() {
 
 func handleGetSlugs(w http.ResponseWriter, r *http.Request) {
 	v := r.URL.Query().Get("offset")
+	if v == "" {
+		v = "0"
+	}
 	offset, _ := strconv.Atoi(v)
 	v = r.URL.Query().Get("limit")
+	if v == "" {
+		v = "1000"
+	}
 	limit, _ := strconv.Atoi(v)
 	slugs, _ := GetSlugsOrderedByDateTaken(offset, limit)
 	w.Header().Set("Content-Type", "application/json")

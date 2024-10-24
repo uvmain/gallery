@@ -1,0 +1,1 @@
+git pull && docker build -t gallery:latest . && docker compose up -d

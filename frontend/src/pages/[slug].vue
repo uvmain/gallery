@@ -31,7 +31,7 @@ interface ImageMetadata {
 const metadata = ref<ImageMetadata | undefined>()
 
 const optimisedPath = computed(() => {
-  return `http://localhost:8080/api/optimised/${slug.value}`
+  return `/api/optimised/${slug.value}`
 })
 
 const fStop = computed(() => {
@@ -85,7 +85,7 @@ const whiteBalance = computed(() => {
 
 async function getMetadata() {
   try {
-    const response = await fetch(`http://localhost:8080/api/metadata/${slug.value}`)
+    const response = await fetch(`/api/metadata/${slug.value}`)
     metadata.value = await response.json() as ImageMetadata
   }
   catch (error) {
