@@ -99,54 +99,71 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div class="flex flex-col p-6 lg:flex-row">
-    <img :src="optimisedPath" class="max-h-90vh max-w-70vw" />
-    <div v-if="metadata" class="flex flex-col gap-y-2 p-6">
-      <h1>
-        {{ metadata.title }}
-      </h1>
-      <div v-if="camera" class="flex items-center space-x-2">
-        <icon-tabler-camera class="size-4em text-black" />
-        <div class="flex flex-col gap-2 text-lg">
-          <span>{{ camera }}</span>
-          <span>{{ lens }}</span>
+  <div class="min-h-screen bg-gray-100">
+    <div id="main" class="flex flex-row justify-center gap-8 p-6">
+      <!-- Image Section -->
+      <div class="border-6 border-white border-solid">
+        <img :src="optimisedPath" class="max-h-90vh max-w-70vw" />
+      </div>
+
+      <!-- EXIF Data Section -->
+      <div v-if="metadata" class="flex flex-col gap-6 p-6 text-sm lg:max-w-1/3">
+        <h1 class="mb-4 text-2xl text-gray-700 font-semibold">
+          {{ metadata.title }}
+        </h1>
+
+        <div v-if="camera" class="flex items-center space-x-3">
+          <icon-tabler-camera class="text-3xl text-gray-600" />
+          <div class="flex flex-col gap-1 text-base">
+            <span class="text-gray-700 font-medium">{{ camera }}</span>
+            <span class="text-gray-600">{{ lens }}</span>
+          </div>
         </div>
-      </div>
-      <div v-if="dateTaken" class="flex items-center space-x-2">
-        <icon-tabler-camera-bolt class="text-2xl text-black" />
-        <span>Taken on {{ dateTaken }}</span>
-      </div>
-      <div v-if="dateUploaded" class="flex items-center space-x-2">
-        <icon-tabler-camera-up class="text-2xl text-black" />
-        <span>Uploaded on {{ dateUploaded }}</span>
-      </div>
-      <div v-if="metadata.exposureMode" class="flex items-center space-x-2">
-        <icon-tabler-camera-cog class="text-2xl text-black" />
-        <span>Mode: {{ metadata.exposureMode }}</span>
-      </div>
-      <div v-if="fStop" class="flex items-center space-x-2">
-        <icon-tabler-aperture class="text-2xl text-black" />
-        <span>{{ fStop }}</span>
-      </div>
-      <div v-if="focalLength" class="flex items-center space-x-2">
-        <icon-tabler-eye-pin class="text-2xl text-black" />
-        <span>{{ focalLength }}</span>
-      </div>
-      <div v-if="metadata.exposureTime" class="flex items-center space-x-2">
-        <icon-tabler-stopwatch class="text-2xl text-black" />
-        <span>{{ metadata.exposureTime }}</span>
-      </div>
-      <div v-if="metadata.iso" class="flex items-center space-x-2">
-        <icon-carbon-iso-outline class="text-2xl text-black" />
-        <span>{{ metadata.iso }}</span>
-      </div>
-      <div v-if="metadata.flashStatus" class="flex items-center space-x-2">
-        <icon-tabler-bolt class="text-2xl text-black" />
-        <span>{{ metadata.flashStatus }}</span>
-      </div>
-      <div v-if="whiteBalance" class="flex items-center space-x-2">
-        <icon-tabler-temperature-sun class="text-2xl text-black" />
-        <span>{{ whiteBalance }}</span>
+
+        <div v-if="dateTaken" class="flex items-center space-x-3">
+          <icon-tabler-calendar class="text-2xl text-gray-600" />
+          <span class="text-gray-600">Taken on {{ dateTaken }}</span>
+        </div>
+
+        <div v-if="dateUploaded" class="flex items-center space-x-3">
+          <icon-tabler-upload class="text-2xl text-gray-600" />
+          <span class="text-gray-600">Uploaded on {{ dateUploaded }}</span>
+        </div>
+
+        <div v-if="metadata.exposureMode && metadata.exposureMode !== 'unknown'" class="flex items-center space-x-3">
+          <icon-tabler-settings class="text-2xl text-gray-600" />
+          <span class="text-gray-600">Mode: {{ metadata.exposureMode }}</span>
+        </div>
+
+        <div v-if="fStop" class="flex items-center space-x-3">
+          <icon-tabler-aperture class="text-2xl text-gray-600" />
+          <span class="text-gray-600">{{ fStop }}</span>
+        </div>
+
+        <div v-if="focalLength" class="flex items-center space-x-3">
+          <icon-tabler-eye-pin class="text-2xl text-gray-600" />
+          <span class="text-gray-600">{{ focalLength }}</span>
+        </div>
+
+        <div v-if="metadata.exposureTime && metadata.exposureTime !== 'unknown'" class="flex items-center space-x-3">
+          <icon-tabler-clock class="text-2xl text-gray-600" />
+          <span class="text-gray-600">{{ metadata.exposureTime }}</span>
+        </div>
+
+        <div v-if="metadata.iso && metadata.iso !== 'unknown'" class="flex items-center space-x-3">
+          <icon-carbon-iso-outline class="text-2xl text-gray-600" />
+          <span class="text-gray-600">{{ metadata.iso }}</span>
+        </div>
+
+        <div v-if="metadata.flashStatus && metadata.flashStatus !== 'unknown'" class="flex items-center space-x-3">
+          <icon-tabler-bolt class="text-2xl text-gray-600" />
+          <span class="text-gray-600">{{ metadata.flashStatus }}</span>
+        </div>
+
+        <div v-if="whiteBalance" class="flex items-center space-x-3">
+          <icon-tabler-sun class="text-2xl text-gray-600" />
+          <span class="text-gray-600">{{ whiteBalance }}</span>
+        </div>
       </div>
     </div>
   </div>
