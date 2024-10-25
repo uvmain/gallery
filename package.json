@@ -2,11 +2,12 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "api": "cd api && env-cmd go run .",
-    "prefrontend": "cd frontend && npm i",
-    "frontend": "cd frontend && npm run dev",
+    "backend:dev": "cd api && go run .",
+    "frontend:dev": "cd frontend && npm run dev",
+    "build:backend": "cd api && go build -o server .",
     "build:frontend": "cd frontend && npm run build && cpy dist ../",
-    "dev": "cd api && cross-env IMAGE_PATH=F:/photography go run .",
+    "dev": "cross-env IMAGE_PATH=F:/photography concurrently \"npm run frontend:dev\" \"npm run backend:dev\"",
+    "build": "cross-env CGO_ENABLED=0 npm run build:frontend && npm run build:backend",
     "cspell": "cspell \"**/*.{go,ts,js,vue}\""
   },
   "devDependencies": {
@@ -14,5 +15,8 @@
     "cross-env": "^7.0.3",
     "cspell": "^8.15.4",
     "env-cmd": "^10.1.0"
+  },
+  "dependencies": {
+    "concurrently": "^9.0.1"
   }
 }

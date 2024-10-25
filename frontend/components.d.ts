@@ -7,7 +7,6 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     IconCarbonIsoOutline: typeof import('~icons/carbon/iso-outline')['default']
     IconTablerAperture: typeof import('~icons/tabler/aperture')['default']
     IconTablerBolt: typeof import('~icons/tabler/bolt')['default']

@@ -3,6 +3,8 @@ data
 api/data
 *.db
 api/.env
+api/server
+api/server.exe
 dist
 frontend/node_modules
 frontend/dist

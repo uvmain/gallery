@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import { computed, onBeforeMount, ref } from 'vue'
+import { computed, onBeforeMount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
 const slug = ref(route.params.slug as string)
+const serverBaseUrl = ref()
 
 interface ImageMetadata {
   filePath: string
@@ -31,7 +32,7 @@ interface ImageMetadata {
 const metadata = ref<ImageMetadata | undefined>()
 
 const optimisedPath = computed(() => {
-  return `/api/optimised/${slug.value}`
+  return `${serverBaseUrl.value}/api/optimised/${slug.value}`
 })
 
 const fStop = computed(() => {
@@ -85,16 +86,26 @@ const whiteBalance = computed(() => {
 
 async function getMetadata() {
   try {
-    const response = await fetch(`/api/metadata/${slug.value}`)
+    const response = await fetch(`${serverBaseUrl.value}/api/metadata/${slug.value}`)
     metadata.value = await response.json() as ImageMetadata
   }
   catch (error) {
-    console.error('Failed to fetch thumbnails:', error)
+    console.error('Failed to fetch Metadata:', error)
   }
 }
 
-onBeforeMount(() => {
-  getMetadata()
+async function getServerUrl() {
+  const response = await fetch(`/api/slugs?offset=0&limit=1`)
+  if (!response || response.status !== 200) {
+    serverBaseUrl.value = ''
+    return
+  }
+  serverBaseUrl.value = 'http://localhost:8080'
+}
+
+onMounted(async () => {
+  await getServerUrl()
+  await getMetadata()
 })
 </script>
 

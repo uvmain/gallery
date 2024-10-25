@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useIntersectionObserver } from '@vueuse/core'
-import { computed, onMounted, ref } from 'vue'
+import { useIntersectionObserver, useStorage } from '@vueuse/core'
+import { computed, onBeforeMount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -11,6 +11,19 @@ const offset = ref(0)
 const loading = ref(false)
 const endOfSlugs = ref(false)
 const scrollElement = ref<HTMLElement | null>(null)
+const serverBaseUrl = ref('')
+
+const state = useStorage('query-state', { limit: limit.value, offset: offset.value })
+
+async function getServerUrl() {
+  const response = await fetch(`/api/slugs?offset=0&limit=1`)
+  if (!response || response.status !== 200) {
+    serverBaseUrl.value = ''
+  }
+  else {
+    serverBaseUrl.value = 'http://localhost:8080'
+  }
+}
 
 async function getSlugs() {
   if (loading.value || endOfSlugs.value)
@@ -18,7 +31,7 @@ async function getSlugs() {
 
   loading.value = true
   try {
-    const response = await fetch(`/api/slugs?offset=${offset.value}&limit=${limit.value}`)
+    const response = await fetch(`${serverBaseUrl.value}/api/slugs?offset=${offset.value}&limit=${limit.value}`)
     if (response.status === 204) {
       endOfSlugs.value = true
     }
@@ -27,6 +40,10 @@ async function getSlugs() {
       if (jsonData && jsonData.length > 0) {
         offset.value += jsonData.length
         slugs.value = [...slugs.value, ...jsonData]
+        state.value = {
+          limit: limit.value,
+          offset: offset.value,
+        }
       }
       else {
         endOfSlugs.value = true
@@ -50,15 +67,21 @@ async function getSlugs() {
 }
 
 function getThumbnailPath(slug: string) {
-  return `/api/thumbnail/${slug}`
+  return `${serverBaseUrl.value}/api/thumbnail/${slug}`
+}
+
+function navigateToSlug(slug: string) {
+  const slugPath = `/${slug}`
+  router.push(slugPath)
 }
 
 const loadingStatus = computed(() => {
   return offset.value > 0 ? 'Loading...' : 'Waiting for initialisation to complete...'
 })
 
-onMounted(() => {
-  getSlugs()
+onMounted(async () => {
+  await getServerUrl()
+  await getSlugs()
 })
 </script>
 
@@ -66,7 +89,7 @@ onMounted(() => {
   <div ref="scrollElement" class="flex flex-col items-center overflow-y-auto bg-gray-100 p-6">
     <div class="flex flex-wrap gap-x-1 lg:max-w-8/10">
       <div v-for="(slug, index) in slugs" :key="index" class="flex-1 basis-auto">
-        <img :src="getThumbnailPath(slug)" :alt="slug" class="h-full max-h-25vh max-w-50vw min-h-20vh w-full cursor-pointer object-cover" @click="router.push(`/${slug}`)">
+        <img :src="getThumbnailPath(slug)" :alt="slug" class="h-full max-h-25vh max-w-50vw min-h-20vh w-full cursor-pointer object-cover" @click="navigateToSlug(slug)">
       </div>
       <div class="flex-2 flex" />
     </div>
