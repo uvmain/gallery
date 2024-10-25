@@ -16,11 +16,10 @@ const serverBaseUrl = ref('')
 const state = useStorage('query-state', { limit: limit.value, offset: offset.value })
 
 async function getServerUrl() {
-  const response = await fetch(`/api/slugs?offset=0&limit=1`)
-  if (!response || response.status !== 200) {
-    serverBaseUrl.value = ''
+  try {
+    await fetch(`/api/slugs?offset=0&limit=1`)
   }
-  else {
+  catch {
     serverBaseUrl.value = 'http://localhost:8080'
   }
 }

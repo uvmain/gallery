@@ -6,7 +6,7 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 
 const slug = ref(route.params.slug as string)
-const serverBaseUrl = ref()
+const serverBaseUrl = ref('')
 
 interface ImageMetadata {
   filePath: string
@@ -95,12 +95,12 @@ async function getMetadata() {
 }
 
 async function getServerUrl() {
-  const response = await fetch(`/api/slugs?offset=0&limit=1`)
-  if (!response || response.status !== 200) {
-    serverBaseUrl.value = ''
-    return
+  try {
+    await fetch(`/api/slugs?offset=0&limit=1`)
   }
-  serverBaseUrl.value = 'http://localhost:8080'
+  catch {
+    serverBaseUrl.value = 'http://localhost:8080'
+  }
 }
 
 onMounted(async () => {
