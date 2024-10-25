@@ -26,16 +26,14 @@ func LoadEnv() {
 		dataPath = "./data"
 	}
 
+	ImagePath = os.Getenv("IMAGE_PATH")
+	if ImagePath == "" {
+		ImagePath = "./images"
+	}
+
 	DatabaseDirectory, _ = filepath.Abs(dataPath)
 	ThumbnailDirectory, _ = filepath.Abs(filepath.Join(dataPath, "thumbnails"))
 	OptimisedDirectory, _ = filepath.Abs(filepath.Join(dataPath, "optimised"))
-
-	imagePath := os.Getenv("IMAGE_PATH")
-	if imagePath == "" {
-		ImagePath, _ = filepath.Abs(filepath.Join(dataPath, "images"))
-	} else {
-		ImagePath, _ = filepath.Abs(imagePath)
-	}
 
 	imageExtensions := os.Getenv("IMAGE_EXTENSIONS")
 	if imageExtensions == "" {
