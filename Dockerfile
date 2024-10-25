@@ -13,9 +13,9 @@ FROM golang:1.23 AS backend-build
 WORKDIR /app
 
 COPY api/ .
-RUN go build -o server .
+RUN CGO_ENABLED=0 go build -o server .
 
-FROM alpine:latest
+FROM gcr.io/distroless/static-debian12
 
 WORKDIR /app
 

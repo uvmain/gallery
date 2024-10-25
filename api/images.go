@@ -103,6 +103,8 @@ type ImageMetadata struct {
 func GetImageDirContents() ([]string, error) {
 	var foundFiles []string
 
+	CreateDir(ImagePath)
+
 	err := filepath.Walk(ImagePath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			log.Fatalf("Error opening Images directory: %s", err)
