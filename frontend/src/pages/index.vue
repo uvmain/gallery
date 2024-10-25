@@ -2,6 +2,7 @@
 import { useIntersectionObserver, useStorage } from '@vueuse/core'
 import { computed, onBeforeMount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { getServerUrl } from '../composables/getServerBaseUrl'
 
 const router = useRouter()
 const observerTarget = ref(null)
@@ -10,19 +11,13 @@ const limit = ref(20)
 const offset = ref(0)
 const loading = ref(false)
 const endOfSlugs = ref(false)
-const scrollElement = ref<HTMLElement | null>(null)
-const serverBaseUrl = ref('')
+const serverBaseUrl = ref()
 
-const state = useStorage('query-state', { limit: limit.value, offset: offset.value })
-
-async function getServerUrl() {
-  try {
-    await fetch(`/api/slugs?offset=0&limit=1`)
-  }
-  catch {
-    serverBaseUrl.value = 'http://localhost:8080'
-  }
-}
+const state = useStorage('query-state', {
+  limit: limit.value,
+  offset: offset.value,
+  lastSlug: '',
+})
 
 async function getSlugs() {
   if (loading.value || endOfSlugs.value)
@@ -39,10 +34,8 @@ async function getSlugs() {
       if (jsonData && jsonData.length > 0) {
         offset.value += jsonData.length
         slugs.value = [...slugs.value, ...jsonData]
-        state.value = {
-          limit: limit.value,
-          offset: offset.value,
-        }
+        state.value.limit = limit.value
+        state.value.offset = offset.value
       }
       else {
         endOfSlugs.value = true
@@ -70,6 +63,7 @@ function getThumbnailPath(slug: string) {
 }
 
 function navigateToSlug(slug: string) {
+  state.value.lastSlug = slug
   const slugPath = `/${slug}`
   router.push(slugPath)
 }
@@ -78,14 +72,14 @@ const loadingStatus = computed(() => {
   return offset.value > 0 ? 'Loading...' : 'Waiting for initialisation to complete...'
 })
 
-onMounted(async () => {
-  await getServerUrl()
+onBeforeMount(async () => {
+  serverBaseUrl.value = await getServerUrl()
   await getSlugs()
 })
 </script>
 
 <template>
-  <div ref="scrollElement" class="flex flex-col items-center overflow-y-auto bg-gray-100 p-6">
+  <div class="flex flex-col items-center overflow-y-auto bg-gray-100 p-6">
     <div class="flex flex-wrap gap-x-1 lg:max-w-8/10">
       <div v-for="(slug, index) in slugs" :key="index" class="flex-1 basis-auto">
         <img :src="getThumbnailPath(slug)" :alt="slug" class="h-full max-h-25vh max-w-50vw min-h-20vh w-full cursor-pointer object-cover" @click="navigateToSlug(slug)">

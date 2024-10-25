@@ -2,11 +2,12 @@
 import dayjs from 'dayjs'
 import { computed, onBeforeMount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { getServerUrl } from '../composables/getServerBaseUrl'
 
 const route = useRoute()
 
 const slug = ref(route.params.slug as string)
-const serverBaseUrl = ref('')
+const serverBaseUrl = ref()
 
 interface ImageMetadata {
   filePath: string
@@ -94,17 +95,8 @@ async function getMetadata() {
   }
 }
 
-async function getServerUrl() {
-  try {
-    await fetch(`/api/slugs?offset=0&limit=1`)
-  }
-  catch {
-    serverBaseUrl.value = 'http://localhost:8080'
-  }
-}
-
-onMounted(async () => {
-  await getServerUrl()
+onBeforeMount(async () => {
+  serverBaseUrl.value = await getServerUrl()
   await getMetadata()
 })
 </script>
@@ -114,7 +106,7 @@ onMounted(async () => {
     <div id="main" class="flex flex-row justify-center gap-8 p-6">
       <!-- Image Section -->
       <div class="border-6 border-white border-solid">
-        <img :src="optimisedPath" class="max-h-90vh max-w-70vw" />
+        <img v-if="optimisedPath" :src="optimisedPath" class="max-h-90vh max-w-70vw" />
       </div>
 
       <!-- EXIF Data Section -->
