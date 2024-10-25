@@ -108,7 +108,7 @@ func GetImageDirContents() ([]string, error) {
 		log.Println("Creating Images directory")
 		err := os.MkdirAll(imagesPath, 0755)
 		if err != nil {
-			log.Printf("Error creating Images directory: %s", err)
+			log.Printf("Error creating Images directory at %s: %s", imagesPath, err)
 		} else {
 			log.Printf("Images directory created: %s", imagesPath)
 		}

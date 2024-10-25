@@ -17,8 +17,6 @@ RUN CGO_ENABLED=0 go build -o server .
 
 FROM gcr.io/distroless/static-debian12
 
-WORKDIR /app
-
 COPY --from=backend-build /app/server .
 COPY --from=frontend-build /frontend/dist ./dist
 
