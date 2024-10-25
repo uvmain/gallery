@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"photogallery/auth"
 	"strconv"
 
 	"github.com/rs/cors"
@@ -11,9 +12,14 @@ import (
 func StartServer() {
 	router := http.NewServeMux()
 
+	// frontend
 	distDir := http.Dir("../dist")
 	fileServer := http.FileServer(distDir)
 	router.Handle("/{path...}", http.StripPrefix("/", fileServer))
+
+	//auth
+	router.HandleFunc("POST /api/login", auth.LoginHandler)
+	router.HandleFunc("/api/logout", auth.LogoutHandler)
 
 	router.HandleFunc("GET /api/slugs", handleGetSlugs)
 	router.HandleFunc("GET /api/metadata/{slug}", handleGetMetadataBySlug)
@@ -21,9 +27,16 @@ func StartServer() {
 	router.HandleFunc("GET /api/optimised/{slug}", handleGetOptimisedBySlug)
 	router.HandleFunc("GET /api/original/{slug}", handleGetOriginalImageBySlug)
 
+	// protected routes
+	router.Handle("/api/protected", auth.AuthMiddleware(http.HandlerFunc(protectedRoute)))
+
 	handler := cors.AllowAll().Handler(router)
 
 	http.ListenAndServe(":8080", handler)
+}
+
+func protectedRoute(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("This is a protected route"))
 }
 
 func handleGetSlugs(w http.ResponseWriter, r *http.Request) {
