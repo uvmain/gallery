@@ -104,17 +104,7 @@ func GetImageDirContents() ([]string, error) {
 	var foundFiles []string
 
 	imagesPath, _ := filepath.Abs(ImagePath)
-	if _, err := os.Stat(imagesPath); os.IsNotExist(err) {
-		log.Println("Creating Images directory")
-		err := os.MkdirAll(imagesPath, 0755)
-		if err != nil {
-			log.Printf("Error creating Images directory at %s: %s", imagesPath, err)
-		} else {
-			log.Printf("Images directory created: %s", imagesPath)
-		}
-	} else {
-		log.Printf("Images directory exists: %n", imagesPath)
-	}
+	CreateDir(imagesPath)
 
 	err := filepath.Walk(imagesPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
