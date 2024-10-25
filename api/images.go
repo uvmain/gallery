@@ -113,7 +113,7 @@ func GetImageDirContents() ([]string, error) {
 			log.Printf("Images directory created: %s", imagesPath)
 		}
 	} else {
-		log.Println("Images directory exists")
+		log.Printf("Images directory exists: %n", imagesPath)
 	}
 
 	err := filepath.Walk(imagesPath, func(path string, info os.FileInfo, err error) error {
