@@ -3,8 +3,10 @@ services:
     image: gallery:latest
     container_name: gallery
     environment:
-      - IMAGE_PATH=/photos
+      THUMBNAIL_MAX_PIXELS: 500
+      OPTIMISED_MAX_PIXELS: 1280
     volumes:
+      - /mnt/main/docker/gallery:/data
       - /mnt/barrra5/photography:/photos
     ports:
-      - "5173:5173"
+      - "3001:8080"

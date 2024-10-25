@@ -23,7 +23,7 @@ var WorkerCount int
 func LoadEnv() {
 	dataPath := os.Getenv("DATA_PATH")
 	if dataPath == "" {
-		dataPath = "../data"
+		dataPath = "./data"
 	}
 
 	DatabaseDirectory, _ = filepath.Abs(dataPath)
