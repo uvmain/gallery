@@ -110,7 +110,7 @@ func GetImageDirContents() ([]string, error) {
 		if err != nil {
 			log.Printf("Error creating Images directory: %s", err)
 		} else {
-			log.Println("Images directory created")
+			log.Printf("Images directory created: %s", imagesPath)
 		}
 	} else {
 		log.Println("Images directory exists")
