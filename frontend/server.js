@@ -2,7 +2,6 @@ import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import express from 'express'
-import 'dotenv/config'
 
 const app = express()
 const __filename = fileURLToPath(import.meta.url)
