@@ -8,12 +8,13 @@ import (
 	"github.com/rs/cors"
 )
 
-var distDir string = "../dist"
-
 func StartServer() {
 	router := http.NewServeMux()
 
-	router.HandleFunc("/{path...}", handleDist)
+	distDir := http.Dir("../dist")
+	fileServer := http.FileServer(distDir)
+	router.Handle("/{path...}", http.StripPrefix("/", fileServer))
+
 	router.HandleFunc("GET /api/slugs", handleGetSlugs)
 	router.HandleFunc("GET /api/metadata/{slug}", handleGetMetadataBySlug)
 	router.HandleFunc("GET /api/thumbnail/{slug}", handleGetThumbnailBySlug)
@@ -23,10 +24,6 @@ func StartServer() {
 	handler := cors.AllowAll().Handler(router)
 
 	http.ListenAndServe("localhost:8080", handler)
-}
-
-func handleDist(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, distDir)
 }
 
 func handleGetSlugs(w http.ResponseWriter, r *http.Request) {
