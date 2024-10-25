@@ -23,7 +23,7 @@ func StartServer() {
 
 	handler := cors.AllowAll().Handler(router)
 
-	http.ListenAndServe("localhost:8080", handler)
+	http.ListenAndServe(":8080", handler)
 }
 
 func handleGetSlugs(w http.ResponseWriter, r *http.Request) {
