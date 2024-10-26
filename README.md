@@ -21,10 +21,8 @@ This is a **PhotoGallery Web Application** built with a **Go REST API backend** 
 
 ## Prerequisites
 
-- Go
-- Node.js & npm
-- Caddy (for local development reverse proxy)
-- SQLite
+- Go (tested on 1.23)
+- Node.js & npm (tested on Node 20 LTS)
 
 ## Getting Started
 
