@@ -27,6 +27,7 @@ async function logout() {
 
   const response = await fetch(`${serverBaseUrl.value}/api/logout`, {
     method: 'GET',
+    credentials: 'include',
   })
   loginStatus.value = (response.status !== 401)
 }

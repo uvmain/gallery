@@ -32,6 +32,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			Value:    token,
 			HttpOnly: true,
 			Secure:   true,
+			SameSite: http.SameSiteNoneMode,
 			Path:     "/",
 		})
 		log.Println("Login successful")
