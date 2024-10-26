@@ -1,6 +1,6 @@
 import routes from 'virtual:generated-pages'
 import { createApp } from 'vue'
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
 import App from './App.vue'
 import 'virtual:uno.css'
@@ -9,7 +9,7 @@ import 'virtual:uno.css'
 const app = createApp(App)
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes,
 })
 
