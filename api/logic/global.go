@@ -1,7 +1,6 @@
-package main
+package logic
 
 import (
-	"database/sql"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -10,7 +9,6 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-var Database *sql.DB
 var DatabaseDirectory string
 var ThumbnailDirectory string
 var OptimisedDirectory string

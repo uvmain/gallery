@@ -1,35 +1,28 @@
-package main
+package database
 
 import (
 	"database/sql"
 	"log"
 	"os"
 	"path/filepath"
+	"photogallery/logic"
+	"photogallery/types"
 
 	_ "modernc.org/sqlite"
 )
 
-type MetadataFile struct {
-	slug     string
-	filePath string
-	fileName string
-}
+var Database *sql.DB
 
-func InitialiseDatabase() *sql.DB {
-	dbPath := filepath.Join(DatabaseDirectory, "sqlite.db")
+func Initialise() *sql.DB {
+	logic.CreateDir(logic.DatabaseDirectory)
+
+	dbPath := filepath.Join(logic.DatabaseDirectory, "sqlite.db")
 	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
 		log.Println("Creating database file")
-		// Create the database directory
-		err := os.MkdirAll(DatabaseDirectory, 0755)
-		if err != nil {
-			log.Fatalf("Error creating database directory: %s", err)
-		} else {
-			log.Println("Database directory created")
-		}
 
 		file, err := os.Create(dbPath)
 		if err != nil {
-			log.Fatalf("Error creating database file: %s", err)
+			log.Printf("Error creating database file: %s", err)
 			return nil
 		} else {
 			log.Println("Database file created")
@@ -42,41 +35,19 @@ func InitialiseDatabase() *sql.DB {
 	db, err := sql.Open("sqlite", dbPath)
 
 	if err != nil {
-		log.Fatalf("Error opening database file: %s", err)
+		log.Printf("Error opening database file: %s", err)
 		return nil
 	} else {
 		log.Println("Database file opened")
 	}
 
-	CreateAlbumsTable(db)
-	CreateMetadataTable(db)
+	createMetadataTable(db)
+	InitialiseAlbums(db)
 	Database = db
 	return db
 }
 
-func CreateAlbumsTable(db *sql.DB) {
-	query := `CREATE TABLE IF NOT EXISTS albums (
-		name TEXT PRIMARY KEY
-	);`
-
-	checkQuery := "SELECT name FROM sqlite_master WHERE type='table' AND name='albums'"
-
-	var name string
-	checkError := db.QueryRow(checkQuery).Scan(&name)
-
-	if checkError == nil {
-		log.Println("Albums table already exists")
-	} else {
-		_, err := db.Exec(query)
-		if err != nil {
-			log.Fatalf("Error creating albums table: %s", err)
-		} else {
-			log.Println("Albums table created")
-		}
-	}
-}
-
-func CreateMetadataTable(db *sql.DB) {
+func createMetadataTable(db *sql.DB) {
 	query := `CREATE TABLE IF NOT EXISTS metadata (
 		slug TEXT PRIMARY KEY,
 		filePath TEXT,
@@ -95,8 +66,7 @@ func CreateMetadataTable(db *sql.DB) {
 		iso TEXT,
 		exposureMode TEXT,
 		whiteBalance TEXT,
-		WhiteBalanceMode TEXT,
-		albums TEXT
+		WhiteBalanceMode TEXT
 	);`
 
 	checkQuery := "SELECT name FROM sqlite_master WHERE type='table' AND name='metadata'"
@@ -104,24 +74,24 @@ func CreateMetadataTable(db *sql.DB) {
 	checkError := db.QueryRow(checkQuery).Scan(&name)
 
 	if checkError == nil {
-		log.Println("Metadata table already exists")
+		log.Println("metadata table already exists")
 	} else {
 		_, err := db.Exec(query)
 		if err != nil {
-			log.Fatalf("Error creating metadata table: %s", err)
+			log.Printf("Error creating metadata table: %s", err)
 		} else {
-			log.Println("Metadata table created")
+			log.Println("metadata table created")
 		}
 	}
 }
 
-func GetExistingMetadataFilePaths() []MetadataFile {
-	foundMetadataFiles := []MetadataFile{}
+func GetExistingMetadataFilePaths() []types.MetadataFile {
+	foundMetadataFiles := []types.MetadataFile{}
 
 	query := "SELECT slug, filePath, fileName FROM metadata"
 	rows, err := Database.Query(query)
 	if err != nil {
-		log.Fatalf("Failed to fetch rows from metadata table: %s", err)
+		log.Printf("Failed to fetch rows from metadata table: %s", err)
 	}
 
 	for rows.Next() {
@@ -133,10 +103,10 @@ func GetExistingMetadataFilePaths() []MetadataFile {
 			log.Fatal(err)
 		}
 
-		rowResult := MetadataFile{
-			slug:     slug,
-			filePath: filePath,
-			fileName: fileName,
+		rowResult := types.MetadataFile{
+			Slug:     slug,
+			FilePath: filePath,
+			FileName: fileName,
 		}
 
 		foundMetadataFiles = append(foundMetadataFiles, rowResult)

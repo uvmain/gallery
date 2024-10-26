@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"photogallery/auth"
+	"photogallery/database"
 	"strconv"
 
 	"github.com/rs/cors"
@@ -25,7 +26,7 @@ func StartServer() {
 	router.HandleFunc("GET /api/metadata/{slug}", handleGetMetadataBySlug)
 	router.HandleFunc("GET /api/thumbnail/{slug}", handleGetThumbnailBySlug)
 	router.HandleFunc("GET /api/optimised/{slug}", handleGetOptimisedBySlug)
-	router.HandleFunc("GET /api/original/{slug}", handleGetOriginalImageBySlug)
+	router.HandleFunc("GET /api/original/{slug}", handleGetOriginalImageBlobBySlug)
 
 	// protected routes
 	router.Handle("/api/protected", auth.AuthMiddleware(http.HandlerFunc(protectedRoute)))
@@ -50,7 +51,7 @@ func handleGetSlugs(w http.ResponseWriter, r *http.Request) {
 		v = "1000"
 	}
 	limit, _ := strconv.Atoi(v)
-	slugs, _ := GetSlugsOrderedByDateTaken(offset, limit)
+	slugs, _ := database.GetSlugsOrderedByDateTaken(offset, limit)
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(slugs); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -59,7 +60,7 @@ func handleGetSlugs(w http.ResponseWriter, r *http.Request) {
 
 func handleGetMetadataBySlug(w http.ResponseWriter, r *http.Request) {
 	slug := r.PathValue("slug")
-	metadata, _ := GetMetadataBySlug(slug)
+	metadata, _ := database.GetMetadataBySlug(slug)
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(metadata); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -90,12 +91,12 @@ func handleGetOptimisedBySlug(w http.ResponseWriter, r *http.Request) {
 	w.Write(optimised)
 }
 
-func handleGetOriginalImageBySlug(w http.ResponseWriter, r *http.Request) {
+func handleGetOriginalImageBlobBySlug(w http.ResponseWriter, r *http.Request) {
 	slug := r.PathValue("slug")
-	imageBlob, err := GetOriginalImageBySlug(slug)
+	imageBlob, err := database.GetOriginalImageBlobBySlug(slug)
 
 	if err != nil {
-		http.Error(w, "Optimised not found", http.StatusNotFound)
+		http.Error(w, "Original image not found", http.StatusNotFound)
 		return
 	}
 	mimeType := http.DetectContentType(imageBlob)

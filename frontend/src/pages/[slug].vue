@@ -27,7 +27,6 @@ interface ImageMetadata {
   exposureMode: string
   whiteBalance: string
   whiteBalanceMode: string
-  albums: '[]'
 }
 
 const metadata = ref<ImageMetadata | undefined>()

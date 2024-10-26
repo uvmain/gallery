@@ -1,8 +1,12 @@
-package main
+package database
 
 import (
 	"log"
+	"os"
 	"path/filepath"
+	"photogallery/image"
+	"photogallery/logic"
+	"photogallery/types"
 
 	_ "modernc.org/sqlite"
 )
@@ -23,23 +27,23 @@ func deleteMetadataRowByFile(filePath string, fileName string) error {
 	return nil
 }
 
-func getMetadataRowsToDelete() []MetadataFile {
-	results := []MetadataFile{}
+func getMetadataRowsToDelete() []types.MetadataFile {
+	results := []types.MetadataFile{}
 
 	filesMap := make(map[string]bool)
-	foundFiles, _ := GetImageDirContents()
+	foundFiles, _ := logic.GetDirContents(logic.ImagePath)
 	for _, v := range foundFiles {
 		filesMap[v] = true
 	}
 
 	foundMetadataFiles := GetExistingMetadataFilePaths()
 	for _, v := range foundMetadataFiles {
-		fullFilePath := filepath.Join(v.filePath, v.fileName)
+		fullFilePath := filepath.Join(v.FilePath, v.FileName)
 		if !filesMap[fullFilePath] {
-			result := MetadataFile{
-				slug:     v.slug,
-				filePath: v.filePath,
-				fileName: v.fileName,
+			result := types.MetadataFile{
+				Slug:     v.Slug,
+				FilePath: v.FilePath,
+				FileName: v.FileName,
 			}
 			results = append(results, result)
 		}
@@ -52,8 +56,8 @@ func deleteExtraneousMetadata() {
 	metadataToDelete := getMetadataRowsToDelete()
 
 	for _, file := range metadataToDelete {
-		filePath := file.filePath
-		fileName := file.fileName
+		filePath := file.FilePath
+		fileName := file.FileName
 		deleteMetadataRowByFile(filePath, fileName)
 	}
 }
@@ -64,13 +68,13 @@ func InitialiseMetadata() {
 	deleteExtraneousMetadata()
 }
 
-func insertMetadataRow(imageMetadata ImageMetadata) error {
+func insertMetadataRow(imageMetadata types.ImageMetadata) error {
 
 	insertQuery := `INSERT INTO metadata (
 			slug, filePath, fileName, title, dateTaken, dateUploaded,
 			cameraMake, cameraModel, lensMake, lensModel, fStop, exposureTime,
-			flashStatus, focalLength, iso, exposureMode, whiteBalance, WhiteBalanceMode, albums
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
+			flashStatus, focalLength, iso, exposureMode, whiteBalance, WhiteBalanceMode
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
 
 	_, err := Database.Exec(
 		insertQuery,
@@ -80,7 +84,6 @@ func insertMetadataRow(imageMetadata ImageMetadata) error {
 		imageMetadata.LensModel, imageMetadata.FStop, imageMetadata.ExposureTime,
 		imageMetadata.FlashStatus, imageMetadata.FocalLength, imageMetadata.ISO,
 		imageMetadata.ExposureMode, imageMetadata.WhiteBalance, imageMetadata.WhiteBalanceMode,
-		imageMetadata.Albums,
 	)
 	if err != nil {
 		log.Printf("error inserting metadata row: %s", err)
@@ -92,7 +95,7 @@ func insertMetadataRow(imageMetadata ImageMetadata) error {
 }
 
 func populateMetadata() {
-	foundFiles, _ := GetImageDirContents()
+	foundFiles, _ := logic.GetDirContents(logic.ImagePath)
 	for _, file := range foundFiles {
 		checkQuery := `SELECT COUNT(*) FROM metadata WHERE filePath = ? AND fileName = ?;`
 		filePath := filepath.Dir(file)
@@ -104,15 +107,15 @@ func populateMetadata() {
 		} else if count > 0 {
 			log.Printf("Metadata row already exists, skipping insert: %s\n", fileName)
 		} else {
-			imageMetadata := GetSourceMetadataForImagePath(file)
+			imageMetadata := image.GetSourceMetadataForImagePath(file)
 			insertMetadataRow(imageMetadata)
 		}
 	}
 }
 
-func GetMetadataBySlug(slug string) (ImageMetadata, error) {
-	var row ImageMetadata
-	checkQuery := `SELECT slug, filePath, fileName, title, dateTaken, dateUploaded, cameraMake, cameraModel, lensMake, lensModel, fStop, exposureTime, flashStatus, focalLength, iso, exposureMode, whiteBalance, whiteBalanceMode, albums FROM metadata WHERE slug = ?;`
+func GetMetadataBySlug(slug string) (types.ImageMetadata, error) {
+	var row types.ImageMetadata
+	checkQuery := `SELECT slug, filePath, fileName, title, dateTaken, dateUploaded, cameraMake, cameraModel, lensMake, lensModel, fStop, exposureTime, flashStatus, focalLength, iso, exposureMode, whiteBalance, whiteBalanceMode FROM metadata WHERE slug = ?;`
 
 	err := Database.QueryRow(checkQuery, slug).Scan(
 		&row.Slug,
@@ -133,10 +136,9 @@ func GetMetadataBySlug(slug string) (ImageMetadata, error) {
 		&row.ExposureMode,
 		&row.WhiteBalance,
 		&row.WhiteBalanceMode,
-		&row.Albums,
 	)
 	if err != nil {
-		return ImageMetadata{}, err
+		return types.ImageMetadata{}, err
 	}
 
 	return row, nil
@@ -168,4 +170,20 @@ func GetSlugsOrderedByDateTaken(offset int, limit int) ([]string, error) {
 	}
 
 	return slugs, nil
+}
+
+func GetOriginalImageBlobBySlug(slug string) ([]byte, error) {
+	metadata, _ := GetMetadataBySlug(slug)
+	filePath, _ := filepath.Abs(filepath.Join(metadata.FilePath, metadata.FileName))
+
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		log.Printf("Original file does not exist: %s:  %s", filePath, err)
+		return nil, err
+	}
+	blob, err := os.ReadFile(filePath)
+	if err != nil {
+		log.Printf("Error reading original image for slug %s: %s", slug, err)
+		return nil, err
+	}
+	return blob, nil
 }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useIntersectionObserver, useStorage } from '@vueuse/core'
-import { computed, onBeforeMount, onMounted, ref } from 'vue'
+import { computed, onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getServerUrl } from '../composables/getServerBaseUrl'
 
