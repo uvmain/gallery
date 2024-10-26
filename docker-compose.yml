@@ -1,12 +1,12 @@
 services:
-  gallery:
-    image: gallery:latest
-    container_name: gallery
+  photogallery:
+    image: photogallery:latest
+    container_name: photogallery
     environment:
       THUMBNAIL_MAX_PIXELS: 500
       OPTIMISED_MAX_PIXELS: 1280
     volumes:
-      - /mnt/main/docker/gallery:/data
+      - /mnt/main/docker/photogallery:/data
       - /mnt/barra5/Photography:/images
     ports:
       - "3001:8080"

@@ -1,5 +1,5 @@
-gallery.localhost {
-	tls gallery.localhost.pem gallery.localhost-key.pem
+photogallery.localhost {
+	tls photogallery.localhost.pem photogallery.localhost-key.pem
 	handle /api/* {
 		reverse_proxy localhost:8080
 	}
