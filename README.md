@@ -16,8 +16,6 @@ This is a **PhotoGallery Web Application** built with a **Go REST API backend** 
 
 - **api/** - Go backend REST API
 - **frontend/** - Vite/Vue3 frontend application
-- **Caddyfile** - Configuration for the Caddy server (local reverse proxy)
-- **.env** - Environment variables for application settings (admin credentials, session details, etc.)
 
 ## Prerequisites
 
