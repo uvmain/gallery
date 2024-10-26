@@ -11,6 +11,5 @@ func main() {
 	database.InitialiseMetadata()
 	InitialiseThumbnails()
 	InitialiseOptimised()
-
 	StartServer()
 }

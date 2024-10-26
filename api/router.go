@@ -20,7 +20,8 @@ func StartServer() {
 
 	//auth
 	router.HandleFunc("POST /api/login", auth.LoginHandler)
-	router.HandleFunc("/api/logout", auth.LogoutHandler)
+	router.HandleFunc("GET /api/logout", auth.LogoutHandler)
+	router.HandleFunc("GET /api/check-session", auth.CheckSessionHandler)
 
 	router.HandleFunc("GET /api/slugs", handleGetSlugs)
 	router.HandleFunc("GET /api/metadata/{slug}", handleGetMetadataBySlug)

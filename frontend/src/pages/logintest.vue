@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { StatusCodes } from 'http-status-codes'
+import { onMounted, ref } from 'vue'
 import { getServerUrl } from '../composables/getServerBaseUrl'
 
 const serverBaseUrl = ref()
 const username = ref('')
 const password = ref('')
-const loginText = ref('')
-const loginStatus = ref()
+const loginStatus = ref(false)
 
 async function login() {
   serverBaseUrl.value = await getServerUrl()
@@ -17,23 +17,61 @@ async function login() {
 
   const response = await fetch(`${serverBaseUrl.value}/api/login`, {
     body: formData,
-    method: 'post',
+    method: 'POST',
   })
-  loginStatus.value = response.status
-  loginText.value = await response.text()
+  loginStatus.value = (response.status === 200)
 }
+
+async function logout() {
+  serverBaseUrl.value = await getServerUrl()
+
+  const response = await fetch(`${serverBaseUrl.value}/api/logout`, {
+    method: 'GET',
+  })
+  loginStatus.value = (response.status !== 401)
+}
+
+async function checkIfLoggedIn() {
+  try {
+    serverBaseUrl.value = await getServerUrl()
+    const response = await fetch(`${serverBaseUrl.value}/api/check-session`, {
+      method: 'GET',
+      credentials: 'include',
+    })
+    loginStatus.value = response.ok
+  }
+  catch {
+    loginStatus.value = false
+  }
+}
+
+onMounted(() => {
+  checkIfLoggedIn()
+})
 </script>
 
 <template>
   <div class="w-300 flex flex-col gap-4 p-6">
-    <label for="username">Username:</label>
-    <input id="username" v-model="username" type="text" name="username"><br><br>
-    <label for="password">Password:</label>
-    <input id="password" v-model="password" type="password" name="password"><br><br>
+    <form>
+      <label for="username">Username:</label>
+      <input id="username" v-model="username" type="text" name="username" autocomplete="username"><br><br>
+      <label for="password">Password:</label>
+      <input id="password" v-model="password" type="password" name="password" autocomplete="current-password"><br><br>
+    </form>
     <button @click="login">
       Login
     </button>
+    <br>
+    <button @click="checkIfLoggedIn">
+      CheckLoginStatus
+    </button>
+    <br>
+    <button @click="logout">
+      Logout
+    </button>
+    <br>
+    <p>
+      login status: {{ loginStatus }}
+    </p>
   </div>
-  <p>Status: {{ loginStatus }}</p>
-  <p>Response: {{ loginText }}</p>
 </template>

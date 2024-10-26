@@ -7,6 +7,7 @@
     "build:backend": "cd api && go build -o server .",
     "build:frontend": "cd frontend && npm run build && cpy dist ../",
     "dev": "cross-env IMAGE_PATH=F:/photography ADMIN_NAME=admin ADMIN_PASSWORD=password concurrently \"npm run frontend:dev\" \"npm run backend:dev\"",
+    "go": "cd api && cross-env IMAGE_PATH=F:/photography ADMIN_NAME=admin ADMIN_PASSWORD=password go run .",
     "build": "cross-env CGO_ENABLED=0 npm run build:frontend && npm run build:backend",
     "cspell": "cspell \"**/*.{go,ts,js,vue}\""
   },

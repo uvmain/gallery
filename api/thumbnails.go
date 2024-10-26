@@ -152,5 +152,5 @@ func GetThumbnailBySlug(slug string) ([]byte, error) {
 func InitialiseThumbnails() {
 	logic.CreateDir(logic.ThumbnailDirectory)
 	deleteExtraneousThumbnails()
-	populateThumbnails()
+	go populateThumbnails()
 }
