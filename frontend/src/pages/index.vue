@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 import { getServerUrl } from '../composables/getServerBaseUrl'
 
 const router = useRouter()
-const endObserver = ref(null)
+const endObserver = ref<HTMLDivElement | null>(null)
 const slugs = ref<string[]>([])
 const limit = ref(20)
 const offset = ref(0)
@@ -36,6 +36,7 @@ async function getSlugs() {
       if (jsonData && jsonData.length > 0) {
         offset.value += jsonData.length
         slugs.value = [...slugs.value, ...jsonData]
+
         state.value.limit = limit.value
         state.value.offset = offset.value
       }

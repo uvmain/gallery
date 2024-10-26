@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"photogallery/auth"
 	"photogallery/database"
+	"photogallery/logic"
 	"strconv"
 
 	"github.com/rs/cors"
@@ -34,7 +35,14 @@ func StartServer() {
 
 	handler := cors.AllowAll().Handler(router)
 
-	http.ListenAndServe(":8080", handler)
+	var serverAddress string
+	if logic.IsLocalDevEnv() {
+		serverAddress = "localhost:8080"
+	} else {
+		serverAddress = ":8080"
+	}
+
+	http.ListenAndServe(serverAddress, handler)
 }
 
 func protectedRoute(w http.ResponseWriter, r *http.Request) {

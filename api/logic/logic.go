@@ -12,6 +12,12 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+func IsLocalDevEnv() bool {
+	localDev := os.Getenv("LOCAL_DEV_ENV")
+	localDevBool, _ := strconv.ParseBool(localDev)
+	return localDevBool
+}
+
 func GenerateSlug() string {
 	unixTime := time.Now().Unix()
 	unixTimeString := strconv.FormatInt(unixTime, 10)
