@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -69,15 +70,17 @@ func InitialiseMetadata() {
 }
 
 func insertMetadataRow(imageMetadata types.ImageMetadata) error {
+	stmt, err := Database.Prepare(`INSERT INTO metadata (
+		slug, filePath, fileName, title, dateTaken, dateUploaded,
+		cameraMake, cameraModel, lensMake, lensModel, fStop, exposureTime,
+		flashStatus, focalLength, iso, exposureMode, whiteBalance, WhiteBalanceMode
+	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
 
-	insertQuery := `INSERT INTO metadata (
-			slug, filePath, fileName, title, dateTaken, dateUploaded,
-			cameraMake, cameraModel, lensMake, lensModel, fStop, exposureTime,
-			flashStatus, focalLength, iso, exposureMode, whiteBalance, WhiteBalanceMode
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
-
-	_, err := Database.Exec(
-		insertQuery,
+	_, err = stmt.Exec(
 		imageMetadata.Slug, imageMetadata.FilePath, imageMetadata.FileName,
 		imageMetadata.Title, imageMetadata.DateTaken, imageMetadata.DateUploaded,
 		imageMetadata.CameraMake, imageMetadata.CameraModel, imageMetadata.LensMake,
@@ -186,4 +189,33 @@ func GetOriginalImageBlobBySlug(slug string) ([]byte, error) {
 		return nil, err
 	}
 	return blob, nil
+}
+
+func UpdateMetadataBySlug(slug string, updates map[string]interface{}) error {
+	query := "UPDATE metadata SET "
+	params := []interface{}{}
+	i := 1
+	for field, value := range updates {
+		query += fmt.Sprintf("%s = ?", field)
+		if i < len(updates) {
+			query += ", "
+		}
+		params = append(params, value)
+		i++
+	}
+	query += " WHERE slug = ?"
+	params = append(params, slug)
+
+	stmt, err := Database.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(params...)
+
+	if err == nil {
+		log.Printf("Metadata updated for %s, %s", slug, updates)
+	}
+	return err
 }

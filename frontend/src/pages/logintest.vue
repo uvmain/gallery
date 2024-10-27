@@ -7,6 +7,7 @@ const serverBaseUrl = ref()
 const username = ref('')
 const password = ref('')
 const loginStatus = ref(false)
+const patchStatus = ref()
 
 async function login() {
   serverBaseUrl.value = await getServerUrl()
@@ -46,6 +47,27 @@ async function checkIfLoggedIn() {
   }
 }
 
+async function patch() {
+  serverBaseUrl.value = await getServerUrl()
+
+  const patchData = {
+    title: 'Easyjet Sunset',
+    cameraMake: 'Nokia',
+    cameraModel: '7',
+  }
+
+  const slug = '1729943979169047800'
+
+  const response = await fetch(`${serverBaseUrl.value}/api/metadata/${slug}`, {
+    body: JSON.stringify(patchData),
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  patchStatus.value = response.status
+}
+
 onMounted(() => {
   checkIfLoggedIn()
 })
@@ -74,5 +96,9 @@ onMounted(() => {
     <p>
       login status: {{ loginStatus }}
     </p>
+    <button @click="patch">
+      Patch
+    </button>
+    {{ patchStatus }}
   </div>
 </template>

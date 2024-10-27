@@ -24,6 +24,7 @@ func StartServer() {
 	router.HandleFunc("GET /api/logout", auth.LogoutHandler)
 	router.HandleFunc("GET /api/check-session", auth.CheckSessionHandler)
 
+	// standard routes
 	router.HandleFunc("GET /api/slugs", handleGetSlugs)
 	router.HandleFunc("GET /api/metadata/{slug}", handleGetMetadataBySlug)
 	router.HandleFunc("GET /api/thumbnail/{slug}", handleGetThumbnailBySlug)
@@ -31,7 +32,7 @@ func StartServer() {
 	router.HandleFunc("GET /api/original/{slug}", handleGetOriginalImageBlobBySlug)
 
 	// protected routes
-	router.Handle("/api/protected", auth.AuthMiddleware(http.HandlerFunc(protectedRoute)))
+	router.Handle("PATCH /api/metadata/{slug}", auth.AuthMiddleware(http.HandlerFunc(handlePatchMetadataBySlug)))
 
 	handler := cors.AllowAll().Handler(router)
 
@@ -43,10 +44,6 @@ func StartServer() {
 	}
 
 	http.ListenAndServe(serverAddress, handler)
-}
-
-func protectedRoute(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("This is a protected route"))
 }
 
 func handleGetSlugs(w http.ResponseWriter, r *http.Request) {
@@ -112,4 +109,22 @@ func handleGetOriginalImageBlobBySlug(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", mimeType)
 	w.WriteHeader(http.StatusOK)
 	w.Write(imageBlob)
+}
+
+func handlePatchMetadataBySlug(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("slug")
+
+	var updates map[string]interface{}
+	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	if err := database.UpdateMetadataBySlug(slug, updates); err != nil {
+		http.Error(w, "Failed to update metadata", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Metadata updated successfully"))
 }

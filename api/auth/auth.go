@@ -9,19 +9,17 @@ import (
 )
 
 var (
-	sessionToken = make(map[string]bool) // Track active sessions
+	sessionToken = make(map[string]bool)
 	username     = os.Getenv("ADMIN_USER")
 	password     = os.Getenv("ADMIN_PASSWORD")
 )
 
-// Helper function to generate a session token
 func generateToken() string {
 	b := make([]byte, 32)
 	rand.Read(b)
 	return base64.URLEncoding.EncodeToString(b)
 }
 
-// Login handler
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("User logging in")
 	if r.FormValue("username") == username && r.FormValue("password") == password {
@@ -43,11 +41,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Middleware for protected routes
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("appSession")
 		if err != nil || !sessionToken[cookie.Value] {
+			log.Println("Unauthorized access attempt")
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
@@ -55,7 +53,6 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-// Logout handler
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("User logging out")
 	cookie, err := r.Cookie("appSession")
