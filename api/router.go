@@ -94,7 +94,7 @@ func handleGetThumbnailBySlug(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Thumbnail not found", http.StatusNotFound)
 		return
 	}
-	w.Header().Set("Content-Type", "image/webp")
+	w.Header().Set("Content-Type", "image/jpeg")
 	w.WriteHeader(http.StatusOK)
 	w.Write(thumbnail)
 }
@@ -106,7 +106,7 @@ func handleGetOptimisedBySlug(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Optimised not found", http.StatusNotFound)
 		return
 	}
-	w.Header().Set("Content-Type", "image/webp")
+	w.Header().Set("Content-Type", "image/jpeg")
 	w.WriteHeader(http.StatusOK)
 	w.Write(optimised)
 }

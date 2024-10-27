@@ -9,11 +9,13 @@ const route = useRoute()
 
 const slug = ref(route.params.slug as string)
 const serverBaseUrl = ref()
+const imageSize = ref()
+const loadOriginalText = ref()
 
 const metadata = ref<ImageMetadata | undefined>()
 
-const optimisedPath = computed(() => {
-  return `${serverBaseUrl.value}/api/optimised/${slug.value}`
+const imageSource = computed(() => {
+  return `${serverBaseUrl.value}/api/${imageSize.value}/${slug.value}`
 })
 
 const fStop = computed(() => {
@@ -65,14 +67,29 @@ const whiteBalance = computed(() => {
   return result
 })
 
+const loadOriginalIconColour = computed(() => {
+  return imageSize.value === 'optimised' ? 'text-gray-600' : 'text-gray-400'
+})
+
 async function getMetadata() {
   try {
     const response = await fetch(`${serverBaseUrl.value}/api/metadata/${slug.value}`)
     metadata.value = await response.json() as ImageMetadata
+    imageSize.value = 'optimised'
+    loadOriginalText.value = 'Load Original'
   }
   catch (error) {
     console.error('Failed to fetch Metadata:', error)
   }
+}
+
+function loadOriginal() {
+  imageSize.value = 'original'
+  loadOriginalText.value = 'Original image loaded'
+}
+
+function downloadOriginal() {
+  console.log('This will download the original image')
 }
 
 watch(
@@ -94,7 +111,7 @@ onBeforeMount(async () => {
   <div class="min-h-screen bg-gray-300">
     <div id="main" class="flex flex-row justify-center gap-8 p-6">
       <!-- Image Section -->
-      <img v-if="optimisedPath" :src="optimisedPath" class="max-h-90vh max-w-70vw border-6 border-white border-solid" />
+      <img v-if="imageSource" :src="imageSource" class="max-h-90vh max-w-70vw border-6 border-white border-solid" />
 
       <!-- EXIF Data Section -->
       <div v-if="metadata" class="flex flex-col gap-6 p-6 text-sm lg:max-w-1/3">
@@ -153,6 +170,15 @@ onBeforeMount(async () => {
         <div v-if="whiteBalance" class="flex items-center space-x-3">
           <icon-tabler-sun class="text-2xl text-gray-600" />
           <span class="text-gray-600">{{ whiteBalance }}</span>
+        </div>
+        <br>
+        <div class="flex cursor-pointer items-center space-x-3" @click="loadOriginal()">
+          <icon-tabler-arrow-autofit-up class="text-2xl" :class="loadOriginalIconColour" />
+          <span class="text-gray-600">{{ loadOriginalText }}</span>
+        </div>
+        <div class="flex cursor-pointer items-center space-x-3" @click="downloadOriginal()">
+          <icon-tabler-download class="text-2xl text-gray-600" />
+          <span class="text-gray-600">Download original</span>
         </div>
       </div>
     </div>
