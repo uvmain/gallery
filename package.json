@@ -3,6 +3,7 @@
   "private": true,
   "name": "photogallery",
   "scripts": {
+    "deps": "npm i && cd api && go mod download && cd ../frontend && npm i && cd ../",
     "backend:dev": "cd api && cross-env LOCAL_DEV_ENV=true IMAGE_PATH=F:/photography ADMIN_NAME=admin ADMIN_PASSWORD=password go run .",
     "frontend:dev": "cd frontend && npm run dev",
     "build:backend": "cd api && go build -o server .",
