@@ -8,6 +8,7 @@ import (
 func createAlbumsTable(db *sql.DB) {
 	query := `CREATE TABLE IF NOT EXISTS albums (
 		name TEXT PRIMARY KEY,
+		dateCreated DATETIME,
 		coverSlug TEXT
 	);`
 

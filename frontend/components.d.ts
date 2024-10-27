@@ -16,6 +16,7 @@ declare module 'vue' {
     IconTablerClock: typeof import('~icons/tabler/clock')['default']
     IconTablerEdit: typeof import('~icons/tabler/edit')['default']
     IconTablerEyePin: typeof import('~icons/tabler/eye-pin')['default']
+    IconTablerHome: typeof import('~icons/tabler/home')['default']
     IconTablerSettings: typeof import('~icons/tabler/settings')['default']
     IconTablerSun: typeof import('~icons/tabler/sun')['default']
     IconTablerUpload: typeof import('~icons/tabler/upload')['default']
