@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { StatusCodes } from 'http-status-codes'
+import dayjs from 'dayjs'
 import { onMounted, ref } from 'vue'
 import { getServerUrl } from '../composables/getServerBaseUrl'
 
@@ -51,12 +51,13 @@ async function patch() {
   serverBaseUrl.value = await getServerUrl()
 
   const patchData = {
-    title: 'Easyjet Sunset',
-    cameraMake: 'Nokia',
-    cameraModel: '7',
+    title: 'Soyuz Panel',
+    // cameraMake: 'Nokia',
+    // cameraModel: '7',
+    dateTaken: dayjs('05-02-2017', 'MM-DD-YYYY'),
   }
 
-  const slug = '1729943979169047800'
+  const slug = '1729943980387385100'
 
   const response = await fetch(`${serverBaseUrl.value}/api/metadata/${slug}`, {
     body: JSON.stringify(patchData),
@@ -74,6 +75,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <Header />
   <div class="w-300 flex flex-col gap-4 p-6">
     <form>
       <label for="username">Username:</label>

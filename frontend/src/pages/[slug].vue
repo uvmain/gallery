@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { ImageMetadata } from '../composables/imageMetadataInterface'
 import dayjs from 'dayjs'
-import { computed, onBeforeMount, onMounted, ref } from 'vue'
+import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getServerUrl } from '../composables/getServerBaseUrl'
 
@@ -8,26 +9,6 @@ const route = useRoute()
 
 const slug = ref(route.params.slug as string)
 const serverBaseUrl = ref()
-
-interface ImageMetadata {
-  filePath: string
-  fileName: string
-  title: string
-  dateTaken: string
-  dateUploaded: string
-  cameraMake: string
-  cameraModel: string
-  lensMake: string
-  lensModel: string
-  fStop: string
-  exposureTime: string
-  flashStatus: string
-  focalLength: string
-  iso: string
-  exposureMode: string
-  whiteBalance: string
-  whiteBalanceMode: string
-}
 
 const metadata = ref<ImageMetadata | undefined>()
 
@@ -94,6 +75,14 @@ async function getMetadata() {
   }
 }
 
+watch(
+  () => route.params.slug,
+  () => {
+    slug.value = route.params.slug as string
+    getMetadata()
+  },
+)
+
 onBeforeMount(async () => {
   serverBaseUrl.value = await getServerUrl()
   await getMetadata()
@@ -101,6 +90,7 @@ onBeforeMount(async () => {
 </script>
 
 <template>
+  <Header bg="300" />
   <div class="min-h-screen bg-gray-300">
     <div id="main" class="flex flex-row justify-center gap-8 p-6">
       <!-- Image Section -->

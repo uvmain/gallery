@@ -26,6 +26,7 @@ func StartServer() {
 
 	// standard routes
 	router.HandleFunc("GET /api/slugs", handleGetSlugs)
+	router.HandleFunc("GET /api/slugs/random", handleGetRandomSlugs)
 	router.HandleFunc("GET /api/metadata/{slug}", handleGetMetadataBySlug)
 	router.HandleFunc("GET /api/thumbnail/{slug}", handleGetThumbnailBySlug)
 	router.HandleFunc("GET /api/optimised/{slug}", handleGetOptimisedBySlug)
@@ -58,6 +59,19 @@ func handleGetSlugs(w http.ResponseWriter, r *http.Request) {
 	}
 	limit, _ := strconv.Atoi(v)
 	slugs, _ := database.GetSlugsOrderedByDateTaken(offset, limit)
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(slugs); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+}
+
+func handleGetRandomSlugs(w http.ResponseWriter, r *http.Request) {
+	v := r.URL.Query().Get("limit")
+	if v == "" {
+		v = "1000"
+	}
+	limit, _ := strconv.Atoi(v)
+	slugs, _ := database.GetSlugsOrderedRandom(limit)
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(slugs); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

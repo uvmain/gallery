@@ -175,6 +175,34 @@ func GetSlugsOrderedByDateTaken(offset int, limit int) ([]string, error) {
 	return slugs, nil
 }
 
+func GetSlugsOrderedRandom(limit int) ([]string, error) {
+	var slugs []string
+
+	query := `SELECT slug FROM metadata ORDER BY RANDOM() DESC LIMIT ?;`
+	rows, err := Database.Query(query, limit)
+	if err != nil {
+		log.Printf("Query failed: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var slug string
+		if err := rows.Scan(&slug); err != nil {
+			log.Printf("Failed to scan row: %v", err)
+			return nil, err
+		}
+		slugs = append(slugs, slug)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Printf("Rows iteration error: %v", err)
+		return nil, err
+	}
+
+	return slugs, nil
+}
+
 func GetOriginalImageBlobBySlug(slug string) ([]byte, error) {
 	metadata, _ := GetMetadataBySlug(slug)
 	filePath, _ := filepath.Abs(filepath.Join(metadata.FilePath, metadata.FileName))

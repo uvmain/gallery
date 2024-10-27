@@ -82,6 +82,7 @@ onBeforeMount(async () => {
 </script>
 
 <template>
+  <Header />
   <div class="flex flex-col items-center overflow-y-auto bg-gray-100 p-6">
     <div class="flex flex-wrap gap-x-1 lg:max-w-8/10">
       <div v-for="(slug, index) in slugs" :key="index" class="flex-1 basis-auto">
