@@ -5,6 +5,9 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"photogallery/database"
+	"photogallery/logic"
+	"photogallery/types"
 	"runtime"
 	"strings"
 	"sync"
@@ -15,7 +18,7 @@ import (
 var wgOptimised sync.WaitGroup
 
 func optimisedAlreadyExists(slug string) bool {
-	optimisedPath := filepath.Join(OptimisedDirectory, (slug + ".jpeg"))
+	optimisedPath := filepath.Join(logic.OptimisedDirectory, (slug + ".jpeg"))
 	if _, err := os.Stat(optimisedPath); os.IsNotExist(err) {
 		return false
 	}
@@ -32,7 +35,7 @@ func generateOptimised(imageFile string, slug string) {
 
 	source, err := imaging.Open(imageFile)
 	if err != nil {
-		log.Fatalf("Failed to open image: %v", err)
+		log.Printf("Failed to open image: %v", err)
 	}
 
 	defer func() {
@@ -44,18 +47,18 @@ func generateOptimised(imageFile string, slug string) {
 
 	if source.Bounds().Max.X > source.Bounds().Max.Y {
 		width = 0
-		height = int(OptimisedMaxPixels)
+		height = int(logic.OptimisedMaxPixels)
 	} else {
-		width = int(OptimisedMaxPixels)
+		width = int(logic.OptimisedMaxPixels)
 		height = 0
 	}
 
-	optimisedPath := filepath.Join(OptimisedDirectory, slug) + ".jpeg"
+	optimisedPath := filepath.Join(logic.OptimisedDirectory, slug) + ".jpeg"
 	optimisedImage := imaging.Resize(source, width, height, imaging.Lanczos)
 
 	f, err := os.Create(optimisedPath)
 	if err != nil {
-		log.Fatalf("Error creating file: %v", err)
+		log.Printf("Error creating file: %v", err)
 	}
 	defer f.Close()
 
@@ -70,9 +73,9 @@ func generateOptimised(imageFile string, slug string) {
 func getOptimisedDirContents() ([]string, error) {
 	var foundOptimised []string
 
-	err := filepath.Walk(OptimisedDirectory, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(logic.OptimisedDirectory, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			log.Fatalf("Error opening Optimised directory: %s", err)
+			log.Printf("Error opening Optimised directory: %s", err)
 			return err
 		}
 		if !info.IsDir() {
@@ -90,14 +93,14 @@ func populateOptimised() {
 		numWorkers = 1
 	}
 	workerPool := make(chan struct{}, numWorkers)
-	for _, row := range GetExistingMetadataFilePaths() {
+	for _, row := range database.GetExistingMetadataFilePaths() {
 		workerPool <- struct{}{} // Block if the pool is full
 		wgOptimised.Add(1)
-		go func(row MetadataFile) {
+		go func(row types.MetadataFile) {
 			defer func() { <-workerPool }()
-			slug := row.slug
-			filePath := row.filePath
-			fileName := row.fileName
+			slug := row.Slug
+			filePath := row.FilePath
+			fileName := row.FileName
 			imageFullPath := filepath.Join(filePath, fileName)
 			generateOptimised(imageFullPath, slug)
 		}(row)
@@ -114,7 +117,7 @@ func deleteExtraneousOptimised() {
 			deleteOptimisedByFilename(optimised)
 		} else {
 			slug := strings.TrimSuffix(filepath.Base(optimised), filepath.Ext(optimised))
-			_, err := GetMetadataBySlug(slug)
+			_, err := database.GetMetadataBySlug(slug)
 			if err != nil {
 				log.Println(slug)
 				deleteOptimisedByFilename(optimised)
@@ -133,10 +136,10 @@ func deleteOptimisedByFilename(filename string) {
 }
 
 func GetOptimisedBySlug(slug string) ([]byte, error) {
-	optimisedPath := filepath.Join(OptimisedDirectory, slug+".jpeg")
+	optimisedPath := filepath.Join(logic.OptimisedDirectory, slug+".jpeg")
 	if _, err := os.Stat(optimisedPath); os.IsNotExist(err) {
 		log.Printf("Optimised file does not exist: %s", optimisedPath)
-		metadata, _ := GetMetadataBySlug(slug)
+		metadata, _ := database.GetMetadataBySlug(slug)
 		filePath, _ := filepath.Abs(filepath.Join(metadata.FilePath, metadata.FileName))
 		generateOptimisedBeforeReady(filePath, slug)
 	}
@@ -152,24 +155,24 @@ func generateOptimisedBeforeReady(imageFile string, slug string) {
 
 	source, err := imaging.Open(imageFile)
 	if err != nil {
-		log.Fatalf("Failed to open image: %v", err)
+		log.Printf("Failed to open image: %v", err)
 	}
 	width, height := 0, 0
 
 	if source.Bounds().Max.X > source.Bounds().Max.Y {
 		width = 0
-		height = int(OptimisedMaxPixels)
+		height = int(logic.OptimisedMaxPixels)
 	} else {
-		width = int(OptimisedMaxPixels)
+		width = int(logic.OptimisedMaxPixels)
 		height = 0
 	}
 
-	optimisedPath := filepath.Join(OptimisedDirectory, slug) + ".jpeg"
+	optimisedPath := filepath.Join(logic.OptimisedDirectory, slug) + ".jpeg"
 	optimisedImage := imaging.Resize(source, width, height, imaging.Lanczos)
 
 	f, err := os.Create(optimisedPath)
 	if err != nil {
-		log.Fatalf("Error creating file: %v", err)
+		log.Printf("Error creating file: %v", err)
 	}
 	defer f.Close()
 
@@ -182,7 +185,7 @@ func generateOptimisedBeforeReady(imageFile string, slug string) {
 }
 
 func InitialiseOptimised() {
-	CreateDir(OptimisedDirectory)
+	logic.CreateDir(logic.OptimisedDirectory)
 	deleteExtraneousOptimised()
 	go populateOptimised()
 }

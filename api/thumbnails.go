@@ -5,6 +5,9 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"photogallery/database"
+	"photogallery/logic"
+	"photogallery/types"
 	"runtime"
 	"strings"
 	"sync"
@@ -15,7 +18,7 @@ import (
 var wgThumbnails sync.WaitGroup
 
 func thumbnailAlreadyExists(slug string) bool {
-	thumbnailPath := filepath.Join(ThumbnailDirectory, (slug + ".jpeg"))
+	thumbnailPath := filepath.Join(logic.ThumbnailDirectory, (slug + ".jpeg"))
 	if _, err := os.Stat(thumbnailPath); os.IsNotExist(err) {
 		return false
 	}
@@ -32,7 +35,7 @@ func generateThumbnail(imageFile string, slug string) {
 
 	source, err := imaging.Open(imageFile)
 	if err != nil {
-		log.Fatalf("Failed to open image: %v", err)
+		log.Printf("Failed to open image: %v", err)
 	}
 
 	defer func() {
@@ -44,18 +47,18 @@ func generateThumbnail(imageFile string, slug string) {
 
 	if source.Bounds().Max.X > source.Bounds().Max.Y {
 		width = 0
-		height = int(ThumbnailMaxPixels)
+		height = int(logic.ThumbnailMaxPixels)
 	} else {
-		width = int(ThumbnailMaxPixels)
+		width = int(logic.ThumbnailMaxPixels)
 		height = 0
 	}
 
-	thumbnailPath := filepath.Join(ThumbnailDirectory, slug) + ".jpeg"
+	thumbnailPath := filepath.Join(logic.ThumbnailDirectory, slug) + ".jpeg"
 	thumbnailImage := imaging.Resize(source, width, height, imaging.Lanczos)
 
 	f, err := os.Create(thumbnailPath)
 	if err != nil {
-		log.Fatalf("Error creating file: %v", err)
+		log.Printf("Error creating file: %v", err)
 	}
 	defer f.Close()
 
@@ -70,9 +73,9 @@ func generateThumbnail(imageFile string, slug string) {
 func getThumbnailDirContents() ([]string, error) {
 	var foundThumbnail []string
 
-	err := filepath.Walk(ThumbnailDirectory, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(logic.ThumbnailDirectory, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			log.Fatalf("Error opening Thumbnail directory: %s", err)
+			log.Printf("Error opening Thumbnail directory: %s", err)
 			return err
 		}
 		if !info.IsDir() {
@@ -90,14 +93,14 @@ func populateThumbnails() {
 		numWorkers = 1
 	}
 	workerPool := make(chan struct{}, numWorkers)
-	for _, row := range GetExistingMetadataFilePaths() {
+	for _, row := range database.GetExistingMetadataFilePaths() {
 		workerPool <- struct{}{} // Block if the pool is full
 		wgThumbnails.Add(1)
-		go func(row MetadataFile) {
+		go func(row types.MetadataFile) {
 			defer func() { <-workerPool }()
-			slug := row.slug
-			filePath := row.filePath
-			fileName := row.fileName
+			slug := row.Slug
+			filePath := row.FilePath
+			fileName := row.FileName
 			imageFullPath := filepath.Join(filePath, fileName)
 			generateThumbnail(imageFullPath, slug)
 		}(row)
@@ -114,7 +117,7 @@ func deleteExtraneousThumbnails() {
 			deleteThumbnailByFilename(thumbnail)
 		} else {
 			slug := strings.TrimSuffix(filepath.Base(thumbnail), filepath.Ext(thumbnail))
-			_, err := GetMetadataBySlug(slug)
+			_, err := database.GetMetadataBySlug(slug)
 			if err != nil {
 				log.Println(slug)
 				deleteThumbnailByFilename(thumbnail)
@@ -133,7 +136,7 @@ func deleteThumbnailByFilename(filename string) {
 }
 
 func GetThumbnailBySlug(slug string) ([]byte, error) {
-	thumbnailPath := filepath.Join(ThumbnailDirectory, slug+".jpeg")
+	thumbnailPath := filepath.Join(logic.ThumbnailDirectory, slug+".jpeg")
 	if _, err := os.Stat(thumbnailPath); os.IsNotExist(err) {
 		log.Printf("Thumbnail file does not exist: %s", thumbnailPath)
 		return nil, err
@@ -147,7 +150,7 @@ func GetThumbnailBySlug(slug string) ([]byte, error) {
 }
 
 func InitialiseThumbnails() {
-	CreateDir(ThumbnailDirectory)
+	logic.CreateDir(logic.ThumbnailDirectory)
 	deleteExtraneousThumbnails()
-	populateThumbnails()
+	go populateThumbnails()
 }

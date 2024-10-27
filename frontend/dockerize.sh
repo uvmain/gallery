@@ -1,1 +1,1 @@
-git pull && docker build -t gallery:latest . && docker compose up -d
+git pull && docker build -t photogallery:latest . && docker compose up -d

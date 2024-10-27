@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import { useIntersectionObserver, useStorage } from '@vueuse/core'
-import { computed, onBeforeMount, onMounted, ref } from 'vue'
+import { useElementVisibility, useStorage } from '@vueuse/core'
+import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { getServerUrl } from '../composables/getServerBaseUrl'
 
 const router = useRouter()
-const observerTarget = ref(null)
+const endObserver = ref<HTMLDivElement | null>(null)
 const slugs = ref<string[]>([])
 const limit = ref(20)
 const offset = ref(0)
 const loading = ref(false)
 const endOfSlugs = ref(false)
 const serverBaseUrl = ref()
+
+const endObserverIsVisible = useElementVisibility(endObserver)
 
 const state = useStorage('query-state', {
   limit: limit.value,
@@ -34,6 +36,7 @@ async function getSlugs() {
       if (jsonData && jsonData.length > 0) {
         offset.value += jsonData.length
         slugs.value = [...slugs.value, ...jsonData]
+
         state.value.limit = limit.value
         state.value.offset = offset.value
       }
@@ -47,14 +50,6 @@ async function getSlugs() {
   }
   finally {
     loading.value = false
-    useIntersectionObserver(
-      observerTarget,
-      ([{ isIntersecting }]) => {
-        if (isIntersecting && !endOfSlugs.value) {
-          getSlugs()
-        }
-      },
-    )
   }
 }
 
@@ -72,8 +67,16 @@ const loadingStatus = computed(() => {
   return offset.value > 0 ? 'Loading...' : 'Waiting for initialisation to complete...'
 })
 
+watch(endObserverIsVisible, async (newValue) => {
+  if (newValue) {
+    serverBaseUrl.value = await getServerUrl()
+    await getSlugs()
+  }
+})
+
 onBeforeMount(async () => {
   serverBaseUrl.value = await getServerUrl()
+  // offset.value = state.value.offset > limit.value ? state.value.offset - limit.value : offset.value
   await getSlugs()
 })
 </script>
@@ -96,6 +99,6 @@ onBeforeMount(async () => {
         </path>
       </svg>
     </div>
-    <div ref="observerTarget" />
+    <div ref="endObserver" />
   </div>
 </template>

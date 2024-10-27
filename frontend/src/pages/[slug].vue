@@ -27,7 +27,6 @@ interface ImageMetadata {
   exposureMode: string
   whiteBalance: string
   whiteBalanceMode: string
-  albums: '[]'
 }
 
 const metadata = ref<ImageMetadata | undefined>()
@@ -102,12 +101,10 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100">
+  <div class="min-h-screen bg-gray-300">
     <div id="main" class="flex flex-row justify-center gap-8 p-6">
       <!-- Image Section -->
-      <div class="border-6 border-white border-solid">
-        <img v-if="optimisedPath" :src="optimisedPath" class="max-h-90vh max-w-70vw" />
-      </div>
+      <img v-if="optimisedPath" :src="optimisedPath" class="max-h-90vh max-w-70vw border-6 border-white border-solid" />
 
       <!-- EXIF Data Section -->
       <div v-if="metadata" class="flex flex-col gap-6 p-6 text-sm lg:max-w-1/3">

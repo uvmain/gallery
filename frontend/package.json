@@ -16,6 +16,7 @@
     "@vueuse/core": "^11.1.0",
     "dayjs": "^1.11.13",
     "express": "^4.21.0",
+    "http-status-codes": "^2.3.0",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3"
   },

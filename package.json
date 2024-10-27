@@ -1,22 +1,27 @@
 {
   "type": "module",
   "private": true,
+  "name": "photogallery",
   "scripts": {
-    "backend:dev": "cd api && go run .",
+    "backend:dev": "cd api && cross-env LOCAL_DEV_ENV=true IMAGE_PATH=F:/photography ADMIN_NAME=admin ADMIN_PASSWORD=password go run .",
     "frontend:dev": "cd frontend && npm run dev",
     "build:backend": "cd api && go build -o server .",
     "build:frontend": "cd frontend && npm run build && cpy dist ../",
-    "dev": "cross-env IMAGE_PATH=F:/photography concurrently \"npm run frontend:dev\" \"npm run backend:dev\"",
+    "dev": "concurrently \"npm run caddy\" \"npm run frontend:dev\" \"npm run backend:dev\"",
     "build": "cross-env CGO_ENABLED=0 npm run build:frontend && npm run build:backend",
+    "generate-cert": "mkcert photogallery.localhost",
+    "install-cert": "mkcert --install",
+    "create-cert": "npm run generate-cert && npm run install-cert",
+    "caddy": "caddy run --config Caddyfile",
     "cspell": "cspell \"**/*.{go,ts,js,vue}\""
   },
   "devDependencies": {
     "cpy-cli": "^5.0.0",
     "cross-env": "^7.0.3",
     "cspell": "^8.15.4",
-    "env-cmd": "^10.1.0"
-  },
-  "dependencies": {
-    "concurrently": "^9.0.1"
+    "env-cmd": "^10.1.0",
+    "concurrently": "^9.0.1",
+    "caddy-baron": "^2.0.1",
+    "node-mkcert-binary": "^2.1.9"
   }
 }
