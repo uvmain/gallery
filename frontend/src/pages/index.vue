@@ -86,7 +86,7 @@ onBeforeMount(async () => {
   <div class="flex flex-col items-center overflow-y-auto bg-gray-100 p-6">
     <div class="flex flex-wrap gap-x-1 lg:max-w-8/10">
       <div v-for="(slug, index) in slugs" :key="index" class="flex-1 basis-auto">
-        <img :src="getThumbnailPath(slug)" :alt="slug" class="h-full max-h-25vh max-w-50vw min-h-20vh w-full cursor-pointer object-cover" @click="navigateToSlug(slug)">
+        <img :src="getThumbnailPath(slug)" :alt="slug" class="h-full max-h-25vh max-w-40vw min-h-20vh w-full cursor-pointer object-cover" @click="navigateToSlug(slug)">
       </div>
       <div class="flex-2 flex" />
     </div>

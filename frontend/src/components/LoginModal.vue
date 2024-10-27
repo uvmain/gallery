@@ -30,6 +30,7 @@ async function login() {
   })
   isLoggedIn.value = (response.status !== 401)
   userLoginState.value = (response.status !== 401)
+  emit('modalClose')
 }
 
 async function logout() {
@@ -41,6 +42,7 @@ async function logout() {
   })
   isLoggedIn.value = (response.status !== 401)
   userLoginState.value = (response.status !== 401)
+  emit('modalClose')
 }
 
 async function checkIfLoggedIn() {
@@ -78,12 +80,12 @@ onClickOutside(target, () => emit('modalClose'))
             </div>
             <div class="flex flex-row gap-2">
               <label for="password">Password:</label>
-              <input id="password" v-model="password" type="password" name="password" autocomplete="current-password">
+              <input id="password" v-model="password" type="password" name="password" autocomplete="current-password" @keydown.enter="login">
             </div>
           </form>
         </div>
         <div class="flex justify-center">
-          <button @click="login" @click.stop="emit('modalClose')">
+          <button class="px-4 py-2" @click="login">
             Login
           </button>
         </div>
@@ -92,7 +94,7 @@ onClickOutside(target, () => emit('modalClose'))
     <div v-else>
       You are logged in;
       <div class="flex justify-center">
-        <button @click="logout" @click.stop="emit('modalClose')">
+        <button class="px-4 py-2" @click="logout">
           Logout
         </button>
       </div>

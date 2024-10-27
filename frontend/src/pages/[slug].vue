@@ -88,8 +88,16 @@ function loadOriginal() {
   loadOriginalText.value = 'Original image loaded'
 }
 
-function downloadOriginal() {
-  console.log('This will download the original image')
+async function downloadOriginal() {
+  const response = await fetch(`${serverBaseUrl.value}/api/original/${slug.value}`)
+  const imageBlob = await response.blob()
+  const a = document.createElement('a')
+  const url = window.URL.createObjectURL(imageBlob)
+  const fileName = metadata.value?.fileName || `${slug.value}.jpeg`
+  a.href = url
+  a.download = fileName
+  a.click()
+  window.URL.revokeObjectURL(url)
 }
 
 watch(
@@ -107,8 +115,8 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <Header bg="300" />
   <div class="min-h-screen bg-gray-300">
+    <Header bg="300" :show-edit="true" />
     <div id="main" class="flex flex-row justify-center gap-8 p-6">
       <!-- Image Section -->
       <img v-if="imageSource" :src="imageSource" class="max-h-90vh max-w-70vw border-6 border-white border-solid" />
