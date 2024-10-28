@@ -3,7 +3,7 @@ import type { ImageMetadata } from '../composables/imageMetadataInterface'
 import dayjs from 'dayjs'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { getServerUrl } from '../composables/getServerBaseUrl'
+import { backendFetchRequest, getServerUrl } from '../composables/fetchFromBackend'
 
 const route = useRoute()
 
@@ -73,7 +73,7 @@ const loadOriginalIconColour = computed(() => {
 
 async function getMetadata() {
   try {
-    const response = await fetch(`${serverBaseUrl.value}/api/metadata/${slug.value}`)
+    const response = await backendFetchRequest(`metadata/${slug.value}`)
     metadata.value = await response.json() as ImageMetadata
     imageSize.value = 'optimised'
     loadOriginalText.value = 'Load Original'
@@ -89,7 +89,7 @@ function loadOriginal() {
 }
 
 async function downloadOriginal() {
-  const response = await fetch(`${serverBaseUrl.value}/api/original/${slug.value}`)
+  const response = await backendFetchRequest(`original/${slug.value}`)
   const imageBlob = await response.blob()
   const a = document.createElement('a')
   const url = window.URL.createObjectURL(imageBlob)

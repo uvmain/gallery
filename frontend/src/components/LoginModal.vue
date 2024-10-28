@@ -2,7 +2,7 @@
 import { onClickOutside, useStorage } from '@vueuse/core'
 import { onBeforeMount, ref } from 'vue'
 
-import { getServerUrl } from '../composables/getServerBaseUrl'
+import { backendFetchRequest, getServerUrl } from '../composables/fetchFromBackend'
 
 defineProps({
   isOpen: Boolean,
@@ -24,7 +24,7 @@ async function login() {
   formData.append('name', username.value)
   formData.append('password', password.value)
 
-  const response = await fetch(`${serverBaseUrl.value}/api/login`, {
+  const response = await backendFetchRequest('login', {
     body: formData,
     method: 'POST',
   })
@@ -36,7 +36,7 @@ async function login() {
 async function logout() {
   serverBaseUrl.value = await getServerUrl()
 
-  const response = await fetch(`${serverBaseUrl.value}/api/logout`, {
+  const response = await backendFetchRequest('logout', {
     method: 'GET',
     credentials: 'include',
   })
@@ -48,7 +48,7 @@ async function logout() {
 async function checkIfLoggedIn() {
   try {
     serverBaseUrl.value = await getServerUrl()
-    const response = await fetch(`${serverBaseUrl.value}/api/check-session`, {
+    const response = await backendFetchRequest('check-session', {
       method: 'GET',
       credentials: 'include',
     })

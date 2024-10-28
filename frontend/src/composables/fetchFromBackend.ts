@@ -15,3 +15,10 @@ export async function getServerUrl(): Promise<string> {
     return serverBaseUrl
   }
 }
+
+export async function backendFetchRequest(path: string, options = {}): Promise<Response> {
+  serverBaseUrl = await getServerUrl()
+  const url = `${serverBaseUrl}/api/${path}`
+  const response = await fetch(url, options)
+  return response
+}

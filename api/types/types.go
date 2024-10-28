@@ -98,6 +98,7 @@ type MetadataFile struct {
 }
 
 type Album struct {
+	Slug        string
 	Name        string
 	DateCreated string
 	CoverSlug   string

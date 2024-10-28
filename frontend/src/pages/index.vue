@@ -2,7 +2,7 @@
 import { useElementVisibility, useStorage } from '@vueuse/core'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { getServerUrl } from '../composables/getServerBaseUrl'
+import { backendFetchRequest, getServerUrl } from '../composables/fetchFromBackend'
 
 const router = useRouter()
 const startObserver = ref<HTMLDivElement | null>(null)
@@ -29,7 +29,7 @@ async function getSlugs() {
 
   loading.value = true
   try {
-    const response = await fetch(`${serverBaseUrl.value}/api/slugs?offset=${offset.value}&limit=${limit.value}`)
+    const response = await backendFetchRequest(`slugs?offset=${offset.value}&limit=${limit.value}`)
     if (response.status === 204) {
       endOfSlugs.value = true
     }
@@ -71,7 +71,6 @@ const loadingStatus = computed(() => {
 
 watch(endObserverIsVisible, async (newValue) => {
   if (newValue) {
-    serverBaseUrl.value = await getServerUrl()
     await getSlugs()
   }
 })

@@ -3,12 +3,15 @@ package database
 import (
 	"database/sql"
 	"log"
+	"photogallery/logic"
 	"photogallery/types"
+	"time"
 )
 
 func createAlbumsTable(db *sql.DB) {
 	query := `CREATE TABLE IF NOT EXISTS albums (
-		name TEXT PRIMARY KEY,
+		slug TEXT PRIMARY KEY,
+		name TEXT,
 		dateCreated DATETIME,
 		coverSlug TEXT
 	);`
@@ -32,11 +35,11 @@ func createAlbumsTable(db *sql.DB) {
 
 func createAlbumLinksTable(db *sql.DB) {
 	query := `CREATE TABLE IF NOT EXISTS album_links (
-    albumName TEXT,
+    albumSlug TEXT,
     imageSlug TEXT,
-    FOREIGN KEY (albumName) REFERENCES albums(name),
+    FOREIGN KEY (albumSlug) REFERENCES albums(slug),
     FOREIGN KEY (imageSlug) REFERENCES metadata(slug),
-    PRIMARY KEY (albumName, imageSlug)
+    PRIMARY KEY (albumSlug, imageSlug)
 	);`
 
 	checkQuery := "SELECT name FROM sqlite_master WHERE type='table' AND name='album_links'"
@@ -59,7 +62,7 @@ func createAlbumLinksTable(db *sql.DB) {
 func GetAllAlbums() []types.Album {
 	var albums []types.Album
 
-	query := `SELECT name, dateCreated, coverSlug FROM albums ORDER BY datecreated DESC;`
+	query := `SELECT slug, name, dateCreated, coverSlug FROM albums ORDER BY datecreated DESC;`
 	rows, err := Database.Query(query)
 	if err != nil {
 		log.Printf("Query failed: %v", err)
@@ -68,15 +71,17 @@ func GetAllAlbums() []types.Album {
 	defer rows.Close()
 
 	for rows.Next() {
+		var slug string
 		var name string
 		var dateCreated string
 		var coverSlug string
-		err = rows.Scan(&name, &dateCreated, &coverSlug)
+		err = rows.Scan(&slug, &name, &dateCreated, &coverSlug)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		rowResult := types.Album{
+			Slug:        slug,
 			Name:        name,
 			DateCreated: dateCreated,
 			CoverSlug:   coverSlug,
@@ -89,15 +94,15 @@ func GetAllAlbums() []types.Album {
 
 func InsertAlbumRow(album types.Album) error {
 	stmt, err := Database.Prepare(`INSERT INTO albums (
-		name, dateCreated, coverSlug
-	) VALUES (?, ?, ?);`)
+		slug, name, dateCreated, coverSlug
+	) VALUES (?, ?, ?, ?);`)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
 	_, err = stmt.Exec(
-		album.Name, album.DateCreated, album.CoverSlug,
+		logic.GenerateSlug(), album.Name, time.Now(), album.CoverSlug,
 	)
 	if err != nil {
 		log.Printf("error inserting album row: %s", err)

@@ -1,9 +1,8 @@
-import { getServerUrl } from './getServerBaseUrl'
+import { backendFetchRequest } from './fetchFromBackend'
 
 export async function getRandomSlug(limit: number) {
   try {
-    const serverBaseUrl = await getServerUrl()
-    const response = await fetch(`${serverBaseUrl}/api/slugs/random?limit=${limit}`)
+    const response = await backendFetchRequest(`slugs/random?limit=${limit}`)
     const jsonData = await response.json() as string[]
     return jsonData
   }

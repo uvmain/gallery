@@ -94,7 +94,7 @@ async function navigateUpload() {
         <div class="p-2 hover:cursor-pointer" @click="navigateUpload">
           <icon-tabler-upload class="text-2xl" :class="iconColour" />
         </div>
-        <div class="p-2 hover:cursor-pointer" @click="emit('add')">
+        <div v-if="showAdd" class="p-2 hover:cursor-pointer" @click="emit('add')">
           <icon-tabler-library-plus class="text-2xl" :class="iconColour" />
         </div>
         <div v-if="showEdit" class="p-2 hover:cursor-pointer" @click="enableEdit">
