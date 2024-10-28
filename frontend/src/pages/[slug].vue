@@ -119,7 +119,7 @@ onBeforeMount(async () => {
     <Header bg="300" :show-edit="true" />
     <div id="main" class="flex flex-row justify-center gap-8 p-6">
       <!-- Image Section -->
-      <img v-if="imageSource" :src="imageSource" class="max-h-90vh max-w-70vw border-6 border-white border-solid" />
+      <img v-if="imageSource" :src="imageSource" class="max-h-80vh max-w-70vw border-6 border-white border-solid" />
 
       <!-- EXIF Data Section -->
       <div v-if="metadata" class="flex flex-col gap-6 p-6 text-sm lg:max-w-1/3">
@@ -147,7 +147,7 @@ onBeforeMount(async () => {
 
         <div v-if="metadata.exposureMode && metadata.exposureMode !== 'unknown'" class="flex items-center space-x-3">
           <icon-tabler-settings class="text-2xl text-gray-600" />
-          <span class="text-gray-600">Mode: {{ metadata.exposureMode }}</span>
+          <span class="text-gray-600" contenteditable="true">Mode: {{ metadata.exposureMode }}</span>
         </div>
 
         <div v-if="fStop" class="flex items-center space-x-3">
