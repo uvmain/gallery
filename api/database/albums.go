@@ -56,12 +56,6 @@ func createAlbumLinksTable(db *sql.DB) {
 	}
 }
 
-type Album struct {
-	Name        string
-	DateCreated string
-	CoverSlug   string
-}
-
 func GetAllAlbums() []types.Album {
 	var albums []types.Album
 
@@ -91,6 +85,27 @@ func GetAllAlbums() []types.Album {
 		albums = append(albums, rowResult)
 	}
 	return albums
+}
+
+func InsertAlbumRow(album types.Album) error {
+	stmt, err := Database.Prepare(`INSERT INTO albums (
+		name, dateCreated, coverSlug
+	) VALUES (?, ?, ?);`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(
+		album.Name, album.DateCreated, album.CoverSlug,
+	)
+	if err != nil {
+		log.Printf("error inserting album row: %s", err)
+		return err
+	}
+
+	log.Printf("Album row inserted successfully for %s", album.Name)
+	return nil
 }
 
 func InitialiseAlbums(db *sql.DB) {

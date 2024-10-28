@@ -182,7 +182,7 @@ func generateOptimisedBeforeReady(imageFile string, slug string) error {
 	}
 	defer f.Close()
 
-	jpeg.Encode(f, optimisedImage, nil)
+	err = jpeg.Encode(f, optimisedImage, nil)
 	if err != nil {
 		log.Printf("Error encoding image: %s", err)
 		return err

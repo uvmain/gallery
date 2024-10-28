@@ -6,6 +6,7 @@ import (
 	"photogallery/auth"
 	"photogallery/database"
 	"photogallery/logic"
+	"photogallery/types"
 	"strconv"
 
 	"github.com/rs/cors"
@@ -35,6 +36,7 @@ func StartServer() {
 
 	// protected routes
 	router.Handle("PATCH /api/metadata/{slug}", auth.AuthMiddleware(http.HandlerFunc(handlePatchMetadataBySlug)))
+	router.Handle("POST /api/albums", auth.AuthMiddleware(http.HandlerFunc(handlePostAlbumRow)))
 
 	handler := cors.AllowAll().Handler(router)
 
@@ -144,6 +146,22 @@ func handlePatchMetadataBySlug(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := database.UpdateMetadataBySlug(slug, updates); err != nil {
+		http.Error(w, "Failed to update metadata", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Metadata updated successfully"))
+}
+
+func handlePostAlbumRow(w http.ResponseWriter, r *http.Request) {
+	var updates types.Album
+	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	if err := database.InsertAlbumRow(updates); err != nil {
 		http.Error(w, "Failed to update metadata", http.StatusInternalServerError)
 		return
 	}

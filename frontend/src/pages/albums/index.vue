@@ -7,8 +7,22 @@ import { getServerUrl } from '../../composables/getServerBaseUrl'
 const serverBaseUrl = ref()
 const albums = ref()
 
-function addAlbum() {
-  console.log('test')
+async function addAlbum() {
+  const newAlbum = {
+    Name: 'Macro',
+    DateCreated: new Date(),
+    CoverSlug: '1729943979792078600',
+  }
+
+  const response = await fetch(`${serverBaseUrl.value}/api/albums`, {
+    body: JSON.stringify(newAlbum),
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+  })
+
+  if (response.status === 200) {
+    getAlbums()
+  }
 }
 
 async function getAlbums() {

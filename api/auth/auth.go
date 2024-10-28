@@ -32,6 +32,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			Secure:   true,
 			SameSite: http.SameSiteNoneMode,
 			Path:     "/",
+			MaxAge:   3600,
 		})
 		log.Println("Login successful")
 		w.Write([]byte("Login successful"))
