@@ -7,6 +7,8 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AddAlbumModal: typeof import('./src/components/AddAlbumModal.vue')['default']
+    copy: typeof import('./src/components/LoginModal copy.vue')['default']
     Header: typeof import('./src/components/Header.vue')['default']
     IconCarbonIsoOutline: typeof import('~icons/carbon/iso-outline')['default']
     IconTablerAdotsDiagonal: typeof import('~icons/tabler/adots-diagonal')['default']
@@ -21,9 +23,11 @@ declare module 'vue' {
     IconTablerEdit: typeof import('~icons/tabler/edit')['default']
     IconTablerEyePin: typeof import('~icons/tabler/eye-pin')['default']
     IconTablerHome: typeof import('~icons/tabler/home')['default']
+    IconTablerLibraryPlus: typeof import('~icons/tabler/library-plus')['default']
     IconTablerNewSection: typeof import('~icons/tabler/new-section')['default']
     IconTablerSettings: typeof import('~icons/tabler/settings')['default']
     IconTablerSun: typeof import('~icons/tabler/sun')['default']
+    IconTablerTrashX: typeof import('~icons/tabler/trash-x')['default']
     IconTablerUpload: typeof import('~icons/tabler/upload')['default']
     IconTablerUser: typeof import('~icons/tabler/user')['default']
     LoginModal: typeof import('./src/components/LoginModal.vue')['default']

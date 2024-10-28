@@ -31,6 +31,7 @@ func StartServer() {
 	router.HandleFunc("GET /api/thumbnail/{slug}", handleGetThumbnailBySlug)
 	router.HandleFunc("GET /api/optimised/{slug}", handleGetOptimisedBySlug)
 	router.HandleFunc("GET /api/original/{slug}", handleGetOriginalImageBlobBySlug)
+	router.HandleFunc("GET /api/albums", handleGetAllAlbums)
 
 	// protected routes
 	router.Handle("PATCH /api/metadata/{slug}", auth.AuthMiddleware(http.HandlerFunc(handlePatchMetadataBySlug)))
@@ -97,6 +98,14 @@ func handleGetThumbnailBySlug(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/jpeg")
 	w.WriteHeader(http.StatusOK)
 	w.Write(thumbnail)
+}
+
+func handleGetAllAlbums(w http.ResponseWriter, r *http.Request) {
+	albums := database.GetAllAlbums()
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(albums); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
 }
 
 func handleGetOptimisedBySlug(w http.ResponseWriter, r *http.Request) {

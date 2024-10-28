@@ -141,7 +141,11 @@ func GetOptimisedBySlug(slug string) ([]byte, error) {
 		log.Printf("Optimised file does not exist: %s", optimisedPath)
 		metadata, _ := database.GetMetadataBySlug(slug)
 		filePath, _ := filepath.Abs(filepath.Join(metadata.FilePath, metadata.FileName))
-		generateOptimisedBeforeReady(filePath, slug)
+		err = generateOptimisedBeforeReady(filePath, slug)
+		if err != nil {
+			log.Printf("Error getting optimised for slug %s: %s", slug, err)
+			return nil, err
+		}
 	}
 	optimisedBlob, err := os.ReadFile(optimisedPath)
 	if err != nil {
@@ -151,11 +155,12 @@ func GetOptimisedBySlug(slug string) ([]byte, error) {
 	return optimisedBlob, nil
 }
 
-func generateOptimisedBeforeReady(imageFile string, slug string) {
+func generateOptimisedBeforeReady(imageFile string, slug string) error {
 
 	source, err := imaging.Open(imageFile)
 	if err != nil {
 		log.Printf("Failed to open image: %v", err)
+		return err
 	}
 	width, height := 0, 0
 
@@ -173,15 +178,18 @@ func generateOptimisedBeforeReady(imageFile string, slug string) {
 	f, err := os.Create(optimisedPath)
 	if err != nil {
 		log.Printf("Error creating file: %v", err)
+		return err
 	}
 	defer f.Close()
 
 	jpeg.Encode(f, optimisedImage, nil)
 	if err != nil {
 		log.Printf("Error encoding image: %s", err)
+		return err
 	}
 
 	log.Printf("Optimised created for %s: %s", imageFile, optimisedPath)
+	return nil
 }
 
 func InitialiseOptimised() {

@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 import { getRandomSlug } from '../composables/getRandomSlug'
 
 const props = defineProps({
-  bg: { type: String, required: true },
+  bg: { type: String, required: false },
   showAdd: { type: Boolean, default: false },
   showEdit: { type: Boolean, default: false },
 })
@@ -17,6 +17,7 @@ const isModalOpened = ref(false)
 function openModal() {
   isModalOpened.value = true
 }
+
 function closeModal() {
   isModalOpened.value = false
 }
@@ -94,7 +95,7 @@ async function navigateUpload() {
           <icon-tabler-upload class="text-2xl" :class="iconColour" />
         </div>
         <div class="p-2 hover:cursor-pointer" @click="emit('add')">
-          <icon-tabler-new-section class="text-2xl" :class="iconColour" />
+          <icon-tabler-library-plus class="text-2xl" :class="iconColour" />
         </div>
         <div v-if="showEdit" class="p-2 hover:cursor-pointer" @click="enableEdit">
           <icon-tabler-edit class="text-2xl" :class="iconColour" />

@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"log"
+	"photogallery/types"
 )
 
 func createAlbumsTable(db *sql.DB) {
@@ -53,6 +54,43 @@ func createAlbumLinksTable(db *sql.DB) {
 			log.Println("album_links table created")
 		}
 	}
+}
+
+type Album struct {
+	Name        string
+	DateCreated string
+	CoverSlug   string
+}
+
+func GetAllAlbums() []types.Album {
+	var albums []types.Album
+
+	query := `SELECT name, dateCreated, coverSlug FROM albums ORDER BY datecreated DESC;`
+	rows, err := Database.Query(query)
+	if err != nil {
+		log.Printf("Query failed: %v", err)
+		return []types.Album{}
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var name string
+		var dateCreated string
+		var coverSlug string
+		err = rows.Scan(&name, &dateCreated, &coverSlug)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		rowResult := types.Album{
+			Name:        name,
+			DateCreated: dateCreated,
+			CoverSlug:   coverSlug,
+		}
+
+		albums = append(albums, rowResult)
+	}
+	return albums
 }
 
 func InitialiseAlbums(db *sql.DB) {

@@ -96,3 +96,9 @@ type MetadataFile struct {
 	FilePath string
 	FileName string
 }
+
+type Album struct {
+	Name        string
+	DateCreated string
+	CoverSlug   string
+}
