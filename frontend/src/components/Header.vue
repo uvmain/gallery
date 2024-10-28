@@ -6,8 +6,11 @@ import { getRandomSlug } from '../composables/getRandomSlug'
 
 const props = defineProps({
   bg: { type: String, required: true },
+  showAdd: { type: Boolean, default: false },
   showEdit: { type: Boolean, default: false },
 })
+
+const emit = defineEmits(['add'])
 
 const isModalOpened = ref(false)
 
@@ -47,15 +50,19 @@ async function navigateHome() {
   router.push('/')
 }
 
+function navigateAlbums() {
+  router.push('/albums')
+}
+
 async function navigateRandom() {
   const result = await getRandomSlug(1)
   const slug = result ? result[0] : ''
   router.push(`/${slug}`)
 }
 
-async function navigateAdd() {
+async function navigateUpload() {
   if (userLoginState.value)
-    router.push('/add')
+    router.push('/upload')
 }
 </script>
 
@@ -71,7 +78,7 @@ async function navigateAdd() {
         </div>
         <div
           class="p-2 text-xl text-gray-700 font-semibold hover:cursor-pointer"
-          @click="navigateHome"
+          @click="navigateAlbums"
         >
           albums
         </div>
@@ -83,8 +90,11 @@ async function navigateAdd() {
         </div>
       </div>
       <div class="flex gap-4">
-        <div class="p-2 hover:cursor-pointer" @click="navigateAdd">
+        <div class="p-2 hover:cursor-pointer" @click="navigateUpload">
           <icon-tabler-upload class="text-2xl" :class="iconColour" />
+        </div>
+        <div class="p-2 hover:cursor-pointer" @click="emit('add')">
+          <icon-tabler-new-section class="text-2xl" :class="iconColour" />
         </div>
         <div v-if="showEdit" class="p-2 hover:cursor-pointer" @click="enableEdit">
           <icon-tabler-edit class="text-2xl" :class="iconColour" />
