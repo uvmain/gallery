@@ -10,7 +10,7 @@ const props = defineProps({
   showEdit: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['add'])
+const emit = defineEmits(['add', 'edit'])
 
 const isModalOpened = ref(false)
 
@@ -40,7 +40,7 @@ const iconColour = computed(() => {
 
 function enableEdit() {
   if (userLoginState.value) {
-    console.log('editing')
+    emit('edit')
   }
   else {
     console.warn('Unable to enter edit mode, please log in')
@@ -94,6 +94,7 @@ async function navigateUpload() {
         <div class="p-2 hover:cursor-pointer" @click="navigateUpload">
           <icon-tabler-upload class="text-2xl" :class="iconColour" />
         </div>
+        <slot />
         <div v-if="showAdd" class="p-2 hover:cursor-pointer" @click="emit('add')">
           <icon-tabler-library-plus class="text-2xl" :class="iconColour" />
         </div>

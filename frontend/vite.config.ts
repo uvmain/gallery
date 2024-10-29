@@ -16,9 +16,9 @@ export default defineConfig({
       imports: [
         'vue',
         'vue-router',
-        'vue/macros',
       ],
       dts: true,
+      viteOptimizeDeps: true,
     }),
     vue(),
     // https://github.com/hannoeru/vite-plugin-pagesQ

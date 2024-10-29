@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import type { ImageMetadata } from '../composables/imageMetadataInterface'
+import { useStorage } from '@vueuse/core'
 import dayjs from 'dayjs'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { backendFetchRequest, getServerUrl } from '../composables/fetchFromBackend'
 
+const userLoginState = useStorage('login-state', false)
+
 const route = useRoute()
 
-const slug = ref(route.params.slug as string)
+const slug = ref(route.params.imageSlug as string)
 const serverBaseUrl = ref()
 const imageSize = ref()
 const loadOriginalText = ref()
-
 const metadata = ref<ImageMetadata | undefined>()
+const inEditingMode = ref(false)
 
 const imageSource = computed(() => {
   return `${serverBaseUrl.value}/api/${imageSize.value}/${slug.value}`
@@ -100,6 +103,42 @@ async function downloadOriginal() {
   window.URL.revokeObjectURL(url)
 }
 
+function enableEditing() {
+  if (userLoginState.value) {
+    inEditingMode.value = true
+  }
+  else {
+    console.warn('Not authorised to enter editing mode, please log in')
+  }
+}
+
+function disableEditing() {
+  inEditingMode.value = false
+  getMetadata()
+}
+
+async function saveMetadata() {
+  if (userLoginState.value) {
+    inEditingMode.value = false
+    try {
+      const options = {
+        body: JSON.stringify(metadata.value),
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+      }
+      const response = await backendFetchRequest(`metadata/${slug.value}`, options)
+      console.log(response.status)
+      await getMetadata()
+    }
+    catch (error) {
+      console.error('Failed to update Metadata:', error)
+    }
+  }
+  else {
+    console.warn('Not authorised to save image metadata, please log in')
+  }
+}
+
 watch(
   () => route.params.slug,
   () => {
@@ -116,16 +155,31 @@ onBeforeMount(async () => {
 
 <template>
   <div class="min-h-screen bg-gray-300">
-    <Header bg="300" :show-edit="true" />
+    <Header bg="300" :show-edit="!inEditingMode" @edit="enableEditing">
+      <div v-if="inEditingMode" class="p-2 hover:cursor-pointer" @click="disableEditing">
+        <icon-tabler-edit-off class="text-2xl text-gray-700" />
+      </div>
+      <div v-if="inEditingMode" class="p-2 hover:cursor-pointer" @click="saveMetadata">
+        <icon-tabler-edit class="text-2xl text-gray-700" />
+      </div>
+    </Header>
     <div id="main" class="flex flex-row justify-center gap-8 p-6">
       <!-- Image Section -->
       <img v-if="imageSource" :src="imageSource" class="max-h-80vh max-w-70vw border-6 border-white border-solid" />
 
       <!-- EXIF Data Section -->
       <div v-if="metadata" class="flex flex-col gap-6 p-6 text-sm lg:max-w-1/3">
-        <h1 class="mb-4 text-2xl text-gray-700 font-semibold">
-          {{ metadata.title }}
-        </h1>
+        <div>
+          <div v-if="inEditingMode">
+            <label for="imageTitle" class="mb-4 text-2xl" >
+              Title:
+            </label>
+            <input id="imageTitle" v-model="metadata.title" type="text">
+          </div>
+          <h1 v-else class="mb-4 text-2xl text-gray-700 font-semibold">
+            {{ metadata.title }}
+          </h1>
+        </div>
 
         <div v-if="camera" class="flex items-center space-x-3">
           <icon-tabler-camera class="text-3xl text-gray-600" />
@@ -135,9 +189,19 @@ onBeforeMount(async () => {
           </div>
         </div>
 
-        <div v-if="dateTaken" class="flex items-center space-x-3">
-          <icon-tabler-calendar class="text-2xl text-gray-600" />
-          <span class="text-gray-600">Taken on {{ dateTaken }}</span>
+        <div>
+          <div v-if="inEditingMode">
+            <label for="dateTaken" class="mb-4 text-2xl" >
+              Date taken:
+            </label>
+            <input id="dateTaken" v-model="metadata.dateTaken" type="date">
+          </div>
+          <div v-else>
+            <div v-if="dateTaken" class="flex items-center space-x-3">
+              <icon-tabler-calendar class="text-2xl text-gray-600" />
+              <span class="text-gray-600">Taken on {{ dateTaken }}</span>
+            </div>
+          </div>
         </div>
 
         <div v-if="dateUploaded" class="flex items-center space-x-3">
@@ -147,7 +211,7 @@ onBeforeMount(async () => {
 
         <div v-if="metadata.exposureMode && metadata.exposureMode !== 'unknown'" class="flex items-center space-x-3">
           <icon-tabler-settings class="text-2xl text-gray-600" />
-          <span class="text-gray-600" contenteditable="true">Mode: {{ metadata.exposureMode }}</span>
+          <span class="text-gray-600">Mode: {{ metadata.exposureMode }}</span>
         </div>
 
         <div v-if="fStop" class="flex items-center space-x-3">
