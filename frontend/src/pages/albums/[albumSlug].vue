@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-const album = ref(route.params.album as string)
+const album = ref(route.params.albumSlug as string)
 </script>
 
 <template>
