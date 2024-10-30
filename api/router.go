@@ -32,11 +32,13 @@ func StartServer() {
 	router.HandleFunc("GET /api/thumbnail/{slug}", handleGetThumbnailBySlug)
 	router.HandleFunc("GET /api/optimised/{slug}", handleGetOptimisedBySlug)
 	router.HandleFunc("GET /api/original/{slug}", handleGetOriginalImageBlobBySlug)
+	router.HandleFunc("GET /api/albums/{albumSlug}", handleGetAlbum)
 	router.HandleFunc("GET /api/albums", handleGetAllAlbums)
 
 	// protected routes
 	router.Handle("PATCH /api/metadata/{slug}", auth.AuthMiddleware(http.HandlerFunc(handlePatchMetadataBySlug)))
 	router.Handle("POST /api/albums", auth.AuthMiddleware(http.HandlerFunc(handlePostAlbumRow)))
+	router.Handle("DELETE /api/albums/{albumSlug}", auth.AuthMiddleware(http.HandlerFunc(handleDeleteAlbumRow)))
 
 	handler := cors.AllowAll().Handler(router)
 
@@ -102,6 +104,18 @@ func handleGetThumbnailBySlug(w http.ResponseWriter, r *http.Request) {
 	w.Write(thumbnail)
 }
 
+func handleGetAlbum(w http.ResponseWriter, r *http.Request) {
+	albumSlug := r.PathValue("albumSlug")
+	album, err := database.GetAlbum(albumSlug)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(album); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+}
+
 func handleGetAllAlbums(w http.ResponseWriter, r *http.Request) {
 	albums := database.GetAllAlbums()
 	w.Header().Set("Content-Type", "application/json")
@@ -144,12 +158,10 @@ func handlePatchMetadataBySlug(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
-
 	if err := database.UpdateMetadataBySlug(slug, updates); err != nil {
 		http.Error(w, "Failed to update metadata", http.StatusInternalServerError)
 		return
 	}
-
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Metadata updated successfully"))
 }
@@ -160,12 +172,20 @@ func handlePostAlbumRow(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
-
 	if err := database.InsertAlbumRow(updates); err != nil {
 		http.Error(w, "Failed to update metadata", http.StatusInternalServerError)
 		return
 	}
-
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Metadata updated successfully"))
+}
+
+func handleDeleteAlbumRow(w http.ResponseWriter, r *http.Request) {
+	albumSlug := r.PathValue("albumSlug")
+	if err := database.DeleteAlbumRow(albumSlug); err != nil {
+		http.Error(w, "Failed to delete album", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Album deleted successfully"))
 }

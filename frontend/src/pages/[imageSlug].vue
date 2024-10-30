@@ -140,9 +140,9 @@ async function saveMetadata() {
 }
 
 watch(
-  () => route.params.slug,
+  () => route.params.imageSlug,
   () => {
-    slug.value = route.params.slug as string
+    slug.value = route.params.imageSlug as string
     getMetadata()
   },
 )
@@ -163,6 +163,7 @@ onBeforeMount(async () => {
         <icon-tabler-edit class="text-2xl text-gray-700" />
       </div>
     </Header>
+    <hr class="mx-auto mt-2 h-px lg:max-w-7/10 border-0 bg-gray-400 opacity-60">
     <div id="main" class="flex flex-row justify-center gap-8 p-6">
       <!-- Image Section -->
       <img v-if="imageSource" :src="imageSource" class="max-h-80vh max-w-70vw border-6 border-white border-solid" />

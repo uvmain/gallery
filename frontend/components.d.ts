@@ -7,6 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Dialog: typeof import('./src/components/Dialog.vue')['default']
     Header: typeof import('./src/components/Header.vue')['default']
     IconCarbonIsoOutline: typeof import('~icons/carbon/iso-outline')['default']
     IconTablerAperture: typeof import('~icons/tabler/aperture')['default']
@@ -18,6 +19,7 @@ declare module 'vue' {
     IconTablerDownload: typeof import('~icons/tabler/download')['default']
     IconTablerEdit: typeof import('~icons/tabler/edit')['default']
     IconTablerEditOff: typeof import('~icons/tabler/edit-off')['default']
+    IconTablerExclamationCircle: typeof import('~icons/tabler/exclamation-circle')['default']
     IconTablerEyePin: typeof import('~icons/tabler/eye-pin')['default']
     IconTablerLibraryPlus: typeof import('~icons/tabler/library-plus')['default']
     IconTablerSettings: typeof import('~icons/tabler/settings')['default']

@@ -33,6 +33,10 @@ async function login() {
   emit('modalClose')
 }
 
+function cancel() {
+  emit('modalClose')
+}
+
 async function logout() {
   serverBaseUrl.value = await getServerUrl()
 
@@ -69,22 +73,25 @@ onClickOutside(target, () => emit('modalClose'))
 </script>
 
 <template>
-  <div v-if="isOpen" class="fixed left-0 top-0 z-999 size-full bg-dark">
+  <div v-if="isOpen" class="fixed left-0 top-0 z-999 size-full backdrop-blur-xl">
     <div v-if="!isLoggedIn">
-      <div ref="target" class="mx-auto mb-auto mt-150px w-300px rounded-lg bg-white px-30px pb-30px pt-20px shadow-dark shadow-xl">
+      <div ref="target" class="mx-auto mb-auto mt-150px w-300px rounded-lg bg-white px-30px pb-30px pt-20px">
         <div class="w-300 flex flex-col gap-4 p-6">
           <form class="flex flex-col gap-2">
-            <div class="flex flex-row gap-2">
+            <div class="flex flex-row items-center gap-2">
               <label for="username">Username:</label>
               <input id="username" v-model="username" type="text" name="username" autocomplete="username">
             </div>
-            <div class="flex flex-row gap-2">
+            <div class="flex flex-row items-center gap-2">
               <label for="password">Password:</label>
               <input id="password" v-model="password" type="password" name="password" autocomplete="current-password" @keydown.enter="login">
             </div>
           </form>
         </div>
-        <div class="flex justify-center">
+        <div class="flex justify-center gap-4">
+          <button class="px-4 py-2" @click="cancel">
+            Cancel
+          </button>
           <button class="px-4 py-2" @click="login">
             Login
           </button>
@@ -92,11 +99,18 @@ onClickOutside(target, () => emit('modalClose'))
       </div>
     </div>
     <div v-else>
-      You are logged in;
-      <div class="flex justify-center">
-        <button class="px-4 py-2" @click="logout">
-          Logout
-        </button>
+      <div class="mx-auto mb-auto mt-150px w-300px rounded-lg bg-white px-30px pb-30px pt-20px">
+        <div class="mb-2 py-4 text-center">
+          You are logged in.
+        </div>
+        <div class="flex justify-center gap-4">
+          <button class="px-4 py-2" @click="cancel">
+            Cancel
+          </button>
+          <button class="px-4 py-2" @click="logout">
+            Logout
+          </button>
+        </div>
       </div>
     </div>
   </div>

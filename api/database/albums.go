@@ -59,6 +59,21 @@ func createAlbumLinksTable(db *sql.DB) {
 	}
 }
 
+func GetAlbum(slug string) (types.Album, error) {
+	var album types.Album
+	query := `SELECT slug, name, dateCreated, coverSlug FROM albums where slug = ?;`
+	err := Database.QueryRow(query, slug).Scan(
+		&album.Slug,
+		&album.Name,
+		&album.DateCreated,
+		&album.CoverSlug,
+	)
+	if err != nil {
+		return types.Album{}, err
+	}
+	return album, nil
+}
+
 func GetAllAlbums() []types.Album {
 	var albums []types.Album
 
@@ -110,6 +125,23 @@ func InsertAlbumRow(album types.Album) error {
 	}
 
 	log.Printf("Album row inserted successfully for %s", album.Name)
+	return nil
+}
+
+func DeleteAlbumRow(albumSlug string) error {
+	stmt, err := Database.Prepare(`DELETE FROM albums where slug = ?;`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(albumSlug)
+	if err != nil {
+		log.Printf("error deleting album row: %s", err)
+		return err
+	}
+
+	log.Printf("Album row deleted successfully for albumSlug %s", albumSlug)
 	return nil
 }
 
