@@ -4,6 +4,7 @@ import type { Album } from '../../composables/albums'
 import dayjs from 'dayjs'
 import { onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { getAlbums } from '../../composables/albums'
 import { backendFetchRequest, getServerUrl } from '../../composables/fetchFromBackend'
 
 const router = useRouter()
@@ -25,17 +26,7 @@ async function addAlbum() {
   const response = await backendFetchRequest('albums', options)
 
   if (response.status === 200) {
-    getAlbums()
-  }
-}
-
-async function getAlbums() {
-  try {
-    const response = await backendFetchRequest('albums')
-    albums.value = await response.json() as Album
-  }
-  catch (error) {
-    console.error('Failed to fetch Albums:', error)
+    albums.value = await getAlbums()
   }
 }
 
@@ -49,7 +40,7 @@ async function deleteAlbum() {
   catch (error) {
     console.error('Failed to fetch Albums:', error)
   }
-  getAlbums()
+  albums.value = await getAlbums()
   hideDialog()
 }
 
@@ -78,7 +69,7 @@ function navigateToAlbum(albumName: string) {
 
 onBeforeMount(async () => {
   serverBaseUrl.value = await getServerUrl()
-  await getAlbums()
+  albums.value = await getAlbums()
 })
 </script>
 

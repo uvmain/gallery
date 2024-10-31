@@ -1,5 +1,9 @@
 let serverBaseUrl: string | undefined
 
+export function getCachedServerUrl() {
+  return serverBaseUrl
+}
+
 export async function getServerUrl(): Promise<string> {
   if (serverBaseUrl !== undefined) {
     return serverBaseUrl

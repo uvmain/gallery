@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { useStorage } from '@vueuse/core'
 import { computed, onBeforeMount, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { backendFetchRequest, getServerUrl } from '../../composables/fetchFromBackend'
-import { useStorage } from '@vueuse/core'
 
 const route = useRoute()
 const router = useRouter()

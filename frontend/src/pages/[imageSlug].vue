@@ -4,7 +4,9 @@ import { useStorage } from '@vueuse/core'
 import dayjs from 'dayjs'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { getAlbumCoverSlugThumbnailAddress, getAlbums } from '../composables/albums'
 import { backendFetchRequest, getServerUrl } from '../composables/fetchFromBackend'
+import AlbumSlug from './albums/[albumSlug].vue'
 
 const userLoginState = useStorage('login-state', false)
 
@@ -13,6 +15,7 @@ const route = useRoute()
 const slug = ref(route.params.imageSlug as string)
 const serverBaseUrl = ref()
 const imageSize = ref()
+const imageAlbums = ref()
 const loadOriginalText = ref()
 const metadata = ref<ImageMetadata | undefined>()
 const inEditingMode = ref(false)
@@ -57,6 +60,11 @@ const lens = computed(() => {
   }
 })
 
+async function getAlbumsList() {
+  const albums = await getAlbums()
+  imageAlbums.value = albums
+}
+
 const whiteBalance = computed(() => {
   let result
   const setting = metadata.value?.whiteBalance
@@ -80,6 +88,7 @@ async function getMetadata() {
     metadata.value = await response.json() as ImageMetadata
     imageSize.value = 'optimised'
     loadOriginalText.value = 'Load Original'
+    getAlbumsList()
   }
   catch (error) {
     console.error('Failed to fetch Metadata:', error)
@@ -163,7 +172,7 @@ onBeforeMount(async () => {
         <icon-tabler-edit class="text-2xl text-gray-700" />
       </div>
     </Header>
-    <hr class="mx-auto mt-2 h-px lg:max-w-7/10 border-0 bg-gray-400 opacity-60">
+    <hr class="mx-auto mt-2 h-px border-0 bg-gray-400 opacity-60 lg:max-w-7/10">
     <div id="main" class="flex flex-row justify-center gap-8 p-6">
       <!-- Image Section -->
       <img v-if="imageSource" :src="imageSource" class="max-h-80vh max-w-70vw border-6 border-white border-solid" />
@@ -172,7 +181,7 @@ onBeforeMount(async () => {
       <div v-if="metadata" class="flex flex-col gap-6 p-6 text-sm lg:max-w-1/3">
         <div>
           <div v-if="inEditingMode">
-            <label for="imageTitle" class="mb-4 text-2xl" >
+            <label for="imageTitle" class="mb-4 text-2xl">
               Title:
             </label>
             <input id="imageTitle" v-model="metadata.title" type="text">
@@ -192,7 +201,7 @@ onBeforeMount(async () => {
 
         <div>
           <div v-if="inEditingMode">
-            <label for="dateTaken" class="mb-4 text-2xl" >
+            <label for="dateTaken" class="mb-4 text-2xl">
               Date taken:
             </label>
             <input id="dateTaken" v-model="metadata.dateTaken" type="date">
@@ -252,6 +261,19 @@ onBeforeMount(async () => {
         <div class="flex cursor-pointer items-center space-x-3" @click="downloadOriginal()">
           <icon-tabler-download class="text-2xl text-gray-600" />
           <span class="text-gray-600">Download original</span>
+        </div>
+        <div class="w-full flex flex-col gap-2 border-1 border-gray-400 border-solid p-4">
+          <div class="text-center text-lg">
+            This photo is in {{ imageAlbums.length }} albums
+          </div>
+          <div class="grid grid-cols-2 gap-2 gap-4 lg:grid-cols-4 md:grid-cols-3">
+            <div v-for="(album, index) in imageAlbums" :key="index" class="flex flex-col gap-2">
+              <img :src="getAlbumCoverSlugThumbnailAddress(album)" class="size-20" />
+              <div class="overflow-auto text-center">
+                {{ album.Name }}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
