@@ -2,12 +2,11 @@
 import { useStorage } from '@vueuse/core'
 import { computed, onBeforeMount, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { backendFetchRequest, getServerUrl } from '../../composables/fetchFromBackend'
+import { backendFetchRequest } from '../../composables/fetchFromBackend'
 
 const route = useRoute()
 const router = useRouter()
 
-const serverBaseUrl = ref()
 const albumData = ref()
 const albumSlug = ref(route.params.albumSlug as string)
 const userLoginState = useStorage('login-state', false)
@@ -39,11 +38,10 @@ async function deleteAlbum() {
 
 const imageSource = computed(() => {
   const imageSlug = albumData.value.CoverSlug
-  return `${serverBaseUrl.value}/api/optimised/${imageSlug}`
+  return `/api/optimised/${imageSlug}`
 })
 
 onBeforeMount(async () => {
-  serverBaseUrl.value = await getServerUrl()
   getAlbumData()
 })
 </script>

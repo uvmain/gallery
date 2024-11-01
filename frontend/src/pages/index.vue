@@ -2,7 +2,7 @@
 import { useElementVisibility, useStorage } from '@vueuse/core'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { backendFetchRequest, getServerUrl } from '../composables/fetchFromBackend'
+import { backendFetchRequest } from '../composables/fetchFromBackend'
 
 const router = useRouter()
 const startObserver = ref<HTMLDivElement | null>(null)
@@ -12,7 +12,6 @@ const limit = ref(20)
 const offset = ref(0)
 const loading = ref(false)
 const endOfSlugs = ref(false)
-const serverBaseUrl = ref()
 
 const startObserverIsVisible = useElementVisibility(startObserver)
 const endObserverIsVisible = useElementVisibility(endObserver)
@@ -56,7 +55,7 @@ async function getSlugs() {
 }
 
 function getThumbnailPath(slug: string) {
-  return `${serverBaseUrl.value}/api/thumbnail/${slug}`
+  return `/api/thumbnail/${slug}`
 }
 
 function navigateToSlug(slug: string) {
@@ -80,7 +79,6 @@ const headerShadowClass = computed(() => {
 })
 
 onBeforeMount(async () => {
-  serverBaseUrl.value = await getServerUrl()
   // offset.value = state.value.offset > limit.value ? state.value.offset - limit.value : offset.value
   await getSlugs()
 })

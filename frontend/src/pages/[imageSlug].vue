@@ -1,27 +1,26 @@
 <script setup lang="ts">
+import type { Album } from '../composables/albums'
 import type { ImageMetadata } from '../composables/imageMetadataInterface'
 import { useStorage } from '@vueuse/core'
 import dayjs from 'dayjs'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getAlbumCoverSlugThumbnailAddress, getAlbums } from '../composables/albums'
-import { backendFetchRequest, getServerUrl } from '../composables/fetchFromBackend'
-import AlbumSlug from './albums/[albumSlug].vue'
+import { backendFetchRequest } from '../composables/fetchFromBackend'
 
 const userLoginState = useStorage('login-state', false)
 
 const route = useRoute()
 
 const slug = ref(route.params.imageSlug as string)
-const serverBaseUrl = ref()
-const imageSize = ref()
-const imageAlbums = ref()
+const imageSize = ref<string>('optimised')
+const imageAlbums = ref<Album[]>([])
 const loadOriginalText = ref()
 const metadata = ref<ImageMetadata | undefined>()
 const inEditingMode = ref(false)
 
 const imageSource = computed(() => {
-  return `${serverBaseUrl.value}/api/${imageSize.value}/${slug.value}`
+  return `/api/${imageSize.value}/${slug.value}`
 })
 
 const fStop = computed(() => {
@@ -135,8 +134,7 @@ async function saveMetadata() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
       }
-      const response = await backendFetchRequest(`metadata/${slug.value}`, options)
-      console.log(response.status)
+      await backendFetchRequest(`metadata/${slug.value}`, options)
       await getMetadata()
     }
     catch (error) {
@@ -148,6 +146,10 @@ async function saveMetadata() {
   }
 }
 
+function addToAlbum() {
+  console.log('adding to album')
+}
+
 watch(
   () => route.params.imageSlug,
   () => {
@@ -157,7 +159,6 @@ watch(
 )
 
 onBeforeMount(async () => {
-  serverBaseUrl.value = await getServerUrl()
   await getMetadata()
 })
 </script>
@@ -169,7 +170,7 @@ onBeforeMount(async () => {
         <icon-tabler-edit-off class="text-2xl text-gray-700" />
       </div>
       <div v-if="inEditingMode" class="p-2 hover:cursor-pointer" @click="saveMetadata">
-        <icon-tabler-edit class="text-2xl text-gray-700" />
+        <icon-tabler-checkbox class="text-2xl text-gray-700" />
       </div>
     </Header>
     <hr class="mx-auto mt-2 h-px border-0 bg-gray-400 opacity-60 lg:max-w-7/10">
@@ -272,6 +273,9 @@ onBeforeMount(async () => {
               <div class="overflow-auto text-center">
                 {{ album.Name }}
               </div>
+            </div>
+            <div v-if="inEditingMode">
+              <icon-tabler-square-plus class="size-20 text-gray-400" @click="addToAlbum" />
             </div>
           </div>
         </div>

@@ -2,14 +2,13 @@
 import { onClickOutside, useStorage } from '@vueuse/core'
 import { onBeforeMount, ref } from 'vue'
 
-import { backendFetchRequest, getServerUrl } from '../composables/fetchFromBackend'
+import { backendFetchRequest } from '../composables/fetchFromBackend'
 
 defineProps({
   isOpen: Boolean,
 })
 
 const emit = defineEmits(['modalClose'])
-const serverBaseUrl = ref()
 const username = ref('')
 const password = ref('')
 const isLoggedIn = ref(false)
@@ -18,8 +17,6 @@ const target = ref(null)
 const userLoginState = useStorage('login-state', isLoggedIn.value)
 
 async function login() {
-  serverBaseUrl.value = await getServerUrl()
-
   const formData = new FormData()
   formData.append('name', username.value)
   formData.append('password', password.value)
@@ -38,8 +35,6 @@ function cancel() {
 }
 
 async function logout() {
-  serverBaseUrl.value = await getServerUrl()
-
   const response = await backendFetchRequest('logout', {
     method: 'GET',
     credentials: 'include',
@@ -51,11 +46,14 @@ async function logout() {
 
 async function checkIfLoggedIn() {
   try {
-    serverBaseUrl.value = await getServerUrl()
     const response = await backendFetchRequest('check-session', {
       method: 'GET',
       credentials: 'include',
     })
+    if (response.status === 401) {
+      isLoggedIn.value = false
+      userLoginState.value = false
+    }
     isLoggedIn.value = response.ok
     userLoginState.value = response.ok
   }

@@ -1,4 +1,4 @@
-import { backendFetchRequest, getCachedServerUrl } from './fetchFromBackend'
+import { backendFetchRequest } from './fetchFromBackend'
 
 export interface Album {
   Slug: string
@@ -11,7 +11,6 @@ export async function getAlbums(): Promise<Album[]> {
   try {
     const response = await backendFetchRequest('albums')
     const albums = await response.json() as Album[]
-    console.log(albums)
     return albums
   }
   catch (error) {
@@ -22,6 +21,5 @@ export async function getAlbums(): Promise<Album[]> {
 
 export function getAlbumCoverSlugThumbnailAddress(album: Album) {
   const imageSlug = album.CoverSlug
-  const serverBaseUrl = getCachedServerUrl()
-  return `${serverBaseUrl}/api/thumbnail/${imageSlug}`
+  return `/api/thumbnail/${imageSlug}`
 }

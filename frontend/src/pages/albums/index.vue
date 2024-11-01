@@ -5,11 +5,10 @@ import dayjs from 'dayjs'
 import { onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getAlbums } from '../../composables/albums'
-import { backendFetchRequest, getServerUrl } from '../../composables/fetchFromBackend'
+import { backendFetchRequest } from '../../composables/fetchFromBackend'
 
 const router = useRouter()
 const albums = ref()
-const serverBaseUrl = ref()
 const confirmDialog = ref<typeof Dialog>()
 const selectedAlbum = ref()
 
@@ -45,7 +44,7 @@ async function deleteAlbum() {
 }
 
 function getImageSource(slug = 'none') {
-  return slug === 'none' ? '/default-image.jpg' : `${serverBaseUrl.value}/api/optimised/${slug}`
+  return slug === 'none' ? '/default-image.jpg' : `/api/optimised/${slug}`
 }
 
 function niceDate(dateString: string) {
@@ -68,7 +67,6 @@ function navigateToAlbum(albumName: string) {
 }
 
 onBeforeMount(async () => {
-  serverBaseUrl.value = await getServerUrl()
   albums.value = await getAlbums()
 })
 </script>
