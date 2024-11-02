@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type Dialog from '../../components/Dialog.vue'
 import type { Album } from '../../composables/albums'
-import dayjs from 'dayjs'
 import { onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getAlbums } from '../../composables/albums'
@@ -43,14 +42,6 @@ async function deleteAlbum() {
   hideDialog()
 }
 
-function getImageSource(slug = 'none') {
-  return slug === 'none' ? '/default-image.jpg' : `/api/optimised/${slug}`
-}
-
-function niceDate(dateString: string) {
-  return dayjs(dateString).format('DD/MM/YYYY')
-}
-
 function trashAlbum(album: Album) {
   selectedAlbum.value = album
   confirmDialog.value?.show()
@@ -76,21 +67,7 @@ onBeforeMount(async () => {
     <Header :show-add="true" @add="addAlbum" />
     <div id="main" class="grid grid-cols-2 mx-auto gap-8 p-6 lg:grid-cols-7 md:grid-cols-4 lg:max-w-8/10">
       <div v-for="(album, index) in albums" :key="index" class="relative">
-        <hr class="mx-auto my-2px h-px max-w-60% border-0 bg-gray-400 opacity-60">
-        <hr class="mx-auto my-2px h-px max-w-70% border-0 bg-gray-400 opacity-80">
-        <hr class="mx-auto my-2px h-px max-w-80% border-0 bg-gray-400">
-        <img :src="getImageSource(album.CoverSlug)" onerror="this.onerror=null;this.src='/default-image.jpg';" class="size-60 border-4 border-white border-solid object-cover" @click="navigateToAlbum(album.Slug)" />
-        <div class="absolute right-4 top-3 p-2 hover:cursor-pointer" @click="trashAlbum(album)">
-          <icon-tabler-trash-x class="text-xl text-white hover:size-115%" />
-        </div>
-        <div class="absolute bottom-2 left-2 w-auto flex flex-col gap-2 p-2 text-white">
-          <div class="[text-shadow:_0_0px_4px_rgb(0_0_0_/_0.8)] text-lg font-semibold">
-            {{ album.Name }}
-          </div>
-          <div class="[text-shadow:_0_0px_4px_rgb(0_0_0_/_0.8)]">
-            Created: {{ niceDate(album.DateCreated) }}
-          </div>
-        </div>
+        <AlbumCoverLarge :album="album" @trash="trashAlbum(album)" @navigate="navigateToAlbum(album.Slug)" />
       </div>
     </div>
     <Dialog ref="confirmDialog" :close-button="false" class="border-none shadow-2xl">

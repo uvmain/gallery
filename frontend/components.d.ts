@@ -7,6 +7,10 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AlbumCover: typeof import('./src/components/AlbumCover.vue')['default']
+    AlbumCoverLarge: typeof import('./src/components/AlbumCoverLarge.vue')['default']
+    AlbumCoverSmall: typeof import('./src/components/AlbumCoverSmall.vue')['default']
+    copy: typeof import('./src/components/AlbumCoverSmall copy.vue')['default']
     Dialog: typeof import('./src/components/Dialog.vue')['default']
     Header: typeof import('./src/components/Header.vue')['default']
     IconCarbonIsoOutline: typeof import('~icons/carbon/iso-outline')['default']

@@ -5,7 +5,7 @@ import { useStorage } from '@vueuse/core'
 import dayjs from 'dayjs'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { getAlbumCoverSlugThumbnailAddress, getAlbums } from '../composables/albums'
+import { getAlbums } from '../composables/albums'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
 
 const userLoginState = useStorage('login-state', false)
@@ -167,19 +167,19 @@ onBeforeMount(async () => {
   <div class="min-h-screen bg-gray-300">
     <Header bg="300" :show-edit="!inEditingMode" @edit="enableEditing">
       <div v-if="inEditingMode" class="p-2 hover:cursor-pointer" @click="disableEditing">
-        <icon-tabler-edit-off class="text-2xl text-gray-700" />
+        <icon-tabler-edit-off class="text-2xl text-red-700" />
       </div>
       <div v-if="inEditingMode" class="p-2 hover:cursor-pointer" @click="saveMetadata">
-        <icon-tabler-checkbox class="text-2xl text-gray-700" />
+        <icon-tabler-checkbox class="text-2xl text-green-700" />
       </div>
     </Header>
     <hr class="mx-auto mt-2 h-px border-0 bg-gray-400 opacity-60 lg:max-w-7/10">
-    <div id="main" class="flex flex-row justify-center gap-8 p-6">
+    <div id="main" class="flex flex-row justify-center gap-6 p-6">
       <!-- Image Section -->
       <img v-if="imageSource" :src="imageSource" class="max-h-80vh max-w-70vw border-6 border-white border-solid" />
 
       <!-- EXIF Data Section -->
-      <div v-if="metadata" class="flex flex-col gap-6 p-6 text-sm lg:max-w-1/3">
+      <div v-if="metadata" class="flex flex-col gap-4 p-6 text-sm lg:max-w-1/3">
         <div>
           <div v-if="inEditingMode">
             <label for="imageTitle" class="mb-4 text-2xl">
@@ -263,16 +263,13 @@ onBeforeMount(async () => {
           <icon-tabler-download class="text-2xl text-gray-600" />
           <span class="text-gray-600">Download original</span>
         </div>
-        <div class="w-full flex flex-col gap-2 border-1 border-gray-400 border-solid p-4">
-          <div class="text-center text-lg">
+        <div class="mt-4 w-full flex flex-col gap-4 border-1 border-gray-200 border-solid p-4">
+          <div class="text-left text-lg">
             This photo is in {{ imageAlbums.length }} albums
           </div>
           <div class="grid grid-cols-2 gap-2 gap-4 lg:grid-cols-4 md:grid-cols-3">
             <div v-for="(album, index) in imageAlbums" :key="index" class="flex flex-col gap-2">
-              <img :src="getAlbumCoverSlugThumbnailAddress(album)" class="size-20" />
-              <div class="overflow-auto text-center">
-                {{ album.Name }}
-              </div>
+              <AlbumCoverSmall :album="album" />
             </div>
             <div v-if="inEditingMode">
               <icon-tabler-square-plus class="size-20 text-gray-400" @click="addToAlbum" />
