@@ -27,7 +27,7 @@ onBeforeMount(async () => {
 <template>
   <div>
     <img :src="albumThumbnailAddress" onerror="this.onerror=null;this.src='/default-image.jpg';" class="size-20 border-2 border-white border-solid hover:cursor-pointer" @click="navigateToAlbum" />
-    <div v-if="showName" class="max-w-20 overflow-hidden text-center">
+    <div v-if="showName" class="max-w-20 overflow-hidden text-center text-gray-600">
       {{ album.Name }}
     </div>
   </div>

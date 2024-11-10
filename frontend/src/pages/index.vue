@@ -90,7 +90,6 @@ onBeforeMount(async () => {
         <div v-for="(slug, index) in slugs" :key="index" class="flex-1 basis-auto">
           <img :src="getThumbnailPath(slug)" :alt="slug" class="h-full max-h-25vh max-w-40vw min-h-20vh w-full cursor-pointer object-cover" @click="navigateToSlug(slug)">
         </div>
-        <div ref="endObserver" />
         <div class="flex-2 flex" />
       </div>
       <div v-if="loading" class="py-4 text-center">
@@ -103,6 +102,7 @@ onBeforeMount(async () => {
           </path>
         </svg>
       </div>
+      <div ref="endObserver" />
     </div>
   </div>
 </template>

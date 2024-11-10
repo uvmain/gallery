@@ -2,6 +2,7 @@
 import type { Album } from '../composables/albums'
 import { onBeforeMount, ref } from 'vue'
 import { getAlbumCoverSlugThumbnailAddress } from '../composables/albums'
+import { backendFetchRequest } from '../composables/fetchFromBackend'
 import { niceDate } from '../composables/logic'
 
 const props = defineProps<{
@@ -11,9 +12,17 @@ const props = defineProps<{
 const emits = defineEmits(['trash', 'navigate'])
 
 const albumThumbnailAddress = ref()
+const imageCount = ref(0)
+
+async function getImageCount() {
+  const response = await backendFetchRequest(`links/album/${props.album.Slug}`)
+  const imageSlugs: string[] = await response.json()
+  imageCount.value = imageSlugs.length
+}
 
 onBeforeMount(async () => {
   albumThumbnailAddress.value = await getAlbumCoverSlugThumbnailAddress(props.album)
+  getImageCount()
 })
 </script>
 
@@ -30,6 +39,9 @@ onBeforeMount(async () => {
       <div class="absolute bottom-2 left-2 w-auto flex flex-col gap-2 p-2 text-white">
         <div class="[text-shadow:_0_0px_4px_rgb(0_0_0_/_0.8)] text-lg font-semibold">
           {{ album.Name }}
+        </div>
+        <div class="[text-shadow:_0_0px_4px_rgb(0_0_0_/_0.8)]">
+          {{ imageCount }} photos
         </div>
         <div class="[text-shadow:_0_0px_4px_rgb(0_0_0_/_0.8)]">
           Created: {{ niceDate(album.DateCreated) }}

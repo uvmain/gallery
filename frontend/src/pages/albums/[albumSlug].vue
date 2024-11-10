@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type Dialog from '../../components/Dialog.vue'
+import type { Album } from '../../composables/albums'
 import { useStorage } from '@vueuse/core'
 import { computed, onBeforeMount, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -8,8 +10,9 @@ import { getThumbnailPath, niceDate } from '../../composables/logic'
 const route = useRoute()
 const router = useRouter()
 
-const albumData = ref()
+const albumData = ref<Album | undefined>()
 const albumLinks = ref<string[]>([])
+const confirmDialog = ref<typeof Dialog>()
 const albumSlug = ref(route.params.albumSlug as string)
 const userLoginState = useStorage('login-state', false)
 
@@ -27,7 +30,11 @@ async function getLinkData() {
   albumLinks.value = await response.json()
 }
 
-async function deleteAlbum() {
+function deleteAlbum() {
+  confirmDialog.value?.show()
+}
+
+async function confirmDeleteAlbum() {
   if (!userLoginState.value) {
     return
   }
@@ -41,6 +48,10 @@ async function deleteAlbum() {
   catch (error) {
     console.error('Failed to delete album:', error)
   }
+}
+
+function hideDialog() {
+  confirmDialog.value?.hide()
 }
 
 onBeforeMount(async () => {
@@ -85,5 +96,24 @@ onBeforeMount(async () => {
         />
       </div>
     </div>
+    <Dialog ref="confirmDialog" :close-button="false" class="border-none shadow-2xl">
+      <div class="m-6 flex flex-col items-center gap-4">
+        <icon-tabler-exclamation-circle class="text-4xl text-red" />
+        <p class="text-center font-semibold">
+          Are you sure you want to delete this album?
+        </p>
+        <div v-if="albumData?.Name">
+          {{ albumData.Name }}
+        </div>
+      </div>
+      <div class="flex justify-center gap-4">
+        <button class="px-4 py-2" @click="hideDialog()">
+          Cancel
+        </button>
+        <button class="px-4 py-2" @click="confirmDeleteAlbum()">
+          Delete
+        </button>
+      </div>
+    </Dialog>
   </div>
 </template>

@@ -35,12 +35,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="mt-4 w-full flex flex-col gap-4 border-1 border-gray-200 border-solid p-4">
-    <div class="text-left text-lg">
+  <div class="mt-4 w-full flex flex-col gap-4 border-1 border-gray-400 border-solid p-4">
+    <div class="text-left text-lg text-gray-600">
       This photo is in {{ imageAlbums.length }} albums
     </div>
-    <div class="grid grid-cols-2 gap-2 gap-4 lg:grid-cols-4 md:grid-cols-3">
-      <div v-for="(album, index) in imageAlbums" :key="index" class="flex flex-col gap-2">
+    <div class="grid grid-cols-2 gap-4 lg:grid-cols-4 md:grid-cols-3">
+      <div v-for="(album, index) in imageAlbums" :key="index">
         <AlbumCoverSmall :album="album" />
       </div>
     </div>
