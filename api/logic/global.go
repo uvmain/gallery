@@ -16,7 +16,6 @@ var ImagePath string
 var ImageExtensions []string
 var ThumbnailMaxPixels uint
 var OptimisedMaxPixels uint
-var WorkerCount int
 
 func LoadEnv() {
 

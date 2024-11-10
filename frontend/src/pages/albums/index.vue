@@ -3,7 +3,7 @@ import type Dialog from '../../components/Dialog.vue'
 import type { Album } from '../../composables/albums'
 import { onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { getAlbums } from '../../composables/albums'
+import { getAllAlbums } from '../../composables/albums'
 import { backendFetchRequest } from '../../composables/fetchFromBackend'
 
 const router = useRouter()
@@ -24,7 +24,7 @@ async function addAlbum() {
   const response = await backendFetchRequest('albums', options)
 
   if (response.status === 200) {
-    albums.value = await getAlbums()
+    albums.value = await getAllAlbums()
   }
 }
 
@@ -38,7 +38,7 @@ async function deleteAlbum() {
   catch (error) {
     console.error('Failed to fetch Albums:', error)
   }
-  albums.value = await getAlbums()
+  albums.value = await getAllAlbums()
   hideDialog()
 }
 
@@ -58,7 +58,7 @@ function navigateToAlbum(albumName: string) {
 }
 
 onBeforeMount(async () => {
-  albums.value = await getAlbums()
+  albums.value = await getAllAlbums()
 })
 </script>
 

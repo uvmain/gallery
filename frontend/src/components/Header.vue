@@ -72,19 +72,19 @@ async function navigateUpload() {
     <header class="mx-auto flex justify-between lg:max-w-8/10 lg:p-6">
       <div class="flex gap-4">
         <div
-          class="p-2 text-xl text-gray-700 font-semibold hover:cursor-pointer"
+          class="p-2 text-2xl text-gray-700 hover:cursor-pointer"
           @click="navigateHome"
         >
           home
         </div>
         <div
-          class="p-2 text-xl text-gray-700 font-semibold hover:cursor-pointer"
+          class="p-2 text-2xl text-gray-700 hover:cursor-pointer"
           @click="navigateAlbums"
         >
           albums
         </div>
         <div
-          class="p-2 text-xl text-gray-700 font-semibold hover:cursor-pointer"
+          class="p-2 text-2xl text-gray-700 hover:cursor-pointer"
           @click="navigateRandom"
         >
           random

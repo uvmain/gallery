@@ -34,6 +34,8 @@ func StartServer() {
 	router.HandleFunc("GET /api/original/{slug}", handleGetOriginalImageBlobBySlug)
 	router.HandleFunc("GET /api/albums/{albumSlug}", handleGetAlbum)
 	router.HandleFunc("GET /api/albums", handleGetAllAlbums)
+	router.HandleFunc("GET /api/links/album/{albumSlug}", handleGetAlbumLinks)
+	router.HandleFunc("GET /api/links/image/{imageSlug}", handleGetImageLinks)
 
 	// protected routes
 	router.Handle("PATCH /api/metadata/{slug}", auth.AuthMiddleware(http.HandlerFunc(handlePatchMetadataBySlug)))
@@ -188,4 +190,32 @@ func handleDeleteAlbumRow(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Album deleted successfully"))
+}
+
+func handleGetAlbumLinks(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("albumSlug")
+	links, err := database.GetAlbumLinks(slug)
+
+	if err != nil {
+		http.Error(w, "Failed to retrieve album links", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(links); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+}
+
+func handleGetImageLinks(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("imageSlug")
+	links, err := database.GetImageLinks(slug)
+
+	if err != nil {
+		http.Error(w, "Failed to retrieve image links", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(links); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
 }

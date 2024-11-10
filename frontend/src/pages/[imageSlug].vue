@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import type { Album } from '../composables/albums'
 import type { ImageMetadata } from '../composables/imageMetadataInterface'
 import { useStorage } from '@vueuse/core'
 import dayjs from 'dayjs'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { getAlbums } from '../composables/albums'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
 
 const userLoginState = useStorage('login-state', false)
@@ -14,7 +12,6 @@ const route = useRoute()
 
 const slug = ref(route.params.imageSlug as string)
 const imageSize = ref<string>('optimised')
-const imageAlbums = ref<Album[]>([])
 const loadOriginalText = ref()
 const metadata = ref<ImageMetadata | undefined>()
 const inEditingMode = ref(false)
@@ -59,11 +56,6 @@ const lens = computed(() => {
   }
 })
 
-async function getAlbumsList() {
-  const albums = await getAlbums()
-  imageAlbums.value = albums
-}
-
 const whiteBalance = computed(() => {
   let result
   const setting = metadata.value?.whiteBalance
@@ -87,7 +79,6 @@ async function getMetadata() {
     metadata.value = await response.json() as ImageMetadata
     imageSize.value = 'optimised'
     loadOriginalText.value = 'Load Original'
-    getAlbumsList()
   }
   catch (error) {
     console.error('Failed to fetch Metadata:', error)
@@ -146,10 +137,6 @@ async function saveMetadata() {
   }
 }
 
-function addToAlbum() {
-  console.log('adding to album')
-}
-
 watch(
   () => route.params.imageSlug,
   () => {
@@ -173,7 +160,7 @@ onBeforeMount(async () => {
         <icon-tabler-checkbox class="text-2xl text-green-700" />
       </div>
     </Header>
-    <hr class="mx-auto mt-2 h-px border-0 bg-gray-400 opacity-60 lg:max-w-7/10">
+    <!-- <hr class="mx-auto mt-2 h-px border-0 bg-gray-400 opacity-60 lg:max-w-7/10"> -->
     <div id="main" class="flex flex-row justify-center gap-6 p-6">
       <!-- Image Section -->
       <img v-if="imageSource" :src="imageSource" class="max-h-80vh max-w-70vw border-6 border-white border-solid" />
@@ -263,19 +250,7 @@ onBeforeMount(async () => {
           <icon-tabler-download class="text-2xl text-gray-600" />
           <span class="text-gray-600">Download original</span>
         </div>
-        <div class="mt-4 w-full flex flex-col gap-4 border-1 border-gray-200 border-solid p-4">
-          <div class="text-left text-lg">
-            This photo is in {{ imageAlbums.length }} albums
-          </div>
-          <div class="grid grid-cols-2 gap-2 gap-4 lg:grid-cols-4 md:grid-cols-3">
-            <div v-for="(album, index) in imageAlbums" :key="index" class="flex flex-col gap-2">
-              <AlbumCoverSmall :album="album" />
-            </div>
-            <div v-if="inEditingMode">
-              <icon-tabler-square-plus class="size-20 text-gray-400" @click="addToAlbum" />
-            </div>
-          </div>
-        </div>
+        <PhotoAlbums v-model:in-editing-mode="inEditingMode" :imageSlug="slug"/>
       </div>
     </div>
   </div>

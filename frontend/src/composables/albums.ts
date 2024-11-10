@@ -1,5 +1,4 @@
 import { backendFetchRequest } from './fetchFromBackend'
-import { getRandomSlug } from './getRandomSlug'
 
 export interface Album {
   Slug: string
@@ -8,11 +7,10 @@ export interface Album {
   CoverSlug: string
 }
 
-export async function getAlbums(): Promise<Album[]> {
+export async function getAllAlbums(): Promise<Album[]> {
   try {
     const response = await backendFetchRequest('albums')
-    let albums = await response.json() as Album[]
-    albums = albums.slice(0, Math.floor(Math.random() * 8) + 1)
+    const albums = await response.json() as Album[]
     return albums
   }
   catch (error) {
@@ -22,9 +20,6 @@ export async function getAlbums(): Promise<Album[]> {
 }
 
 export async function getAlbumCoverSlugThumbnailAddress(album: Album) {
-  // const imageSlug = album.CoverSlug
-  const result = await getRandomSlug(1)
-  const imageSlug = result ? result[0] : ''
-  // console.log(imageSlug)
+  const imageSlug = album.CoverSlug
   return `/api/thumbnail/${imageSlug}`
 }

@@ -1,13 +1,23 @@
 <script setup lang="ts">
 import type { Album } from '../composables/albums'
 import { onBeforeMount, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { getAlbumCoverSlugThumbnailAddress } from '../composables/albums'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   album: Album
-}>()
+  showName?: boolean
+}>(), {
+  showName: true,
+})
 
 const albumThumbnailAddress = ref()
+
+const router = useRouter()
+
+function navigateToAlbum() {
+  router.push(`/albums/${props.album.Slug}`)
+}
 
 onBeforeMount(async () => {
   albumThumbnailAddress.value = await getAlbumCoverSlugThumbnailAddress(props.album)
@@ -16,8 +26,8 @@ onBeforeMount(async () => {
 
 <template>
   <div>
-    <img :src="albumThumbnailAddress" class="size-20 border-2 border-white border-solid" />
-    <div class="max-w-20 overflow-hidden text-center">
+    <img :src="albumThumbnailAddress" onerror="this.onerror=null;this.src='/default-image.jpg';" class="size-20 border-2 border-white border-solid hover:cursor-pointer" @click="navigateToAlbum" />
+    <div v-if="showName" class="max-w-20 overflow-hidden text-center">
       {{ album.Name }}
     </div>
   </div>

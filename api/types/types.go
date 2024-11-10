@@ -103,3 +103,8 @@ type Album struct {
 	DateCreated string
 	CoverSlug   string
 }
+
+type Link struct {
+	AlbumSlug string
+	ImageSlug string
+}

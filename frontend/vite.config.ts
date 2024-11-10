@@ -47,8 +47,7 @@ export default defineConfig({
     Unfonts({
       google: {
         families: [
-          'Poppins',
-          'Raleway',
+          'Montserrat',
         ],
       },
     }),

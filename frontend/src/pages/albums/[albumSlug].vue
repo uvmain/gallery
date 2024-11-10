@@ -3,11 +3,13 @@ import { useStorage } from '@vueuse/core'
 import { computed, onBeforeMount, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { backendFetchRequest } from '../../composables/fetchFromBackend'
+import { getThumbnailPath, niceDate } from '../../composables/logic'
 
 const route = useRoute()
 const router = useRouter()
 
 const albumData = ref()
+const albumLinks = ref<string[]>([])
 const albumSlug = ref(route.params.albumSlug as string)
 const userLoginState = useStorage('login-state', false)
 
@@ -18,6 +20,11 @@ const iconColour = computed(() => {
 async function getAlbumData() {
   const response = await backendFetchRequest(`albums/${albumSlug.value}`)
   albumData.value = await response.json()
+}
+
+async function getLinkData() {
+  const response = await backendFetchRequest(`links/album/${albumSlug.value}`)
+  albumLinks.value = await response.json()
 }
 
 async function deleteAlbum() {
@@ -36,13 +43,9 @@ async function deleteAlbum() {
   }
 }
 
-const imageSource = computed(() => {
-  const imageSlug = albumData.value.CoverSlug
-  return `/api/optimised/${imageSlug}`
-})
-
 onBeforeMount(async () => {
   getAlbumData()
+  getLinkData()
 })
 </script>
 
@@ -53,25 +56,34 @@ onBeforeMount(async () => {
         <icon-tabler-trash-x class="text-2xl" :class="iconColour" />
       </div>
     </Header>
-    <div v-if="albumData" class="flex flex-row justify-center gap-8 p-6">
-      {{ albumData }}
-    </div>
-    <div class="relative mx-auto flex flex-wrap gap-x-1 lg:max-w-8/10">
-      <img :src="imageSource" :alt="albumSlug" class="h-50 w-full object-cover">
-      <div class="absolute top-1/5 h-30 w-full bg-white opacity-90 blur-2xl">
+    <div v-if="albumData" class="flex flex-row items-center justify-center gap-6 p-6 lg:max-w-8/10">
+      <img
+        :src="getThumbnailPath(albumData.CoverSlug)"
+        :alt="albumData.CoverSlug"
+        onerror="this.onerror=null;this.src='/default-image.jpg';"
+        class="h-40 w-80 cursor-pointer border-2 border-white border-solid object-cover"
+      />
+      <div class="flex flex-col gap-2">
+        <div class="text-2xl text-gray-600">
+          {{ albumData.Name }}
+        </div>
+        <div class="text-gray-600">
+          Created: {{ niceDate(albumData.DateCreated) }}
+        </div>
+        <div v-if="albumLinks" class="text-gray-600">
+          {{ albumLinks.length }} photos
+        </div>
       </div>
-      <div class="absolute left-1/2 top-1/3 text-center text-3xl text-gray-600">
-        {{ albumData.Name }}
+    </div>
+    <div id="main" class="grid grid-cols-2 mx-auto gap-8 p-6 lg:grid-cols-7 md:grid-cols-4 lg:max-w-8/10">
+      <div v-for="(imageSlug, index) in albumLinks" :key="index" class="relative">
+        <img
+          :src="getThumbnailPath(imageSlug)"
+          :alt="imageSlug"
+          class="h-full max-h-25vh max-w-40vw min-h-20vh w-full cursor-pointer object-cover"
+          @click="router.push(`/${imageSlug}`)"
+        />
       </div>
     </div>
   </div>
 </template>
-
-<style lang="css" scoped>
-.bgImgCenter{
-    background-image: url('imagePath');
-    background-repeat: no-repeat;
-    background-position: center;
-    position: relative;
-}
-</style>
