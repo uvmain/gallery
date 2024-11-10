@@ -12,20 +12,7 @@ const confirmDialog = ref<typeof Dialog>()
 const selectedAlbum = ref()
 
 async function addAlbum() {
-  const newAlbum = {
-    Name: 'Macro',
-    CoverSlug: '1729943979792078600',
-  }
-  const options = {
-    body: JSON.stringify(newAlbum),
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-  }
-  const response = await backendFetchRequest('albums', options)
-
-  if (response.status === 200) {
-    albums.value = await getAllAlbums()
-  }
+  router.push('/albums/add-album')
 }
 
 async function deleteAlbum() {

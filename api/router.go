@@ -37,7 +37,7 @@ func StartServer() {
 	router.HandleFunc("GET /api/links/album/{albumSlug}", handleGetAlbumLinks)
 	router.HandleFunc("GET /api/links/image/{imageSlug}", handleGetImageLinks)
 
-	// protected routes
+	// authenticated routes
 	router.Handle("PATCH /api/metadata/{slug}", auth.AuthMiddleware(http.HandlerFunc(handlePatchMetadataBySlug)))
 	router.Handle("POST /api/albums", auth.AuthMiddleware(http.HandlerFunc(handlePostAlbumRow)))
 	router.Handle("DELETE /api/albums/{albumSlug}", auth.AuthMiddleware(http.HandlerFunc(handleDeleteAlbumRow)))
