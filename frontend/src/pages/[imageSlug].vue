@@ -1,20 +1,22 @@
 <script setup lang="ts">
 import type { ImageMetadata } from '../composables/imageMetadataInterface'
-import { useStorage } from '@vueuse/core'
+import { useSessionStorage } from '@vueuse/core'
 import dayjs from 'dayjs'
 import { computed, onBeforeMount, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
 
-const userLoginState = useStorage('login-state', false)
-
 const route = useRoute()
+const router = useRouter()
 
 const slug = ref(route.params.imageSlug as string)
 const imageSize = ref<string>('optimised')
 const loadOriginalText = ref()
 const metadata = ref<ImageMetadata | undefined>()
 const inEditingMode = ref(false)
+
+const userLoginState = useSessionStorage('login-state', false)
+const selectedImage = useSessionStorage('selected-image', '')
 
 const imageSource = computed(() => {
   return `/api/${imageSize.value}/${slug.value}`
@@ -137,6 +139,11 @@ async function saveMetadata() {
   }
 }
 
+function addToAlbum() {
+  selectedImage.value = route.params.imageSlug as string
+  router.push('/albums')
+}
+
 watch(
   () => route.params.imageSlug,
   () => {
@@ -160,12 +167,8 @@ onBeforeMount(async () => {
         <icon-tabler-checkbox class="text-2xl text-green-700" />
       </div>
     </Header>
-    <!-- <hr class="mx-auto mt-2 h-px border-0 bg-gray-400 opacity-60 lg:max-w-7/10"> -->
     <div id="main" class="flex flex-row justify-center gap-6 p-6">
-      <!-- Image Section -->
       <img v-if="imageSource" :src="imageSource" class="max-h-80vh max-w-70vw border-6 border-white border-solid" />
-
-      <!-- EXIF Data Section -->
       <div v-if="metadata" class="flex flex-col gap-4 p-6 text-sm lg:max-w-1/3">
         <div>
           <div v-if="inEditingMode">
@@ -250,7 +253,7 @@ onBeforeMount(async () => {
           <icon-tabler-download class="text-2xl text-gray-600" />
           <span class="text-gray-600">Download original</span>
         </div>
-        <PhotoAlbums v-model:in-editing-mode="inEditingMode" :imageSlug="slug"/>
+        <PhotoAlbums v-model:in-editing-mode="inEditingMode" :image-slug="slug" @add-to-album="addToAlbum()" />
       </div>
     </div>
   </div>

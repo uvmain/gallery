@@ -32,7 +32,6 @@ async function deleteAlbum() {
 function trashAlbum(album: Album) {
   selectedAlbum.value = album
   confirmDialog.value?.show()
-  console.log(`trashing album ${album.Name}`)
 }
 
 function hideDialog() {

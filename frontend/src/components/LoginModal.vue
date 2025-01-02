@@ -1,5 +1,5 @@
 <script setup>
-import { onClickOutside, useStorage } from '@vueuse/core'
+import { onClickOutside, useSessionStorage } from '@vueuse/core'
 import { onBeforeMount, ref } from 'vue'
 
 import { backendFetchRequest } from '../composables/fetchFromBackend'
@@ -14,7 +14,7 @@ const password = ref('')
 const isLoggedIn = ref(false)
 const target = ref(null)
 
-const userLoginState = useStorage('login-state', isLoggedIn.value)
+const userLoginState = useSessionStorage('login-state', isLoggedIn.value)
 
 async function login() {
   const formData = new FormData()

@@ -8,6 +8,7 @@ import (
 	"photogallery/logic"
 	"photogallery/types"
 	"strconv"
+	"time"
 
 	"github.com/rs/cors"
 )
@@ -41,6 +42,7 @@ func StartServer() {
 	router.Handle("PATCH /api/metadata/{slug}", auth.AuthMiddleware(http.HandlerFunc(handlePatchMetadataBySlug)))
 	router.Handle("POST /api/albums", auth.AuthMiddleware(http.HandlerFunc(handlePostAlbumRow)))
 	router.Handle("DELETE /api/albums/{albumSlug}", auth.AuthMiddleware(http.HandlerFunc(handleDeleteAlbumRow)))
+	router.Handle("POST /api/links", auth.AuthMiddleware(http.HandlerFunc(handlePostLinkRow)))
 
 	handler := cors.AllowAll().Handler(router)
 
@@ -52,6 +54,12 @@ func StartServer() {
 	}
 
 	http.ListenAndServe(serverAddress, handler)
+}
+
+func enableCdnCaching(w http.ResponseWriter) {
+	expiryDate := time.Now().AddDate(1, 0, 0)
+	w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+	w.Header().Set("Expires", expiryDate.String())
 }
 
 func handleGetSlugs(w http.ResponseWriter, r *http.Request) {
@@ -101,6 +109,7 @@ func handleGetThumbnailBySlug(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Thumbnail not found", http.StatusNotFound)
 		return
 	}
+	enableCdnCaching(w)
 	w.Header().Set("Content-Type", "image/jpeg")
 	w.WriteHeader(http.StatusOK)
 	w.Write(thumbnail)
@@ -133,6 +142,7 @@ func handleGetOptimisedBySlug(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Optimised not found", http.StatusNotFound)
 		return
 	}
+	enableCdnCaching(w)
 	w.Header().Set("Content-Type", "image/jpeg")
 	w.WriteHeader(http.StatusOK)
 	w.Write(optimised)
@@ -147,6 +157,7 @@ func handleGetOriginalImageBlobBySlug(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	mimeType := http.DetectContentType(imageBlob)
+	enableCdnCaching(w)
 	w.Header().Set("Content-Type", mimeType)
 	w.WriteHeader(http.StatusOK)
 	w.Write(imageBlob)
@@ -175,11 +186,25 @@ func handlePostAlbumRow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := database.InsertAlbumRow(updates); err != nil {
-		http.Error(w, "Failed to update metadata", http.StatusInternalServerError)
+		http.Error(w, "Failed to post album", http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Metadata updated successfully"))
+	w.Write([]byte("Album posted successfully"))
+}
+
+func handlePostLinkRow(w http.ResponseWriter, r *http.Request) {
+	var updates types.Link
+	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+	if err := database.InsertLinkRow(updates); err != nil {
+		http.Error(w, "Failed to insert link", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Link row inserted successfully"))
 }
 
 func handleDeleteAlbumRow(w http.ResponseWriter, r *http.Request) {

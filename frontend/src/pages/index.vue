@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useElementVisibility, useStorage } from '@vueuse/core'
+import { useElementVisibility, useSessionStorage } from '@vueuse/core'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
@@ -16,8 +16,8 @@ const endOfSlugs = ref(false)
 
 const startObserverIsVisible = useElementVisibility(startObserver)
 const endObserverIsVisible = useElementVisibility(endObserver)
-
-const state = useStorage('query-state', {
+const selectedImage = useSessionStorage('selected-image', '')
+const state = useSessionStorage('query-state', {
   limit: limit.value,
   offset: offset.value,
   lastSlug: '',
@@ -76,7 +76,7 @@ const headerShadowClass = computed(() => {
 })
 
 onBeforeMount(async () => {
-  // offset.value = state.value.offset > limit.value ? state.value.offset - limit.value : offset.value
+  selectedImage.value = undefined
   await getSlugs()
 })
 </script>

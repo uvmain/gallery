@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type Dialog from '../../components/Dialog.vue'
 import type { Album } from '../../composables/albums'
-import { useStorage } from '@vueuse/core'
+import { useSessionStorage } from '@vueuse/core'
 import { computed, onBeforeMount, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { backendFetchRequest } from '../../composables/fetchFromBackend'
@@ -14,7 +14,9 @@ const albumData = ref<Album | undefined>()
 const albumLinks = ref<string[]>([])
 const confirmDialog = ref<typeof Dialog>()
 const albumSlug = ref(route.params.albumSlug as string)
-const userLoginState = useStorage('login-state', false)
+const userLoginState = useSessionStorage('login-state', false)
+const selectedImage = useSessionStorage('selected-image', '')
+const inEditingMode = ref(false)
 
 const iconColour = computed(() => {
   return userLoginState.value ? 'text-gray-600' : 'text-gray-400'
@@ -54,6 +56,10 @@ function hideDialog() {
   confirmDialog.value?.hide()
 }
 
+function edit() {
+  inEditingMode.value = !inEditingMode.value
+}
+
 onBeforeMount(async () => {
   getAlbumData()
   getLinkData()
@@ -62,8 +68,8 @@ onBeforeMount(async () => {
 
 <template>
   <div class="min-h-screen bg-gray-300">
-    <Header bg="300" :show-edit="true">
-      <div class="p-2 hover:cursor-pointer" @click="deleteAlbum">
+    <Header bg="300" :show-edit="true" @edit="edit()">
+      <div v-if="userLoginState" class="p-2 hover:cursor-pointer" @click="deleteAlbum">
         <icon-tabler-trash-x class="text-2xl" :class="iconColour" />
       </div>
     </Header>
@@ -84,6 +90,11 @@ onBeforeMount(async () => {
         <div v-if="albumLinks" class="text-gray-600">
           {{ albumLinks.length }} photos
         </div>
+      </div>
+    </div>
+    <div v-if="inEditingMode">
+      <div v-if="selectedImage.length">
+        {{selectedImage}}
       </div>
     </div>
     <div id="main" class="grid grid-cols-2 mx-auto gap-8 p-6 lg:grid-cols-7 md:grid-cols-4 lg:max-w-8/10">

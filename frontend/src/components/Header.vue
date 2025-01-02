@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
+import { useSessionStorage } from '@vueuse/core'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getRandomSlug } from '../composables/getRandomSlug'
@@ -32,7 +32,7 @@ const bgColour = computed(() => {
 
 const router = useRouter()
 
-const userLoginState = useStorage('login-state', false)
+const userLoginState = useSessionStorage('login-state', false)
 
 const iconColour = computed(() => {
   return userLoginState.value ? 'text-gray-600' : 'text-gray-400'

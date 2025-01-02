@@ -16,7 +16,7 @@ const imageCount = ref(0)
 
 async function getImageCount() {
   const response = await backendFetchRequest(`links/album/${props.album.Slug}`)
-  const imageSlugs: string[] = await response.json()
+  const imageSlugs: string[] = await response.json() || []
   imageCount.value = imageSlugs.length
 }
 
