@@ -2,7 +2,8 @@ services:
   photogallery:
     image: photogallery:latest
     container_name: photogallery
-    env_file: ".env"
+    env_file:
+      - .env
     volumes:
       - /mnt/main/docker/photogallery:/data
       - /mnt/barra5/Photography:/images
