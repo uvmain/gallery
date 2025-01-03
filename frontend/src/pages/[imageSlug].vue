@@ -195,7 +195,7 @@ onBeforeMount(async () => {
             <label for="dateTaken" class="mb-4 text-2xl">
               Date taken:
             </label>
-            <input id="dateTaken" v-model="metadata.dateTaken" type="date">
+            <input id="dateTaken" v-model="metadata.dateTaken" type="datetime-local">
           </div>
           <div v-else>
             <div v-if="dateTaken" class="flex items-center space-x-3">

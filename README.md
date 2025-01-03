@@ -41,7 +41,7 @@ This command downloads the npm dependencies for the local dev and frontend compo
 Update the following environment variables in the /package.json (for local dev) and in the docker_compose.yml (or sibling .env file):
 ```plaintext
 IMAGE_PATH=path/to/your/images
-ADMIN_NAME=your_admin_name
+ADMIN_USER=your_admin_name
 ADMIN_PASSWORD=your_admin_password
 ```
 

@@ -8,11 +8,7 @@ import (
 	"os"
 )
 
-var (
-	sessionToken = make(map[string]bool)
-	username     = os.Getenv("ADMIN_USER")
-	password     = os.Getenv("ADMIN_PASSWORD")
-)
+var sessionToken = make(map[string]bool)
 
 func generateToken() string {
 	b := make([]byte, 32)
@@ -21,8 +17,12 @@ func generateToken() string {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	username := os.Getenv("ADMIN_USER")
+	password := os.Getenv("ADMIN_PASSWORD")
+	passedUsername := r.FormValue("username")
+	passedPassword := r.FormValue("password")
 	log.Println("User logging in")
-	if r.FormValue("username") == username && r.FormValue("password") == password {
+	if passedUsername == username && passedPassword == password {
 		token := generateToken()
 		sessionToken[token] = true
 		http.SetCookie(w, &http.Cookie{

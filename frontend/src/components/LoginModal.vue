@@ -18,7 +18,7 @@ const userLoginState = useSessionStorage('login-state', isLoggedIn.value)
 
 async function login() {
   const formData = new FormData()
-  formData.append('name', username.value)
+  formData.append('username', username.value)
   formData.append('password', password.value)
 
   const response = await backendFetchRequest('login', {
