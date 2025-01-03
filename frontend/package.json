@@ -6,7 +6,7 @@
   "main": "server.js",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite-ssg build",
     "preview": "vite preview",
     "cspell": "cspell \"**/*.{ts,js,vue}\"",
     "lint": "eslint .",
@@ -39,6 +39,7 @@
     "unplugin-vue-components": "^0.27.4",
     "vite": "^5.3.1",
     "vite-plugin-pages": "^0.32.3",
+    "vite-ssg": "^0.24.3",
     "vue-tsc": "^2.0.21"
   }
 }

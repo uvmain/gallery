@@ -1,3 +1,5 @@
+/// <reference types="vite-ssg" />
+
 import { fileURLToPath, URL } from 'node:url'
 import vue from '@vitejs/plugin-vue'
 import UnoCSS from 'unocss/vite'
@@ -60,4 +62,12 @@ export default defineConfig({
   assetsInclude: [
     '**/*.md',
   ],
+  ssgOptions: {
+    script: 'async',
+    format: 'cjs',
+    formatting: 'minify',
+    crittersOptions: {
+      reduceInlineStyles: false,
+    },
+  },
 })

@@ -1,18 +1,8 @@
-import routes from 'virtual:generated-pages'
-import { createApp } from 'vue'
-import { createRouter, createWebHistory } from 'vue-router'
+import type { Component } from 'vue'
+import generatedRoutes from 'virtual:generated-pages'
+import { ViteSSG } from 'vite-ssg'
 
 import App from './App.vue'
 import 'virtual:uno.css'
 
-// eslint-disable-next-line ts/no-unsafe-argument
-const app = createApp(App)
-
-const router = createRouter({
-  history: createWebHistory(),
-  routes,
-})
-
-app.use(router)
-
-app.mount('#app')
+export const createApp = ViteSSG(App as Component, { routes: generatedRoutes, base: import.meta.env.BASE_URL })

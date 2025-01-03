@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"photogallery/auth"
 	"photogallery/database"
@@ -49,8 +50,10 @@ func StartServer() {
 	var serverAddress string
 	if logic.IsLocalDevEnv() {
 		serverAddress = "localhost:8080"
+		log.Println("Application running at https://photogallery.localhost")
 	} else {
 		serverAddress = ":8080"
+		log.Println("Application running at http://localhost:8080")
 	}
 
 	http.ListenAndServe(serverAddress, handler)

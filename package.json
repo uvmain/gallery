@@ -3,26 +3,28 @@
   "private": true,
   "name": "photogallery",
   "scripts": {
-    "deps": "npm i && cd api && go mod download && cd ../frontend && npm i && cd ../",
-    "backend:dev": "cd api && cross-env LOCAL_DEV_ENV=true IMAGE_PATH=E:/photography ADMIN_NAME=admin ADMIN_PASSWORD=password go run .",
-    "frontend:dev": "cd frontend && npm run dev",
-    "build:backend": "cd api && go build -o server .",
+    "postinstall": "cd api && go mod download && cd ../frontend && npm i && cd ../ && npm run create-cert",
+    "clean": "rimraf -v -I api/server api/server.exe dist frontend/dist",
+    "clean:full": "rimraf -v -I api/server api/server.exe api/data dist frontend/dist frontend/node_modules node_modules photogallery.localhost.pem photogallery.localhost-key.pem",
+    "dev:backend": "cd api && cross-env LOCAL_DEV_ENV=true IMAGE_PATH=E:/photography ADMIN_NAME=admin ADMIN_PASSWORD=password go run .",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run caddy\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build:backend": "cd api && go build -o server . && cpy server . --rename=server.exe",
     "build:frontend": "cd frontend && npm run build && cpy dist ../",
-    "dev": "concurrently \"npm run caddy\" \"npm run frontend:dev\" \"npm run backend:dev\"",
     "build": "cross-env CGO_ENABLED=0 npm run build:frontend && npm run build:backend",
-    "generate-cert": "mkcert photogallery.localhost",
-    "install-cert": "mkcert --install",
-    "create-cert": "npm run generate-cert && npm run install-cert",
+    "preview": "cd api && cross-env IMAGE_PATH=E:/photography ADMIN_NAME=admin ADMIN_PASSWORD=password server.exe",
+    "create-cert": "mkcert photogallery.localhost && mkcert --install",
     "caddy": "caddy run --config Caddyfile",
     "cspell": "cspell \"**/*.{go,ts,js,vue}\""
   },
   "devDependencies": {
+    "caddy-baron": "^2.0.1",
+    "concurrently": "^9.0.1",
     "cpy-cli": "^5.0.0",
     "cross-env": "^7.0.3",
     "cspell": "^8.15.4",
     "env-cmd": "^10.1.0",
-    "concurrently": "^9.0.1",
-    "caddy-baron": "^2.0.1",
-    "node-mkcert-binary": "^2.1.9"
+    "node-mkcert-binary": "^2.1.9",
+    "rimraf": "^6.0.1"
   }
 }
