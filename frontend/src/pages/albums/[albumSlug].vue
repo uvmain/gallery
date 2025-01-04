@@ -68,7 +68,7 @@ onBeforeMount(async () => {
 
 <template>
   <div class="min-h-screen bg-gray-300">
-    <Header bg="300" :show-edit="true" @edit="edit()">
+    <Header :show-edit="true" @edit="edit()">
       <div v-if="userLoginState" class="p-2 hover:cursor-pointer" @click="deleteAlbum">
         <icon-tabler-trash-x class="text-2xl" :class="iconColour" />
       </div>

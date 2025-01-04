@@ -3,11 +3,12 @@
 </template>
 
 <style>
-html, body {
+html, body, #app {
   margin: 0;
   padding: 0;
   border: 0;
   font-family: 'Montserrat', sans-serif;
-  height: 100%;
+  min-height: 100%;
+  @apply standard;
 }
 </style>

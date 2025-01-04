@@ -72,7 +72,7 @@ const whiteBalance = computed(() => {
 })
 
 const loadOriginalIconColour = computed(() => {
-  return imageSize.value === 'optimised' ? 'text-gray-600' : 'text-gray-400'
+  return imageSize.value === 'optimised' ? '' : 'text-gray-400'
 })
 
 async function getMetadata() {
@@ -158,8 +158,8 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-300">
-    <Header bg="300" :show-edit="!inEditingMode" @edit="enableEditing">
+  <div class="min-h-screen">
+    <Header :show-edit="!inEditingMode" @edit="enableEditing">
       <div v-if="inEditingMode" class="p-2 hover:cursor-pointer" @click="disableEditing">
         <icon-tabler-edit-off class="text-2xl text-red-700" />
       </div>
@@ -168,25 +168,25 @@ onBeforeMount(async () => {
       </div>
     </Header>
     <div id="main" class="flex flex-row justify-center gap-6 p-6">
-      <img v-if="imageSource" :src="imageSource" class="max-h-80vh max-w-70vw border-6 border-white border-solid" />
+      <img v-if="imageSource" :src="imageSource" class="max-h-80vh max-w-70vw border-6 border-white dark:border-neutral-500 border-solid" />
       <div v-if="metadata" class="flex flex-col gap-4 p-6 text-sm lg:max-w-1/3">
         <div>
           <div v-if="inEditingMode">
             <label for="imageTitle" class="mb-4 text-2xl">
               Title:
             </label>
-            <input id="imageTitle" v-model="metadata.title" type="text">
+            <input id="imageTitle" v-model="metadata.title" type="text" @keypress.enter="saveMetadata">
           </div>
-          <h1 v-else class="mb-4 text-2xl text-gray-700 font-semibold">
+          <h1 v-else class="mb-4 text-2xl font-semibold">
             {{ metadata.title }}
           </h1>
         </div>
 
         <div v-if="camera" class="flex items-center space-x-3">
-          <icon-tabler-camera class="text-3xl text-gray-600" />
+          <icon-tabler-camera class="text-3xl" />
           <div class="flex flex-col gap-1 text-base">
-            <span class="text-gray-700 font-medium">{{ camera }}</span>
-            <span class="text-gray-600">{{ lens }}</span>
+            <span>{{ camera }}</span>
+            <span>{{ lens }}</span>
           </div>
         </div>
 
@@ -199,59 +199,59 @@ onBeforeMount(async () => {
           </div>
           <div v-else>
             <div v-if="dateTaken" class="flex items-center space-x-3">
-              <icon-tabler-calendar class="text-2xl text-gray-600" />
-              <span class="text-gray-600">Taken on {{ dateTaken }}</span>
+              <icon-tabler-calendar class="text-2xl" />
+              <span>Taken on {{ dateTaken }}</span>
             </div>
           </div>
         </div>
 
         <div v-if="dateUploaded" class="flex items-center space-x-3">
-          <icon-tabler-upload class="text-2xl text-gray-600" />
-          <span class="text-gray-600">Uploaded on {{ dateUploaded }}</span>
+          <icon-tabler-upload class="text-2xl" />
+          <span>Uploaded on {{ dateUploaded }}</span>
         </div>
 
         <div v-if="metadata.exposureMode && metadata.exposureMode !== 'unknown'" class="flex items-center space-x-3">
-          <icon-tabler-settings class="text-2xl text-gray-600" />
-          <span class="text-gray-600">Mode: {{ metadata.exposureMode }}</span>
+          <icon-tabler-settings class="text-2xl" />
+          <span>Mode: {{ metadata.exposureMode }}</span>
         </div>
 
         <div v-if="fStop" class="flex items-center space-x-3">
-          <icon-tabler-aperture class="text-2xl text-gray-600" />
-          <span class="text-gray-600">{{ fStop }}</span>
+          <icon-tabler-aperture class="text-2xl" />
+          <span>{{ fStop }}</span>
         </div>
 
         <div v-if="focalLength" class="flex items-center space-x-3">
-          <icon-tabler-eye-pin class="text-2xl text-gray-600" />
-          <span class="text-gray-600">{{ focalLength }}</span>
+          <icon-tabler-eye-pin class="text-2xl" />
+          <span>{{ focalLength }}</span>
         </div>
 
         <div v-if="metadata.exposureTime && metadata.exposureTime !== 'unknown'" class="flex items-center space-x-3">
-          <icon-tabler-clock class="text-2xl text-gray-600" />
-          <span class="text-gray-600">{{ metadata.exposureTime }}</span>
+          <icon-tabler-clock class="text-2xl" />
+          <span>{{ metadata.exposureTime }}</span>
         </div>
 
         <div v-if="metadata.iso && metadata.iso !== 'unknown'" class="flex items-center space-x-3">
-          <icon-carbon-iso-outline class="text-2xl text-gray-600" />
-          <span class="text-gray-600">{{ metadata.iso }}</span>
+          <icon-carbon-iso-outline class="text-2xl" />
+          <span>{{ metadata.iso }}</span>
         </div>
 
         <div v-if="metadata.flashStatus && metadata.flashStatus !== 'unknown'" class="flex items-center space-x-3">
-          <icon-tabler-bolt class="text-2xl text-gray-600" />
-          <span class="text-gray-600">{{ metadata.flashStatus }}</span>
+          <icon-tabler-bolt class="text-2xl" />
+          <span>{{ metadata.flashStatus }}</span>
         </div>
 
         <div v-if="whiteBalance" class="flex items-center space-x-3">
-          <icon-tabler-sun class="text-2xl text-gray-600" />
-          <span class="text-gray-600">{{ whiteBalance }}</span>
+          <icon-tabler-sun class="text-2xl" />
+          <span>{{ whiteBalance }}</span>
         </div>
         <br>
         <div class="flex cursor-pointer items-center space-x-3" @click="loadOriginal()">
-          <icon-tabler-arrow-autofit-up class="text-2xl" :class="loadOriginalIconColour" />
-          <span class="text-gray-600">{{ loadOriginalText }}</span>
+          <icon-tabler-arrow-autofit-up id="load-original" class="text-2xl" :class="loadOriginalIconColour" />
+          <label for="load-original">{{ loadOriginalText }}</label>
         </div>
         <div class="flex cursor-pointer items-center space-x-3" @click="downloadOriginal()">
-          <icon-tabler-download class="text-2xl text-gray-600" />
-          <span class="text-gray-600">Download original</span>
+          <icon-tabler-download id="download-original" class="text-2xl" />
+          <label for="download-original">Download original</label>
         </div>
         <PhotoAlbums v-model:in-editing-mode="inEditingMode" :image-slug="slug" @add-to-album="addToAlbum()" />
       </div>

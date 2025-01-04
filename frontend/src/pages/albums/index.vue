@@ -49,7 +49,7 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100">
+  <div class="min-h-screen">
     <Header :show-add="true" @add="addAlbum" />
     <div id="main" class="grid grid-cols-2 mx-auto gap-8 p-6 lg:grid-cols-7 md:grid-cols-4 lg:max-w-8/10">
       <div v-for="(album, index) in albums" :key="index" class="relative">

@@ -84,7 +84,7 @@ onBeforeMount(async () => {
 <template>
   <div>
     <Header class="sticky top-0 z-10" :class="headerShadowClass" />
-    <div class="flex flex-col items-center bg-gray-100 p-6">
+    <div class="flex flex-col items-center p-6">
       <div class="flex flex-wrap gap-x-1 lg:max-w-8/10">
         <div ref="startObserver" />
         <div v-for="(slug, index) in slugs" :key="index" class="flex-1 basis-auto">

@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { useSessionStorage } from '@vueuse/core'
+import { useDark, useSessionStorage, useToggle } from '@vueuse/core'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getRandomSlug } from '../composables/getRandomSlug'
 
-const props = defineProps({
-  bg: { type: String, required: false },
+defineProps({
   showAdd: { type: Boolean, default: false },
   showEdit: { type: Boolean, default: false },
 })
@@ -13,6 +12,8 @@ const props = defineProps({
 const emit = defineEmits(['add', 'edit'])
 
 const isModalOpened = ref(false)
+const isDark = useDark()
+const toggleDark = useToggle(isDark)
 
 function openModal() {
   isModalOpened.value = true
@@ -22,21 +23,9 @@ function closeModal() {
   isModalOpened.value = false
 }
 
-const bgColour = computed(() => {
-  if (props.bg === '200')
-    return 'bg-gray-200'
-  else if (props.bg === '300')
-    return 'bg-gray-300'
-  else return 'bg-gray-100'
-})
-
 const router = useRouter()
 
 const userLoginState = useSessionStorage('login-state', false)
-
-const iconColour = computed(() => {
-  return userLoginState.value ? 'text-gray-600' : 'text-gray-400'
-})
 
 function enableEdit() {
   if (userLoginState.value) {
@@ -68,23 +57,23 @@ async function navigateUpload() {
 </script>
 
 <template>
-  <div class="h-18 px-6" :class="bgColour">
+  <div class="h-18 px-6 standard">
     <header class="mx-auto flex justify-between lg:max-w-8/10 lg:p-6">
       <div class="flex gap-4">
         <div
-          class="p-2 text-2xl text-gray-700 hover:cursor-pointer"
+          class="p-2 text-2xl hover:cursor-pointer"
           @click="navigateHome"
         >
           home
         </div>
         <div
-          class="p-2 text-2xl text-gray-700 hover:cursor-pointer"
+          class="p-2 text-2xl hover:cursor-pointer"
           @click="navigateAlbums"
         >
           albums
         </div>
         <div
-          class="p-2 text-2xl text-gray-700 hover:cursor-pointer"
+          class="p-2 text-2xl hover:cursor-pointer"
           @click="navigateRandom"
         >
           random
@@ -92,17 +81,23 @@ async function navigateUpload() {
       </div>
       <div class="flex gap-4">
         <div class="p-2 hover:cursor-pointer" @click="navigateUpload">
-          <icon-tabler-upload class="text-2xl" :class="iconColour" />
+          <icon-tabler-upload class="text-2xl" />
         </div>
         <slot />
         <div v-if="showAdd" class="p-2 hover:cursor-pointer" @click="emit('add')">
-          <icon-tabler-library-plus class="text-2xl" :class="iconColour" />
+          <icon-tabler-library-plus class="text-2xl" />
         </div>
         <div v-if="showEdit" class="p-2 hover:cursor-pointer" @click="enableEdit">
-          <icon-tabler-edit class="text-2xl" :class="iconColour" />
+          <icon-tabler-edit class="text-2xl" />
+        </div>
+        <div v-if="isDark" class="p-2 hover:cursor-pointer" @click="toggleDark()">
+          <icon-tabler-moon-stars class="text-2xl" />
+        </div>
+        <div v-else class="p-2 hover:cursor-pointer" @click="toggleDark()">
+          <icon-tabler-sun class="text-2xl" />
         </div>
         <div class="p-2 hover:cursor-pointer" @click="openModal">
-          <icon-tabler-user class="text-2xl text-gray-600" />
+          <icon-tabler-user class="text-2xl" />
         </div>
       </div>
       <LoginModal :is-open="isModalOpened" @modal-close="closeModal" @submit="navigateHome" />

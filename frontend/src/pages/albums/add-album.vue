@@ -26,7 +26,7 @@ async function addAlbum() {
 
 <template>
   <div class="min-h-screen bg-gray-300">
-    <Header bg="300" :show-edit="true">
+    <Header :show-edit="true">
     </Header>
     <div @click="addAlbum">
       testing
