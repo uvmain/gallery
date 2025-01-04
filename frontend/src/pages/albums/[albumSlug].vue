@@ -94,7 +94,7 @@ onBeforeMount(async () => {
     </div>
     <div v-if="inEditingMode">
       <div v-if="selectedImage.length">
-        {{selectedImage}}
+        {{ selectedImage }}
       </div>
     </div>
     <div id="main" class="grid grid-cols-2 mx-auto gap-8 p-6 lg:grid-cols-7 md:grid-cols-4 lg:max-w-8/10">

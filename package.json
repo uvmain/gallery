@@ -12,9 +12,10 @@
     "build:backend": "cd api && go build -o server . && cpy server . --rename=server.exe",
     "build:frontend": "cd frontend && npm run build && cpy dist ../",
     "build": "cross-env CGO_ENABLED=0 npm run build:frontend && npm run build:backend",
-    "preview": "cd api && cross-env IMAGE_PATH=E:/photography ADMIN_USER=admin ADMIN_PASSWORD=password server.exe",
+    "preview": "concurrently \"npm run caddy:preview\" \"cd api && cross-env LOCAL_DEV_ENV=true IMAGE_PATH=E:/photography ADMIN_USER=admin ADMIN_PASSWORD=password server.exe\"",
     "create-cert": "mkcert photogallery.localhost && mkcert --install",
     "caddy": "caddy run --config Caddyfile",
+    "caddy:preview": "caddy run --config Caddyfile.preview",
     "cspell": "cspell \"**/*.{go,ts,js,vue}\""
   },
   "devDependencies": {

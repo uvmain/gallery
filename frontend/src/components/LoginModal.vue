@@ -97,7 +97,7 @@ onClickOutside(target, () => emit('modalClose'))
       </div>
     </div>
     <div v-else>
-      <div class="standard mx-auto mb-auto mt-150px w-300px rounded-lg px-30px pb-30px pt-20px">
+      <div class="mx-auto mb-auto mt-150px w-300px rounded-lg px-30px pb-30px pt-20px standard">
         <div class="mb-2 py-4 text-center">
           You are logged in.
         </div>

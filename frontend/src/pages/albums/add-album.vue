@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue'
+import { ref } from 'vue'
 import { backendFetchRequest } from '../../composables/fetchFromBackend'
 
 const newAlbumResponse = ref()

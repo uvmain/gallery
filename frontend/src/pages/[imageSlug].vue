@@ -168,7 +168,7 @@ onBeforeMount(async () => {
       </div>
     </Header>
     <div id="main" class="flex flex-row justify-center gap-6 p-6">
-      <img v-if="imageSource" :src="imageSource" class="max-h-80vh max-w-70vw border-6 border-white dark:border-neutral-500 border-solid" />
+      <img v-if="imageSource" :src="imageSource" class="max-h-80vh max-w-70vw border-6 border-white border-solid dark:border-neutral-500" />
       <div v-if="metadata" class="flex flex-col gap-4 p-6 text-sm lg:max-w-1/3">
         <div>
           <div v-if="inEditingMode">

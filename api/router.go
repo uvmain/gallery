@@ -20,7 +20,15 @@ func StartServer() {
 	// frontend
 	distDir := http.Dir("../dist")
 	fileServer := http.FileServer(distDir)
-	router.Handle("/{path...}", http.StripPrefix("/", fileServer))
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// serve static files
+		if _, err := distDir.Open(r.URL.Path); err == nil {
+			fileServer.ServeHTTP(w, r)
+			return
+		}
+		// serve index.html for non-static files
+		http.ServeFile(w, r, "../dist/index.html")
+	})
 
 	//auth
 	router.HandleFunc("POST /api/login", auth.LoginHandler)

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useDark, useSessionStorage, useToggle } from '@vueuse/core'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getRandomSlug } from '../composables/getRandomSlug'
 
