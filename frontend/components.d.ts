@@ -36,5 +36,6 @@ declare module 'vue' {
     PhotoAlbums: typeof import('./src/components/PhotoAlbums.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TooltipIcon: typeof import('./src/components/TooltipIcon.vue')['default']
   }
 }

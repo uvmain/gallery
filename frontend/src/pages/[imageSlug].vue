@@ -4,6 +4,7 @@ import { useSessionStorage } from '@vueuse/core'
 import dayjs from 'dayjs'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import TooltipIcon from '../components/TooltipIcon.vue'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
 
 const route = useRoute()
@@ -35,11 +36,11 @@ const focalLength = computed(() => {
 })
 
 const dateTaken = computed(() => {
-  return metadata.value && metadata.value.dateTaken !== 'unknown' ? dayjs(metadata.value.dateTaken).format('DD MMMM YYYY HH:mm:ss') : undefined
+  return metadata.value && metadata.value.dateTaken !== 'unknown' ? `Taken on ${dayjs(metadata.value.dateTaken).format('DD MMMM YYYY HH:mm:ss')}` : undefined
 })
 
 const dateUploaded = computed(() => {
-  return metadata.value && metadata.value.dateUploaded !== 'unknown' ? dayjs(metadata.value.dateUploaded).format('DD MMMM YYYY HH:mm:ss') : undefined
+  return metadata.value && metadata.value.dateUploaded !== 'unknown' ? `Uploaded on ${dayjs(metadata.value.dateUploaded).format('DD MMMM YYYY HH:mm:ss')}` : undefined
 })
 
 const camera = computed(() => {
@@ -203,97 +204,44 @@ onBeforeMount(async () => {
             <input id="dateTaken" v-model="metadata.dateTaken" type="datetime-local">
           </div>
           <div v-else>
-            <div v-if="dateTaken" class="flex items-center space-x-3">
-              <div class="group">
-                <icon-tabler-calendar class="text-2xl" />
-                <span class="tooltip">
-                  Date Taken
-                </span>
-              </div>
-              <span>Taken on {{ dateTaken }}</span>
-            </div>
+            <TooltipIcon v-if="dateTaken" tooltip-text="Date Taken" :content="dateTaken">
+              <icon-tabler-calendar class="text-2xl" />
+            </TooltipIcon>
           </div>
         </div>
 
-        <div v-if="dateUploaded" class="flex items-center space-x-3">
-          <div class="group">
-            <icon-tabler-upload class="text-2xl" />
-            <span class="tooltip">
-              Date Uploaded
-            </span>
-          </div>
-          <span>Uploaded on {{ dateUploaded }}</span>
-        </div>
+        <TooltipIcon v-if="dateUploaded" tooltip-text="Date Uploaded" :content="dateUploaded">
+          <icon-tabler-upload class="text-2xl" />
+        </TooltipIcon>
 
-        <div v-if="metadata.exposureMode && metadata.exposureMode !== 'unknown'" class="flex items-center space-x-3">
-          <div class="group">
-            <icon-tabler-settings class="text-2xl" />
-            <span class="tooltip">
-              Camera Mode
-            </span>
-          </div>
-          <span>Mode: {{ metadata.exposureMode }}</span>
-        </div>
+        <TooltipIcon v-if="metadata.exposureMode && metadata.exposureMode !== 'unknown'" tooltip-text="Exposure Mode" :content="metadata.exposureMode">
+          <icon-tabler-settings class="text-2xl" />
+        </TooltipIcon>
 
-        <div v-if="fStop" class="flex items-center space-x-3">
-          <div class="group">
-            <icon-tabler-aperture class="text-2xl" />
-            <span class="tooltip">
-              fStop
-            </span>
-          </div>
-          <span>{{ fStop }}</span>
-        </div>
+        <TooltipIcon v-if="fStop" tooltip-text="fStop" :content="fStop">
+          <icon-tabler-aperture class="text-2xl" />
+        </TooltipIcon>
 
-        <div v-if="focalLength" class="flex items-center space-x-3">
-          <div class="group">
-            <icon-tabler-eye-pin class="text-2xl" />
-            <span class="tooltip">
-              Focal Length
-            </span>
-          </div>
-          <span>{{ focalLength }}</span>
-        </div>
+        <TooltipIcon v-if="focalLength" tooltip-text="Focal Length" :content="focalLength">
+          <icon-tabler-eye-pin class="text-2xl" />
+        </TooltipIcon>
 
-        <div v-if="metadata.exposureTime && metadata.exposureTime !== 'unknown'" class="flex items-center space-x-3">
-          <div class="group">
-            <icon-tabler-clock class="text-2xl" />
-            <span class="tooltip">
-              Shutter Speed
-            </span>
-          </div>
-          <span>{{ metadata.exposureTime }}</span>
-        </div>
+        <TooltipIcon v-if="metadata.exposureTime && metadata.exposureTime !== 'unknown'" tooltip-text="Shutter Speed" :content="metadata.exposureTime">
+          <icon-tabler-clock class="text-2xl" />
+        </TooltipIcon>
 
-        <div v-if="metadata.iso && metadata.iso !== 'unknown'" class="flex items-center space-x-3">
-          <div class="group">
-            <icon-carbon-iso-outline class="text-2xl" />
-            <span class="tooltip">
-              ISO
-            </span>
-          </div>
-          <span>{{ metadata.iso }}</span>
-        </div>
+        <TooltipIcon v-if="metadata.iso && metadata.iso !== 'unknown'" tooltip-text="ISO" :content="metadata.iso">
+          <icon-carbon-iso-outline class="text-2xl" />
+        </TooltipIcon>
 
-        <div v-if="metadata.flashStatus && metadata.flashStatus !== 'unknown'" class="flex items-center space-x-3">
-          <div class="group">
-            <icon-tabler-bolt class="text-2xl" />
-            <span class="tooltip">
-              Flash Status
-            </span>
-          </div>
-          <span>{{ metadata.flashStatus }}</span>
-        </div>
+        <TooltipIcon v-if="metadata.flashStatus && metadata.flashStatus !== 'unknown'" tooltip-text="Flash Status" :content="metadata.flashStatus">
+          <icon-tabler-bolt class="text-2xl" />
+        </TooltipIcon>
 
-        <div v-if="whiteBalance" class="flex items-center space-x-3">
-          <div class="group">
-            <icon-tabler-sun class="text-2xl" />
-            <span class="tooltip">
-              White Balance
-            </span>
-          </div>
-          <span>{{ whiteBalance }}</span>
-        </div>
+        <TooltipIcon v-if="whiteBalance" tooltip-text="White Balance" :content="whiteBalance">
+          <icon-tabler-sun class="text-2xl" />
+        </TooltipIcon>
+
         <br>
         <div class="flex cursor-pointer items-center space-x-3" @click="loadOriginal()">
           <icon-tabler-arrow-autofit-up id="load-original" class="text-2xl" :class="loadOriginalIconColour" />

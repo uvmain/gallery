@@ -2,6 +2,7 @@
 import { useDark, useSessionStorage, useToggle } from '@vueuse/core'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import TooltipIcon from '../components/TooltipIcon.vue'
 import { getRandomSlug } from '../composables/getRandomSlug'
 
 defineProps({
@@ -80,25 +81,23 @@ async function navigateUpload() {
         </div>
       </div>
       <div class="flex gap-4">
-        <div class="p-2 hover:cursor-pointer" @click="navigateUpload">
+        <TooltipIcon tooltip-text="Upload" class="hover:cursor-pointer" @click="navigateUpload">
           <icon-tabler-upload class="text-2xl" />
-        </div>
+        </TooltipIcon>
         <slot />
-        <div v-if="showAdd" class="p-2 hover:cursor-pointer" @click="emit('add')">
+        <TooltipIcon v-if="showAdd" tooltip-text="Add" class="hover:cursor-pointer" @click="emit('add')">
           <icon-tabler-library-plus class="text-2xl" />
-        </div>
-        <div v-if="showEdit" class="p-2 hover:cursor-pointer" @click="enableEdit">
+        </TooltipIcon>
+        <TooltipIcon v-if="showEdit" tooltip-text="Edit Mode" class="hover:cursor-pointer" @click="enableEdit">
           <icon-tabler-edit class="text-2xl" />
-        </div>
-        <div v-if="isDark" class="p-2 hover:cursor-pointer" @click="toggleDark()">
-          <icon-tabler-moon-stars class="text-2xl" />
-        </div>
-        <div v-else class="p-2 hover:cursor-pointer" @click="toggleDark()">
-          <icon-tabler-sun class="text-2xl" />
-        </div>
-        <div class="p-2 hover:cursor-pointer" @click="openModal">
+        </TooltipIcon>
+        <TooltipIcon :tooltip-text="isDark ? 'Light Mode' : 'Dark Mode'" class="hover:cursor-pointer" @click="toggleDark()">
+          <icon-tabler-sun v-if="isDark" class="text-2xl" />
+          <icon-tabler-moon-stars v-else class="text-2xl" />
+        </TooltipIcon>
+        <TooltipIcon :tooltip-text="userLoginState ? 'Log Out' : 'Log In'" class="hover:cursor-pointer" @click="openModal">
           <icon-tabler-user class="text-2xl" />
-        </div>
+        </TooltipIcon>
       </div>
       <LoginModal :is-open="isModalOpened" @modal-close="closeModal" @submit="navigateHome" />
     </header>
