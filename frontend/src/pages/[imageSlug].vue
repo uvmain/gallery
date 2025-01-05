@@ -183,7 +183,12 @@ onBeforeMount(async () => {
         </div>
 
         <div v-if="camera" class="flex items-center space-x-3">
-          <icon-tabler-camera class="text-3xl" />
+          <div class="group">
+            <icon-tabler-camera class="text-3xl" />
+            <span class="tooltip">
+              Camera Model
+            </span>
+          </div>
           <div class="flex flex-col gap-1 text-base">
             <span>{{ camera }}</span>
             <span>{{ lens }}</span>
@@ -199,49 +204,94 @@ onBeforeMount(async () => {
           </div>
           <div v-else>
             <div v-if="dateTaken" class="flex items-center space-x-3">
-              <icon-tabler-calendar class="text-2xl" />
+              <div class="group">
+                <icon-tabler-calendar class="text-2xl" />
+                <span class="tooltip">
+                  Date Taken
+                </span>
+              </div>
               <span>Taken on {{ dateTaken }}</span>
             </div>
           </div>
         </div>
 
         <div v-if="dateUploaded" class="flex items-center space-x-3">
-          <icon-tabler-upload class="text-2xl" />
+          <div class="group">
+            <icon-tabler-upload class="text-2xl" />
+            <span class="tooltip">
+              Date Uploaded
+            </span>
+          </div>
           <span>Uploaded on {{ dateUploaded }}</span>
         </div>
 
         <div v-if="metadata.exposureMode && metadata.exposureMode !== 'unknown'" class="flex items-center space-x-3">
-          <icon-tabler-settings class="text-2xl" />
+          <div class="group">
+            <icon-tabler-settings class="text-2xl" />
+            <span class="tooltip">
+              Camera Mode
+            </span>
+          </div>
           <span>Mode: {{ metadata.exposureMode }}</span>
         </div>
 
         <div v-if="fStop" class="flex items-center space-x-3">
-          <icon-tabler-aperture class="text-2xl" />
+          <div class="group">
+            <icon-tabler-aperture class="text-2xl" />
+            <span class="tooltip">
+              fStop
+            </span>
+          </div>
           <span>{{ fStop }}</span>
         </div>
 
         <div v-if="focalLength" class="flex items-center space-x-3">
-          <icon-tabler-eye-pin class="text-2xl" />
+          <div class="group">
+            <icon-tabler-eye-pin class="text-2xl" />
+            <span class="tooltip">
+              Focal Length
+            </span>
+          </div>
           <span>{{ focalLength }}</span>
         </div>
 
         <div v-if="metadata.exposureTime && metadata.exposureTime !== 'unknown'" class="flex items-center space-x-3">
-          <icon-tabler-clock class="text-2xl" />
+          <div class="group">
+            <icon-tabler-clock class="text-2xl" />
+            <span class="tooltip">
+              Shutter Speed
+            </span>
+          </div>
           <span>{{ metadata.exposureTime }}</span>
         </div>
 
         <div v-if="metadata.iso && metadata.iso !== 'unknown'" class="flex items-center space-x-3">
-          <icon-carbon-iso-outline class="text-2xl" />
+          <div class="group">
+            <icon-carbon-iso-outline class="text-2xl" />
+            <span class="tooltip">
+              ISO
+            </span>
+          </div>
           <span>{{ metadata.iso }}</span>
         </div>
 
         <div v-if="metadata.flashStatus && metadata.flashStatus !== 'unknown'" class="flex items-center space-x-3">
-          <icon-tabler-bolt class="text-2xl" />
+          <div class="group">
+            <icon-tabler-bolt class="text-2xl" />
+            <span class="tooltip">
+              Flash Status
+            </span>
+          </div>
           <span>{{ metadata.flashStatus }}</span>
         </div>
 
         <div v-if="whiteBalance" class="flex items-center space-x-3">
-          <icon-tabler-sun class="text-2xl" />
+          <div class="group">
+            <icon-tabler-sun class="text-2xl" />
+            <span class="tooltip">
+              White Balance
+            </span>
+          </div>
           <span>{{ whiteBalance }}</span>
         </div>
         <br>
