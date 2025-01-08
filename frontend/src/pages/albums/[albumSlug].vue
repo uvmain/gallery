@@ -67,7 +67,7 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-300">
+  <div class="min-h-screen">
     <Header :show-edit="true" @edit="edit()">
       <div v-if="userLoginState" class="p-2 hover:cursor-pointer" @click="deleteAlbum">
         <icon-tabler-trash-x class="text-2xl" :class="iconColour" />
@@ -78,16 +78,16 @@ onBeforeMount(async () => {
         :src="getThumbnailPath(albumData.CoverSlug)"
         :alt="albumData.CoverSlug"
         onerror="this.onerror=null;this.src='/default-image.jpg';"
-        class="h-40 w-80 cursor-pointer border-2 border-white border-solid object-cover"
+        class="h-40 w-80 cursor-pointer border-2 border-white border-solid object-cover dark:border-neutral-500"
       />
       <div class="flex flex-col gap-2">
-        <div class="text-2xl text-gray-600">
+        <div class="text-2xl">
           {{ albumData.Name }}
         </div>
-        <div class="text-gray-600">
+        <div>
           Created: {{ niceDate(albumData.DateCreated) }}
         </div>
-        <div v-if="albumLinks" class="text-gray-600">
+        <div v-if="albumLinks">
           {{ albumLinks.length }} photos
         </div>
       </div>
@@ -118,10 +118,10 @@ onBeforeMount(async () => {
         </div>
       </div>
       <div class="flex justify-center gap-4">
-        <button class="px-4 py-2" @click="hideDialog()">
+        <button aria-label="cancel" class="px-4 py-2" @click="hideDialog()">
           Cancel
         </button>
-        <button class="px-4 py-2" @click="confirmDeleteAlbum()">
+        <button aria-label="delete" class="px-4 py-2" @click="confirmDeleteAlbum()">
           Delete
         </button>
       </div>

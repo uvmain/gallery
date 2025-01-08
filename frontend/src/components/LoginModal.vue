@@ -87,10 +87,10 @@ onClickOutside(target, () => emit('modalClose'))
           </form>
         </div>
         <div class="flex justify-center gap-4">
-          <button class="px-4 py-2" @click="cancel">
+          <button aria-label="cancel" class="px-4 py-2" @click="cancel">
             Cancel
           </button>
-          <button class="px-4 py-2" @click="login">
+          <button aria-label="login" class="px-4 py-2" @click="login">
             Login
           </button>
         </div>
@@ -102,10 +102,10 @@ onClickOutside(target, () => emit('modalClose'))
           You are logged in.
         </div>
         <div class="flex justify-center gap-4">
-          <button class="px-4 py-2" @click="cancel">
+          <button aria-label="cancel" class="px-4 py-2" @click="cancel" @keydown.escape="cancel">
             Cancel
           </button>
-          <button class="px-4 py-2" @click="logout">
+          <button aria-label="logout" class="px-4 py-2" @click="logout">
             Logout
           </button>
         </div>

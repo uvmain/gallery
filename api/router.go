@@ -14,6 +14,12 @@ import (
 	"github.com/rs/cors"
 )
 
+func enableCdnCaching(w http.ResponseWriter) {
+	expiryDate := time.Now().AddDate(1, 0, 0)
+	w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+	w.Header().Set("Expires", expiryDate.String())
+}
+
 func StartServer() {
 	router := http.NewServeMux()
 
@@ -23,6 +29,7 @@ func StartServer() {
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		// serve static files
 		if _, err := distDir.Open(r.URL.Path); err == nil {
+			enableCdnCaching(w)
 			fileServer.ServeHTTP(w, r)
 			return
 		}
@@ -65,12 +72,6 @@ func StartServer() {
 	}
 
 	http.ListenAndServe(serverAddress, handler)
-}
-
-func enableCdnCaching(w http.ResponseWriter) {
-	expiryDate := time.Now().AddDate(1, 0, 0)
-	w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
-	w.Header().Set("Expires", expiryDate.String())
 }
 
 func handleGetSlugs(w http.ResponseWriter, r *http.Request) {

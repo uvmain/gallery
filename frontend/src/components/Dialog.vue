@@ -26,7 +26,7 @@ defineExpose({ show, hide })
       <slot />
     </div>
     <slot name="successOkButton">
-      <button v-if="closeButton" class="mx-auto mt-4 block rounded px-6 py-3" @click="dialog?.close()">
+      <button v-if="closeButton" aria-label="close" class="mx-auto mt-4 block rounded px-6 py-3" @click="dialog?.close()">
         Close
       </button>
     </slot>
