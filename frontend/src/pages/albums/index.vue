@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type Dialog from '../../components/Dialog.vue'
 import type { Album } from '../../composables/albums'
+import { useSessionStorage } from '@vueuse/core'
 import { onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getAllAlbums } from '../../composables/albums'
@@ -12,6 +13,7 @@ const addDialog = ref<typeof Dialog>()
 const deleteDialog = ref<typeof Dialog>()
 const selectedAlbum = ref()
 const newAlbumName = ref<string>()
+const userLoginState = useSessionStorage('login-state', false)
 
 function addAlbum() {
   addDialog.value?.show()
@@ -74,7 +76,7 @@ onBeforeMount(async () => {
 
 <template>
   <div class="min-h-screen">
-    <Header :show-add="true" @add="addAlbum" />
+    <Header :show-add="userLoginState" @add="addAlbum" />
     <div id="main" class="grid grid-cols-2 mx-auto gap-8 p-6 lg:grid-cols-7 md:grid-cols-4 lg:max-w-8/10">
       <div v-for="(album, index) in albums" :key="index" class="relative">
         <AlbumCoverLarge :album="album" @trash="trashAlbum(album)" @navigate="navigateToAlbum(album.Slug)" />

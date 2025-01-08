@@ -81,14 +81,14 @@ async function navigateUpload() {
         </div>
       </div>
       <div class="flex gap-4">
-        <TooltipIcon tooltip-text="Upload" class="hover:cursor-pointer" @click="navigateUpload">
+        <TooltipIcon v-if="userLoginState" tooltip-text="Upload" class="hover:cursor-pointer" @click="navigateUpload">
           <icon-tabler-upload class="text-2xl" />
         </TooltipIcon>
         <slot />
-        <TooltipIcon v-if="showAdd" tooltip-text="Add" class="hover:cursor-pointer" @click="emit('add')">
+        <TooltipIcon v-if="showAdd && userLoginState" tooltip-text="Add" class="hover:cursor-pointer" @click="emit('add')">
           <icon-tabler-library-plus class="text-2xl" />
         </TooltipIcon>
-        <TooltipIcon v-if="showEdit" tooltip-text="Edit Mode" class="hover:cursor-pointer" @click="enableEdit">
+        <TooltipIcon v-if="showEdit && userLoginState" tooltip-text="Edit Mode" class="hover:cursor-pointer" @click="enableEdit">
           <icon-tabler-edit class="text-2xl" />
         </TooltipIcon>
         <TooltipIcon :tooltip-text="isDark ? 'Light Mode' : 'Dark Mode'" class="hover:cursor-pointer" @click="toggleDark()">
