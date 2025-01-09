@@ -84,17 +84,20 @@ async function navigateUpload() {
         <TooltipIcon v-if="userLoginState" tooltip-text="Upload" class="hover:cursor-pointer" @click="navigateUpload">
           <icon-tabler-upload class="text-2xl" />
         </TooltipIcon>
-        <slot />
+        <slot name="1" />
         <TooltipIcon v-if="showAdd && userLoginState" tooltip-text="Add" class="hover:cursor-pointer" @click="emit('add')">
           <icon-tabler-library-plus class="text-2xl" />
         </TooltipIcon>
+        <slot name="2" />
         <TooltipIcon v-if="showEdit && userLoginState" tooltip-text="Edit Mode" class="hover:cursor-pointer" @click="enableEdit">
           <icon-tabler-edit class="text-2xl" />
         </TooltipIcon>
+        <slot name="3" />
         <TooltipIcon :tooltip-text="isDark ? 'Light Mode' : 'Dark Mode'" class="hover:cursor-pointer" @click="toggleDark()">
           <icon-tabler-sun v-if="isDark" class="text-2xl" />
           <icon-tabler-moon-stars v-else class="text-2xl" />
         </TooltipIcon>
+        <slot name="4" />
         <TooltipIcon :tooltip-text="userLoginState ? 'Log Out' : 'Log In'" class="hover:cursor-pointer" @click="openModal">
           <icon-tabler-user class="text-2xl" />
         </TooltipIcon>

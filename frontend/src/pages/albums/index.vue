@@ -14,9 +14,14 @@ const deleteDialog = ref<typeof Dialog>()
 const selectedAlbum = ref()
 const newAlbumName = ref<string>()
 const userLoginState = useSessionStorage('login-state', false)
+const inEditingMode = ref(false)
 
 function addAlbum() {
   addDialog.value?.show()
+}
+
+function edit() {
+  inEditingMode.value = !inEditingMode.value
 }
 
 async function confirmAddAlbum() {
@@ -76,10 +81,17 @@ onBeforeMount(async () => {
 
 <template>
   <div class="min-h-screen">
-    <Header :show-add="userLoginState" @add="addAlbum" />
+    <Header :show-add="userLoginState" :show-edit="!inEditingMode" @edit="edit()" @add="addAlbum">
+      <template #2>
+        <div v-if="inEditingMode" class="p-2 hover:cursor-pointer" @click="edit()">
+          <icon-tabler-edit-off class="text-2xl text-red-700" />
+        </div>
+      </template>
+    </Header>
+
     <div id="main" class="grid grid-cols-2 mx-auto gap-8 p-6 lg:grid-cols-7 md:grid-cols-4 lg:max-w-8/10">
       <div v-for="(album, index) in albums" :key="index" class="relative">
-        <AlbumCoverLarge :album="album" @trash="trashAlbum(album)" @navigate="navigateToAlbum(album.Slug)" />
+        <AlbumCoverLarge :album="album" :in-edit-mode="inEditingMode" @trash="trashAlbum(album)" @navigate="navigateToAlbum(album.Slug)" />
       </div>
     </div>
     <Dialog ref="addDialog" :close-button="false" class="modal">

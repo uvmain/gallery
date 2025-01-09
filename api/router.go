@@ -56,9 +56,12 @@ func StartServer() {
 
 	// authenticated routes
 	router.Handle("PATCH /api/metadata/{slug}", auth.AuthMiddleware(http.HandlerFunc(handlePatchMetadataBySlug)))
+	router.Handle("PATCH /api/albums/cover", auth.AuthMiddleware(http.HandlerFunc(handlePatchAlbumCover)))
+	router.Handle("PATCH /api/albums/name", auth.AuthMiddleware(http.HandlerFunc(handlePatchAlbumName)))
 	router.Handle("POST /api/albums", auth.AuthMiddleware(http.HandlerFunc(handlePostAlbumRow)))
 	router.Handle("DELETE /api/albums/{albumSlug}", auth.AuthMiddleware(http.HandlerFunc(handleDeleteAlbumRow)))
-	router.Handle("POST /api/link", auth.AuthMiddleware(http.HandlerFunc(handlePostLinkRows)))
+	router.Handle("POST /api/link", auth.AuthMiddleware(http.HandlerFunc(handlePostLinkRow)))
+	router.Handle("DELETE /api/link", auth.AuthMiddleware(http.HandlerFunc(handleDeleteLinkRow)))
 	router.Handle("POST /api/links", auth.AuthMiddleware(http.HandlerFunc(handlePostLinkRows)))
 
 	handler := cors.AllowAll().Handler(router)
@@ -220,6 +223,20 @@ func handlePostLinkRow(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Link row inserted successfully"))
 }
 
+func handleDeleteLinkRow(w http.ResponseWriter, r *http.Request) {
+	var updates types.Link
+	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+	if err := database.DeleteLinkRow(updates); err != nil {
+		http.Error(w, "Failed to insert link", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Link row inserted successfully"))
+}
+
 func handlePostLinkRows(w http.ResponseWriter, r *http.Request) {
 	var updates types.Links
 
@@ -241,6 +258,42 @@ func handlePostLinkRows(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Link rows inserted successfully"))
+}
+
+func handlePatchAlbumCover(w http.ResponseWriter, r *http.Request) {
+	type CoverUpdate struct {
+		AlbumSlug string
+		CoverSlug string
+	}
+	var updates CoverUpdate
+	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
+		http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
+		return
+	}
+	if err := database.UpdateAlbumCover(updates.AlbumSlug, updates.CoverSlug); err != nil {
+		http.Error(w, "Failed to insert link: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Cover rows updated successfully"))
+}
+
+func handlePatchAlbumName(w http.ResponseWriter, r *http.Request) {
+	type AlbumNameUpdate struct {
+		AlbumSlug string
+		AlbumName string
+	}
+	var update AlbumNameUpdate
+	if err := json.NewDecoder(r.Body).Decode(&update); err != nil {
+		http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
+		return
+	}
+	if err := database.UpdateAlbumName(update.AlbumSlug, update.AlbumName); err != nil {
+		http.Error(w, "Failed to udpate Album Name: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Album Name updated successfully"))
 }
 
 func handleDeleteAlbumRow(w http.ResponseWriter, r *http.Request) {

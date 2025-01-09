@@ -14,6 +14,7 @@ const emits = defineEmits(['addToAlbum'])
 const imageAlbums = ref<Album[]>([])
 
 async function getAllAlbumsList() {
+  imageAlbums.value = []
   const response = await backendFetchRequest(`links/image/${props.imageSlug}`)
   const albumSlugs: string[] = await response.json() || []
   albumSlugs.forEach(async (albumSlug) => {

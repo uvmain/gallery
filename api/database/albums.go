@@ -119,6 +119,40 @@ func DeleteAlbumRow(albumSlug string) error {
 	return nil
 }
 
+func UpdateAlbumCover(albumSlug string, coverSlug string) error {
+	stmt, err := Database.Prepare(`UPDATE albums set coverSlug = ? where slug = ?;`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(coverSlug, albumSlug)
+	if err != nil {
+		log.Printf("error updating cover for album row: %s", err)
+		return err
+	}
+
+	log.Printf("Cover updated to %s successfully for albumSlug %s", coverSlug, albumSlug)
+	return nil
+}
+
+func UpdateAlbumName(albumSlug string, albumName string) error {
+	stmt, err := Database.Prepare(`UPDATE albums set name = ? where slug = ?;`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(albumName, albumSlug)
+	if err != nil {
+		log.Printf("error updating name for album row: %s", err)
+		return err
+	}
+
+	log.Printf("Album Name updated to %s successfully for albumSlug %s", albumName, albumSlug)
+	return nil
+}
+
 func InitialiseAlbums(db *sql.DB) {
 	createAlbumsTable(db)
 }

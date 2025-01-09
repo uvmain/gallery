@@ -4,14 +4,26 @@ import { onMounted, ref } from 'vue'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
 import { getThumbnailPath } from '../composables/logic'
 
+const props = defineProps({
+  singleSelect: { type: Boolean, default: false },
+  definedSlugs: { type: Array, default: () => [] },
+})
+
+const emit = defineEmits(['closeModal'])
+
 const slugs = ref()
 
 const selectedSlugs = useSessionStorage<string[]>('selected-slugs', [])
 
 async function getSlugs() {
-  const response = await backendFetchRequest('slugs')
-  const jsonData = await response.json() as string
-  slugs.value = [...jsonData]
+  if (props.definedSlugs.length > 0) {
+    slugs.value = props.definedSlugs
+  }
+  else {
+    const response = await backendFetchRequest('slugs')
+    const jsonData = await response.json() as string
+    slugs.value = [...jsonData]
+  }
 }
 
 function toggleSelected(slug: string) {
@@ -21,6 +33,9 @@ function toggleSelected(slug: string) {
   }
   else {
     selectedSlugs.value.push(slug)
+    if (props.singleSelect === true) {
+      emit('closeModal', slug)
+    }
   }
 }
 

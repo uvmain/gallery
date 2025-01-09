@@ -16,9 +16,9 @@ const albumData = ref<Album | undefined>()
 const albumLinks = ref<string[]>([])
 const deleteDialog = ref<typeof Dialog>()
 const addToAlbumDialog = ref<typeof Dialog>()
+const coverDialog = ref<typeof Dialog>()
 const albumSlug = ref(route.params.albumSlug as string)
 const userLoginState = useSessionStorage('login-state', false)
-const selectedImage = useSessionStorage('selected-image', '')
 const inEditingMode = ref(false)
 
 const selectedSlugs = useSessionStorage<string[]>('selected-slugs', [])
@@ -37,6 +37,8 @@ async function addImagesToAlbum() {
 
   if (response.status === 200) {
     await getLinkData()
+    selectedSlugs.value = []
+    hideAddDialog()
   }
 }
 
@@ -50,8 +52,65 @@ async function getLinkData() {
   albumLinks.value = await response.json()
 }
 
+async function deleteLink(imageSlug: string) {
+  const data = {
+    AlbumSlug: albumData.value?.Slug,
+    ImageSlug: imageSlug,
+  }
+  const options = {
+    body: JSON.stringify(data),
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+  }
+  const response = await backendFetchRequest('link', options)
+
+  if (response.status === 200) {
+    await getLinkData()
+  }
+}
+
+async function updateAlbumName() {
+  const data = {
+    AlbumSlug: albumData.value?.Slug,
+    AlbumName: albumData.value?.Name,
+  }
+  const options = {
+    body: JSON.stringify(data),
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+  }
+  const response = await backendFetchRequest(`albums/name`, options)
+  inEditingMode.value = false
+  if (response.status === 200) {
+    await getAlbumData()
+  }
+}
+
+async function swapCover(coverSlug: string) {
+  const data = {
+    AlbumSlug: albumData.value?.Slug,
+    CoverSlug: coverSlug,
+  }
+  const options = {
+    body: JSON.stringify(data),
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+  }
+  const response = await backendFetchRequest(`albums/cover`, options)
+  hideCoverDialog()
+
+  if (response.status === 200) {
+    await getAlbumData()
+  }
+}
+
 function showDeleteDialog() {
   deleteDialog.value?.show()
+}
+
+function showCoverDialog() {
+  selectedSlugs.value = []
+  coverDialog.value?.show()
 }
 
 async function confirmDeleteAlbum() {
@@ -74,8 +133,13 @@ function hideDeleteDialog() {
   deleteDialog.value?.hide()
 }
 
+function hideCoverDialog() {
+  coverDialog.value?.hide()
+}
+
 function hideAddDialog() {
   addToAlbumDialog.value?.hide()
+  selectedSlugs.value = []
 }
 
 function edit() {
@@ -90,22 +154,30 @@ onBeforeMount(async () => {
 
 <template>
   <div class="min-h-screen">
-    <Header :show-edit="true" :show-add="true" @edit="edit()" @add="addToAlbumDialog?.show()">
+    <Header :show-add="true" :show-edit="!inEditingMode" @edit="edit()" @add="addToAlbumDialog?.show()">
       <div v-if="userLoginState" class="p-2 hover:cursor-pointer" @click="showDeleteDialog">
         <icon-tabler-trash-x class="text-2xl" />
       </div>
+      <template #2>
+        <div v-if="inEditingMode" class="p-2 hover:cursor-pointer" @click="edit()">
+          <icon-tabler-edit-off class="text-2xl text-red-700" />
+        </div>
+        <div v-if="inEditingMode" class="p-2 hover:cursor-pointer" @click="updateAlbumName">
+          <icon-tabler-checkbox class="text-2xl text-green-700" />
+        </div>
+      </template>
     </Header>
+
     <div v-if="albumData" class="flex flex-row items-center justify-center gap-6 p-6 lg:max-w-8/10">
-      <img
-        :src="getThumbnailPath(albumData.CoverSlug)"
-        :alt="albumData.CoverSlug"
-        onerror="this.onerror=null;this.src='/default-image.jpg';"
-        class="h-40 w-80 cursor-pointer border-2 border-white border-solid object-cover dark:border-neutral-500"
-      />
+      <PhotoThumbnail :slug="albumData.CoverSlug" :edit-mode="inEditingMode" :large="true" @edit-image="showCoverDialog()" />
       <div class="flex flex-col gap-2">
-        <div class="text-2xl">
+        <div v-if="inEditingMode">
+          <input id="imageTitle" v-model="albumData.Name" type="text" class="input" @keypress.enter="updateAlbumName">
+        </div>
+        <div v-else class="text-2xl">
           {{ albumData.Name }}
         </div>
+
         <div>
           Created: {{ niceDate(albumData.DateCreated) }}
         </div>
@@ -115,9 +187,9 @@ onBeforeMount(async () => {
       </div>
     </div>
 
-    <div id="main" class="grid grid-cols-2 mx-auto gap-8 p-6 lg:grid-cols-7 md:grid-cols-4 lg:max-w-8/10">
-      <div v-for="(imageSlug, index) in albumLinks" :key="index" class="relative">
-        <PhotoThumbnail :slug="imageSlug" />
+    <div class="mx-auto flex flex-wrap gap-x-2 gap-y-1 lg:max-w-8/10">
+      <div v-for="(slug, index) in albumLinks" :key="index">
+        <PhotoThumbnail :slug="slug" :delete-mode="inEditingMode" :square="true" @delete-image="deleteLink(slug)" />
       </div>
     </div>
 
@@ -160,6 +232,10 @@ onBeforeMount(async () => {
         </button>
       </div>
       <ImageSelector />
+    </Dialog>
+
+    <Dialog ref="coverDialog" :close-button="false" class="size-90%" @keydown.escape="hideAddDialog()">
+      <ImageSelector :single-select="true" :defined-slugs="albumLinks" @close-modal="swapCover" />
     </Dialog>
   </div>
 </template>
