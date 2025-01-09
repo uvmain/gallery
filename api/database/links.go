@@ -105,7 +105,7 @@ func GetAllLinks() []types.Link {
 }
 
 func InsertLinkRow(link types.Link) error {
-	stmt, err := Database.Prepare(`INSERT INTO albums (
+	stmt, err := Database.Prepare(`INSERT INTO album_links (
 		albumSlug, imageSlug
 	) VALUES (?, ?);`)
 	if err != nil {
@@ -126,7 +126,7 @@ func InsertLinkRow(link types.Link) error {
 }
 
 func DeleteLinkRow(link types.Link) error {
-	stmt, err := Database.Prepare(`DELETE FROM albums where albumSlug = ? and imageSlug = ?;`)
+	stmt, err := Database.Prepare(`DELETE FROM album_links where albumSlug = ? and imageSlug = ?;`)
 	if err != nil {
 		return err
 	}

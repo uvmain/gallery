@@ -2,8 +2,10 @@
 import type Dialog from '../../components/Dialog.vue'
 import type { Album } from '../../composables/albums'
 import { useSessionStorage } from '@vueuse/core'
-import { computed, onBeforeMount, ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import ImageSelector from '../../components/ImageSelector.vue'
+import PhotoThumbnail from '../../components/PhotoThumbnail.vue'
 import { backendFetchRequest } from '../../composables/fetchFromBackend'
 import { getThumbnailPath, niceDate } from '../../composables/logic'
 
@@ -18,6 +20,25 @@ const albumSlug = ref(route.params.albumSlug as string)
 const userLoginState = useSessionStorage('login-state', false)
 const selectedImage = useSessionStorage('selected-image', '')
 const inEditingMode = ref(false)
+
+const selectedSlugs = useSessionStorage<string[]>('selected-slugs', [])
+
+async function addImagesToAlbum() {
+  const newAlbum = {
+    AlbumSlug: albumData.value?.Slug,
+    ImageSlugs: selectedSlugs.value,
+  }
+  const options = {
+    body: JSON.stringify(newAlbum),
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+  }
+  const response = await backendFetchRequest('links', options)
+
+  if (response.status === 200) {
+    await getLinkData()
+  }
+}
 
 async function getAlbumData() {
   const response = await backendFetchRequest(`albums/${albumSlug.value}`)
@@ -93,19 +114,10 @@ onBeforeMount(async () => {
         </div>
       </div>
     </div>
-    <div v-if="inEditingMode">
-      <div v-if="selectedImage.length">
-        {{ selectedImage }}
-      </div>
-    </div>
+
     <div id="main" class="grid grid-cols-2 mx-auto gap-8 p-6 lg:grid-cols-7 md:grid-cols-4 lg:max-w-8/10">
       <div v-for="(imageSlug, index) in albumLinks" :key="index" class="relative">
-        <img
-          :src="getThumbnailPath(imageSlug)"
-          :alt="imageSlug"
-          class="h-full max-h-25vh max-w-40vw min-h-20vh w-full cursor-pointer object-cover"
-          @click="router.push(`/${imageSlug}`)"
-        />
+        <PhotoThumbnail :slug="imageSlug" />
       </div>
     </div>
 
@@ -130,25 +142,24 @@ onBeforeMount(async () => {
     </Dialog>
 
     <Dialog ref="addToAlbumDialog" :close-button="false" class="size-90%" @keydown.escape="hideAddDialog()">
-      <div v-if="albumData">
+      <div v-if="albumData" class="flex flex-row items-center justify-center gap-4">
         <img
           :src="getThumbnailPath(albumData.CoverSlug)"
           :alt="albumData.CoverSlug"
           onerror="this.onerror=null;this.src='/default-image.jpg';"
           class="h-40 w-80 cursor-pointer border-2 border-white border-solid object-cover dark:border-neutral-500"
         />
-        <div>
+        <div class="text-lg">
           {{ albumData.Name }}
         </div>
-      </div>
-      <div class="flex justify-center gap-4">
         <button aria-label="cancel" class="button" @click="hideAddDialog()">
           Cancel
         </button>
-        <button aria-label="delete" class="button" @click="confirmDeleteAlbum()">
-          Add
+        <button aria-label="delete" class="button" @click="addImagesToAlbum()">
+          Add Selected
         </button>
       </div>
+      <ImageSelector />
     </Dialog>
   </div>
 </template>

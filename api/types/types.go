@@ -108,3 +108,8 @@ type Link struct {
 	AlbumSlug string
 	ImageSlug string
 }
+
+type Links struct {
+	AlbumSlug  string
+	ImageSlugs []string
+}

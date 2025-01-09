@@ -58,7 +58,8 @@ func StartServer() {
 	router.Handle("PATCH /api/metadata/{slug}", auth.AuthMiddleware(http.HandlerFunc(handlePatchMetadataBySlug)))
 	router.Handle("POST /api/albums", auth.AuthMiddleware(http.HandlerFunc(handlePostAlbumRow)))
 	router.Handle("DELETE /api/albums/{albumSlug}", auth.AuthMiddleware(http.HandlerFunc(handleDeleteAlbumRow)))
-	router.Handle("POST /api/links", auth.AuthMiddleware(http.HandlerFunc(handlePostLinkRow)))
+	router.Handle("POST /api/link", auth.AuthMiddleware(http.HandlerFunc(handlePostLinkRows)))
+	router.Handle("POST /api/links", auth.AuthMiddleware(http.HandlerFunc(handlePostLinkRows)))
 
 	handler := cors.AllowAll().Handler(router)
 
@@ -217,6 +218,29 @@ func handlePostLinkRow(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Link row inserted successfully"))
+}
+
+func handlePostLinkRows(w http.ResponseWriter, r *http.Request) {
+	var updates types.Links
+
+	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
+		http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
+		return
+	}
+
+	for _, imageSlug := range updates.ImageSlugs {
+		update := types.Link{
+			AlbumSlug: updates.AlbumSlug,
+			ImageSlug: imageSlug,
+		}
+		if err := database.InsertLinkRow(update); err != nil {
+			http.Error(w, "Failed to insert link: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Link rows inserted successfully"))
 }
 
 func handleDeleteAlbumRow(w http.ResponseWriter, r *http.Request) {
