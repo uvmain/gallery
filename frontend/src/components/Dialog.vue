@@ -21,12 +21,12 @@ defineExpose({ show, hide })
 </script>
 
 <template>
-  <dialog ref="dialog" class="rounded-lg bg-transparent px-2 pb-4 md:pb-8">
-    <div :class="unpadded ? '' : 'px-4 pt-4'">
+  <dialog ref="dialog" class="modal p-2 md:p-4" @keydown.escape="dialog?.close()">
+    <div :class="unpadded ? '' : 'p-4'">
       <slot />
     </div>
     <slot name="successOkButton">
-      <button v-if="closeButton" aria-label="close" class="mx-auto mt-4 block rounded px-6 py-3" @click="dialog?.close()">
+      <button v-if="closeButton" aria-label="close" class="button" @click="dialog?.close()">
         Close
       </button>
     </slot>

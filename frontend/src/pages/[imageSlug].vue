@@ -171,14 +171,11 @@ onBeforeMount(async () => {
     <div id="main" class="flex flex-row justify-center gap-6 p-6">
       <img v-if="imageSource" :src="imageSource" class="max-h-80vh max-w-70vw border-6 border-white border-solid dark:border-neutral-500" />
       <div v-if="metadata" class="flex flex-col gap-4 p-6 text-sm lg:max-w-1/3">
-        <div>
+        <div class="text-lg font-semibold">
           <div v-if="inEditingMode">
-            <label for="imageTitle" class="mb-4 text-2xl">
-              Title:
-            </label>
-            <input id="imageTitle" v-model="metadata.title" type="text" @keypress.enter="saveMetadata">
+            <input id="imageTitle" v-model="metadata.title" type="text" class="input" @keypress.enter="saveMetadata">
           </div>
-          <h1 v-else class="mb-4 text-2xl font-semibold">
+          <h1 v-else>
             {{ metadata.title }}
           </h1>
         </div>
@@ -197,11 +194,11 @@ onBeforeMount(async () => {
         </div>
 
         <div>
-          <div v-if="inEditingMode">
-            <label for="dateTaken" class="mb-4 text-2xl">
-              Date taken:
-            </label>
-            <input id="dateTaken" v-model="metadata.dateTaken" type="datetime-local">
+          <div v-if="inEditingMode" class="flex gap-x-2">
+            <TooltipIcon tooltip-text="Date Taken">
+              <icon-tabler-calendar class="text-2xl" />
+            </TooltipIcon>
+            <input id="dateTaken" v-model="metadata.dateTaken" type="datetime-local" class="input text-lg">
           </div>
           <div v-else>
             <TooltipIcon v-if="dateTaken" tooltip-text="Date Taken" :content="dateTaken">

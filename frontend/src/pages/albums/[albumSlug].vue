@@ -12,15 +12,12 @@ const router = useRouter()
 
 const albumData = ref<Album | undefined>()
 const albumLinks = ref<string[]>([])
-const confirmDialog = ref<typeof Dialog>()
+const deleteDialog = ref<typeof Dialog>()
+const addToAlbumDialog = ref<typeof Dialog>()
 const albumSlug = ref(route.params.albumSlug as string)
 const userLoginState = useSessionStorage('login-state', false)
 const selectedImage = useSessionStorage('selected-image', '')
 const inEditingMode = ref(false)
-
-const iconColour = computed(() => {
-  return userLoginState.value ? 'text-gray-600' : 'text-gray-400'
-})
 
 async function getAlbumData() {
   const response = await backendFetchRequest(`albums/${albumSlug.value}`)
@@ -32,8 +29,8 @@ async function getLinkData() {
   albumLinks.value = await response.json()
 }
 
-function deleteAlbum() {
-  confirmDialog.value?.show()
+function showDeleteDialog() {
+  deleteDialog.value?.show()
 }
 
 async function confirmDeleteAlbum() {
@@ -52,8 +49,12 @@ async function confirmDeleteAlbum() {
   }
 }
 
-function hideDialog() {
-  confirmDialog.value?.hide()
+function hideDeleteDialog() {
+  deleteDialog.value?.hide()
+}
+
+function hideAddDialog() {
+  addToAlbumDialog.value?.hide()
 }
 
 function edit() {
@@ -68,9 +69,9 @@ onBeforeMount(async () => {
 
 <template>
   <div class="min-h-screen">
-    <Header :show-edit="true" @edit="edit()">
-      <div v-if="userLoginState" class="p-2 hover:cursor-pointer" @click="deleteAlbum">
-        <icon-tabler-trash-x class="text-2xl" :class="iconColour" />
+    <Header :show-edit="true" :show-add="true" @edit="edit()" @add="addToAlbumDialog?.show()">
+      <div v-if="userLoginState" class="p-2 hover:cursor-pointer" @click="showDeleteDialog">
+        <icon-tabler-trash-x class="text-2xl" />
       </div>
     </Header>
     <div v-if="albumData" class="flex flex-row items-center justify-center gap-6 p-6 lg:max-w-8/10">
@@ -107,7 +108,8 @@ onBeforeMount(async () => {
         />
       </div>
     </div>
-    <Dialog ref="confirmDialog" :close-button="false" class="border-none shadow-2xl">
+
+    <Dialog ref="deleteDialog" :close-button="false">
       <div class="m-6 flex flex-col items-center gap-4">
         <icon-tabler-exclamation-circle class="text-4xl text-red" />
         <p class="text-center font-semibold">
@@ -118,11 +120,33 @@ onBeforeMount(async () => {
         </div>
       </div>
       <div class="flex justify-center gap-4">
-        <button aria-label="cancel" class="px-4 py-2" @click="hideDialog()">
+        <button aria-label="cancel" class="button" @click="hideDeleteDialog()">
           Cancel
         </button>
-        <button aria-label="delete" class="px-4 py-2" @click="confirmDeleteAlbum()">
+        <button aria-label="delete" class="button" @click="confirmDeleteAlbum()">
           Delete
+        </button>
+      </div>
+    </Dialog>
+
+    <Dialog ref="addToAlbumDialog" :close-button="false" class="size-90%" @keydown.escape="hideAddDialog()">
+      <div v-if="albumData">
+        <img
+          :src="getThumbnailPath(albumData.CoverSlug)"
+          :alt="albumData.CoverSlug"
+          onerror="this.onerror=null;this.src='/default-image.jpg';"
+          class="h-40 w-80 cursor-pointer border-2 border-white border-solid object-cover dark:border-neutral-500"
+        />
+        <div>
+          {{ albumData.Name }}
+        </div>
+      </div>
+      <div class="flex justify-center gap-4">
+        <button aria-label="cancel" class="button" @click="hideAddDialog()">
+          Cancel
+        </button>
+        <button aria-label="delete" class="button" @click="confirmDeleteAlbum()">
+          Add
         </button>
       </div>
     </Dialog>

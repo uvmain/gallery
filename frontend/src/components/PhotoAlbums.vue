@@ -46,7 +46,7 @@ onMounted(() => {
       </div>
       <div v-if="inEditingMode">
         <div class="hover:cursor-pointer" @click="emits('addToAlbum')">
-          <icon-tabler-square-plus class="text-2xl text-dark" />
+          <icon-tabler-square-plus class="text-2xl" />
         </div>
       </div>
     </div>

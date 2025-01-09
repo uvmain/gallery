@@ -32,6 +32,7 @@ declare module 'vue' {
     IconTablerTrashX: typeof import('~icons/tabler/trash-x')['default']
     IconTablerUpload: typeof import('~icons/tabler/upload')['default']
     IconTablerUser: typeof import('~icons/tabler/user')['default']
+    ImageSelector: typeof import('./src/components/ImageSelector.vue')['default']
     LoginModal: typeof import('./src/components/LoginModal.vue')['default']
     PhotoAlbums: typeof import('./src/components/PhotoAlbums.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

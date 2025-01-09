@@ -82,24 +82,26 @@ onBeforeMount(async () => {
         <AlbumCoverLarge :album="album" @trash="trashAlbum(album)" @navigate="navigateToAlbum(album.Slug)" />
       </div>
     </div>
-    <Dialog ref="addDialog" :close-button="false" class="border-none shadow-2xl standard">
-      <div class="m-6 flex flex-col items-center gap-4">
-        <icon-tabler-library-plus class="text-4xl text-green" />
-        <div class="flex flex-row items-center gap-2">
-          <label for="albumname">Album Name:</label>
-          <input id="albumname" v-model="newAlbumName" type="text" name="albumname" autocomplete="albumname">
+    <Dialog ref="addDialog" :close-button="false" class="modal">
+      <div class="p-6">
+        <div class="flex flex-col items-center gap-6">
+          <icon-tabler-library-plus class="text-4xl text-green" />
+          <div class="flex flex-row items-center gap-2">
+            <label for="albumname">Album Name:</label>
+            <input id="albumname" v-model="newAlbumName" type="text" name="albumname" autocomplete="albumname">
+          </div>
+          <div class="flex justify-center gap-4">
+            <button aria-label="cancel" class="button" @click="hideAddDialog()">
+              Cancel
+            </button>
+            <button aria-label="delete" class="button" @click="confirmAddAlbum()">
+              Add
+            </button>
+          </div>
         </div>
       </div>
-      <div class="flex justify-center gap-4">
-        <button aria-label="cancel" class="px-4 py-2" @click="hideAddDialog()">
-          Cancel
-        </button>
-        <button aria-label="delete" class="px-4 py-2" @click="confirmAddAlbum()">
-          Add
-        </button>
-      </div>
     </Dialog>
-    <Dialog ref="deleteDialog" :close-button="false" class="border-none shadow-2xl standard">
+    <Dialog ref="deleteDialog" :close-button="false" class="modal">
       <div class="m-6 flex flex-col items-center gap-4">
         <icon-tabler-exclamation-circle class="text-4xl text-red" />
         <p class="text-center font-semibold">
@@ -110,10 +112,10 @@ onBeforeMount(async () => {
         </div>
       </div>
       <div class="flex justify-center gap-4">
-        <button aria-label="cancel" class="px-4 py-2" @click="hideDeleteDialog()">
+        <button aria-label="cancel" class="button" @click="hideDeleteDialog()">
           Cancel
         </button>
-        <button aria-label="delete" class="px-4 py-2" @click="deleteAlbum()">
+        <button aria-label="delete" class="button" @click="deleteAlbum()">
           Delete
         </button>
       </div>

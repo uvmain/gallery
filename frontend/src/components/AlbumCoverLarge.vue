@@ -36,7 +36,7 @@ onBeforeMount(async () => {
       <div class="absolute right-4 top-3 p-2 hover:cursor-pointer" @click="emits('trash', album)">
         <icon-tabler-trash-x class="text-xl hover:size-115%" />
       </div>
-      <div class="grad absolute bottom-2 left-2 mb-1 w-auto flex flex-col gap-2 rounded p-2 text-white">
+      <div class="grad absolute bottom-2 left-2 mb-1 w-auto flex flex-col gap-2 rounded-sm p-2 text-white">
         <div class="[text-shadow:_0_0px_4px_rgb(0_0_0_/_0.8)] text-lg font-semibold">
           {{ album.Name }}
         </div>
