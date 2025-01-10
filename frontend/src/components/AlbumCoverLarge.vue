@@ -30,9 +30,9 @@ onBeforeMount(async () => {
 <template>
   <div>
     <div>
-      <hr class="mx-auto my-2px h-px max-w-60% border-0 bg-gray-400 opacity-60">
-      <hr class="mx-auto my-2px h-px max-w-70% border-0 bg-gray-400 opacity-80">
-      <hr class="mx-auto my-2px h-px max-w-80% border-0 bg-gray-400">
+      <hr class="mx-auto my-2px hidden h-px max-w-60% border-0 bg-gray-400 opacity-60 lg:block">
+      <hr class="mx-auto my-2px hidden h-px max-w-70% border-0 bg-gray-400 opacity-80 lg:block">
+      <hr class="mx-auto my-2px hidden h-px max-w-80% border-0 bg-gray-400 lg:block">
       <img :src="albumThumbnailAddress" onerror="this.onerror=null;this.src='/default-image.jpg';" class="size-60 border-4 border-white border-solid object-cover dark:border-neutral-500" @click="emits('navigate', album.Slug)" />
       <div v-if="inEditMode" class="grad absolute right-4 top-3 p-2 hover:cursor-pointer" @click="emits('trash', album)">
         <icon-tabler-trash-x class="text-xl text-white hover:text-green" />

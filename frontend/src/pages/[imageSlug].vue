@@ -168,10 +168,10 @@ onBeforeMount(async () => {
         <icon-tabler-checkbox class="text-2xl text-green-700" />
       </div>
     </Header>
-    <div id="main" class="flex flex-row justify-center gap-6 p-6">
+    <div id="main" class="flex flex-col justify-center gap-6 p-6 lg:flex-row">
       <img v-if="imageSource" :src="imageSource" class="max-h-80vh max-w-70vw border-6 border-white border-solid dark:border-neutral-500" />
       <div v-if="metadata" class="flex flex-col gap-4 p-6 text-sm lg:max-w-1/3">
-        <div class="text-lg font-semibold">
+        <div class="font-semibold lg:text-lg">
           <div v-if="inEditingMode">
             <input id="imageTitle" v-model="metadata.title" type="text" class="input" @keypress.enter="saveMetadata">
           </div>
@@ -198,7 +198,7 @@ onBeforeMount(async () => {
             <TooltipIcon tooltip-text="Date Taken">
               <icon-tabler-calendar class="text-2xl" />
             </TooltipIcon>
-            <input id="dateTaken" v-model="metadata.dateTaken" type="datetime-local" class="input text-lg">
+            <input id="dateTaken" v-model="metadata.dateTaken" type="datetime-local" class="text-lg input">
           </div>
           <div v-else>
             <TooltipIcon v-if="dateTaken" tooltip-text="Date Taken" :content="dateTaken">

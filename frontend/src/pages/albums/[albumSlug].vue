@@ -168,7 +168,7 @@ onBeforeMount(async () => {
       </template>
     </Header>
 
-    <div v-if="albumData" class="flex flex-row items-center justify-center gap-6 p-6 lg:max-w-8/10">
+    <div v-if="albumData" class="flex flex-col items-center justify-center gap-6 p-6 lg:max-w-8/10 lg:flex-row">
       <PhotoThumbnail :slug="albumData.CoverSlug" :edit-mode="inEditingMode" :large="true" @edit-image="showCoverDialog()" />
       <div class="flex flex-col gap-2">
         <div v-if="inEditingMode">
@@ -187,7 +187,7 @@ onBeforeMount(async () => {
       </div>
     </div>
 
-    <div class="mx-auto flex flex-wrap gap-x-2 gap-y-1 lg:max-w-8/10">
+    <div class="mx-auto max-w-8/10 flex flex-wrap gap-x-2 gap-y-1">
       <div v-for="(slug, index) in albumLinks" :key="index">
         <PhotoThumbnail :slug="slug" :delete-mode="inEditingMode" :square="true" @delete-image="deleteLink(slug)" />
       </div>
@@ -214,7 +214,7 @@ onBeforeMount(async () => {
     </Dialog>
 
     <Dialog ref="addToAlbumDialog" :close-button="false" class="size-90%" @keydown.escape="hideAddDialog()">
-      <div v-if="albumData" class="flex flex-row items-center justify-center gap-4">
+      <div v-if="albumData" class="flex flex-col items-center justify-center gap-4 lg:flex-row">
         <img
           :src="getThumbnailPath(albumData.CoverSlug)"
           :alt="albumData.CoverSlug"

@@ -59,26 +59,22 @@ async function navigateUpload() {
 
 <template>
   <div class="h-18 px-6 standard">
-    <header class="mx-auto flex justify-between lg:max-w-8/10 lg:p-6">
-      <div class="flex gap-4">
-        <div
-          class="p-2 text-2xl hover:cursor-pointer"
-          @click="navigateHome"
-        >
+    <header class="mx-auto flex justify-between pt-2 lg:max-w-8/10 lg:p-6 lg:pt-0">
+      <div class="flex items-center gap-4">
+        <div class="hidden p-2 text-2xl lg:block hover:cursor-pointer" @click="navigateHome">
           home
         </div>
-        <div
-          class="p-2 text-2xl hover:cursor-pointer"
-          @click="navigateAlbums"
-        >
+        <icon-tabler-home class="p-2 text-2xl lg:hidden" @click="navigateHome" />
+
+        <div class="hidden p-2 text-2xl lg:block hover:cursor-pointer" @click="navigateAlbums">
           albums
         </div>
-        <div
-          class="p-2 text-2xl hover:cursor-pointer"
-          @click="navigateRandom"
-        >
+        <icon-tabler-vinyl class="p-2 text-2xl lg:hidden" @click="navigateAlbums" />
+
+        <div class="hidden p-2 text-2xl lg:block hover:cursor-pointer" @click="navigateRandom">
           random
         </div>
+        <icon-tabler-arrows-shuffle class="p-2 text-2xl lg:hidden" @click="navigateRandom" />
       </div>
       <div class="flex gap-4">
         <TooltipIcon v-if="userLoginState" tooltip-text="Upload" class="hover:cursor-pointer" @click="navigateUpload">
