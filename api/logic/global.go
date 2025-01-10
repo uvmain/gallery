@@ -10,6 +10,7 @@ import (
 )
 
 var DatabaseDirectory string
+var ImageDirectory string
 var ThumbnailDirectory string
 var OptimisedDirectory string
 var ImagePath string
@@ -30,6 +31,7 @@ func LoadEnv() {
 	}
 
 	DatabaseDirectory, _ = filepath.Abs(dataPath)
+	ImageDirectory, _ = filepath.Abs(ImagePath)
 	ThumbnailDirectory, _ = filepath.Abs(filepath.Join(dataPath, "thumbnails"))
 	OptimisedDirectory, _ = filepath.Abs(filepath.Join(dataPath, "optimised"))
 

@@ -6,7 +6,10 @@ import (
 	"net/http"
 	"photogallery/auth"
 	"photogallery/database"
+	"photogallery/image"
 	"photogallery/logic"
+	"photogallery/optimised"
+	"photogallery/thumbnails"
 	"photogallery/types"
 	"strconv"
 	"time"
@@ -63,6 +66,7 @@ func StartServer() {
 	router.Handle("POST /api/link", auth.AuthMiddleware(http.HandlerFunc(handlePostLinkRow)))
 	router.Handle("DELETE /api/link", auth.AuthMiddleware(http.HandlerFunc(handleDeleteLinkRow)))
 	router.Handle("POST /api/links", auth.AuthMiddleware(http.HandlerFunc(handlePostLinkRows)))
+	router.Handle("POST /api/upload", auth.AuthMiddleware(http.HandlerFunc(handlePostNewImage)))
 
 	handler := cors.AllowAll().Handler(router)
 
@@ -120,7 +124,7 @@ func handleGetMetadataBySlug(w http.ResponseWriter, r *http.Request) {
 
 func handleGetThumbnailBySlug(w http.ResponseWriter, r *http.Request) {
 	slug := r.PathValue("slug")
-	thumbnail, err := GetThumbnailBySlug(slug)
+	thumbnail, err := thumbnails.GetThumbnailBySlug(slug)
 	if err != nil {
 		http.Error(w, "Thumbnail not found", http.StatusNotFound)
 		return
@@ -153,7 +157,7 @@ func handleGetAllAlbums(w http.ResponseWriter, r *http.Request) {
 
 func handleGetOptimisedBySlug(w http.ResponseWriter, r *http.Request) {
 	slug := r.PathValue("slug")
-	optimised, err := GetOptimisedBySlug(slug)
+	optimised, err := optimised.GetOptimisedBySlug(slug)
 	if err != nil {
 		http.Error(w, "Optimised not found", http.StatusNotFound)
 		return
@@ -330,6 +334,28 @@ func handleGetImageLinks(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(links); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+}
+
+func handlePostNewImage(w http.ResponseWriter, r *http.Request) {
+	file, fileHeader, err := r.FormFile("file")
+	if err != nil {
+		http.Error(w, "Failed to read file: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	title := r.FormValue("title")
+	if title == "" {
+		http.Error(w, "Title is required", http.StatusBadRequest)
+		return
+	}
+
+	slug := image.UploadImage(file, fileHeader)
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(slug); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }
