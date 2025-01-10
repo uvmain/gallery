@@ -1,11 +1,12 @@
 package database
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
-	"photogallery/image"
+	"photogallery/exif"
 	"photogallery/logic"
 	"photogallery/types"
 
@@ -110,7 +111,7 @@ func populateMetadata() {
 		} else if count > 0 {
 			log.Printf("Metadata row already exists, skipping insert: %s\n", fileName)
 		} else {
-			imageMetadata := image.GetSourceMetadataForImagePath(file)
+			imageMetadata := exif.GetSourceMetadataForImagePath(file)
 			insertMetadataRow(imageMetadata)
 		}
 	}
@@ -246,4 +247,24 @@ func UpdateMetadataBySlug(slug string, updates map[string]interface{}) error {
 		log.Printf("Metadata updated for %s, %s", slug, updates)
 	}
 	return err
+}
+
+func PopulateMetadataForUpload(fileName string) (string, error) {
+	filePath := filepath.Join(logic.ImageDirectory, fileName)
+
+	checkQuery := `SELECT COUNT(*) FROM metadata WHERE filePath = ? AND fileName = ?;`
+
+	var count int
+	err := Database.QueryRow(checkQuery, filePath, fileName).Scan(&count)
+	if err != nil {
+		log.Printf("error checking existing row for %s: %v", fileName, err)
+		return "", err
+	} else if count > 0 {
+		log.Printf("Metadata row already exists, skipping insert: %s\n", fileName)
+		return "", errors.New("metadata already exists")
+	} else {
+		imageMetadata := exif.GetSourceMetadataForImagePath(filePath)
+		insertMetadataRow(imageMetadata)
+		return imageMetadata.Slug, nil
+	}
 }

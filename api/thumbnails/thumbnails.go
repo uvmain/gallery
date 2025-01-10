@@ -1,4 +1,4 @@
-package main
+package thumbnails
 
 import (
 	"image/jpeg"
@@ -25,9 +25,7 @@ func thumbnailAlreadyExists(slug string) bool {
 	return true
 }
 
-func generateThumbnail(imageFile string, slug string) {
-
-	defer wgThumbnails.Done()
+func GenerateThumbnail(imageFile string, slug string) {
 
 	if thumbnailAlreadyExists(slug) {
 		return
@@ -98,11 +96,13 @@ func populateThumbnails() {
 		wgThumbnails.Add(1)
 		go func(row types.MetadataFile) {
 			defer func() { <-workerPool }()
+			wgThumbnails.Add(1)
+			defer wgThumbnails.Done()
 			slug := row.Slug
 			filePath := row.FilePath
 			fileName := row.FileName
 			imageFullPath := filepath.Join(filePath, fileName)
-			generateThumbnail(imageFullPath, slug)
+			GenerateThumbnail(imageFullPath, slug)
 		}(row)
 	}
 
