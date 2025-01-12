@@ -59,7 +59,7 @@ async function navigateUpload() {
 
 <template>
   <div class="h-18 px-6 standard">
-    <header class="mx-auto flex justify-between pt-2 lg:max-w-8/10 lg:p-6 lg:pt-0">
+    <header class="mx-auto flex justify-between pt-2 lg:max-w-8/10 lg:p-6">
       <div class="flex items-center gap-4">
         <div class="hidden p-2 text-2xl lg:block hover:cursor-pointer" @click="navigateHome">
           home

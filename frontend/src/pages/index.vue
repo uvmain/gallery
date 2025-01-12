@@ -3,6 +3,7 @@ import { useElementVisibility, useSessionStorage } from '@vueuse/core'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
+import { getAllSlugs } from '../composables/getAllSlugs'
 import { getThumbnailPath } from '../composables/logic'
 
 const router = useRouter()
@@ -78,6 +79,7 @@ const headerShadowClass = computed(() => {
 onBeforeMount(async () => {
   selectedImage.value = undefined
   await getSlugs()
+  getAllSlugs()
 })
 </script>
 
