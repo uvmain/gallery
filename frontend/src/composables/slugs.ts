@@ -40,14 +40,12 @@ export async function getRandomSlug(): Promise<string> {
   const allSlugs: string[] = await getAllSlugs()
   let randomSlug = allSlugs[Math.floor(Math.random() * allSlugs.length)]
   if (allSlugs.length > 30 && lastThirtyRandomSlugs.includes(randomSlug)) {
-    console.log('trying again')
     randomSlug = await getRandomSlug()
   }
   if (lastThirtyRandomSlugs.length >= 30) {
     lastThirtyRandomSlugs.shift()
   }
   lastThirtyRandomSlugs.push(randomSlug)
-  console.log(lastThirtyRandomSlugs)
   return randomSlug
 }
 
