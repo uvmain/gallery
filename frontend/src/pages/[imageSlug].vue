@@ -1,16 +1,21 @@
 <script setup lang="ts">
 import type { ImageMetadata } from '../composables/imageMetadataInterface'
-import { useSessionStorage } from '@vueuse/core'
+import { onKeyStroke, useSessionStorage } from '@vueuse/core'
 import dayjs from 'dayjs'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import TooltipIcon from '../components/TooltipIcon.vue'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
+import { getNextSlug, getPreviousSlug, getRandomSlug, getSlugPosition } from '../composables/slugs'
 
 const route = useRoute()
 const router = useRouter()
 
 const slug = ref(route.params.imageSlug as string)
+const slugPosition = ref<number>()
+const prevSlug = ref<string>()
+const nextSlug = ref<string>()
+
 const imageSize = ref<string>('optimised')
 const loadOriginalText = ref()
 const metadata = ref<ImageMetadata | undefined>()
@@ -78,6 +83,9 @@ const loadOriginalIconColour = computed(() => {
 
 async function getMetadata() {
   try {
+    slugPosition.value = await getSlugPosition(slug.value)
+    prevSlug.value = await getPreviousSlug(slug.value)
+    nextSlug.value = await getNextSlug(slug.value)
     const response = await backendFetchRequest(`metadata/${slug.value}`)
     metadata.value = await response.json() as ImageMetadata
     imageSize.value = 'optimised'
@@ -152,6 +160,22 @@ watch(
     getMetadata()
   },
 )
+
+onKeyStroke('ArrowLeft', (e) => {
+  e.preventDefault()
+  router.push(`/${prevSlug.value}`)
+})
+
+onKeyStroke('ArrowRight', (e) => {
+  e.preventDefault()
+  router.push(`/${nextSlug.value}`)
+})
+
+onKeyStroke('ArrowDown', async (e) => {
+  e.preventDefault()
+  const slug = await getRandomSlug()
+  router.push(`/${slug}`)
+})
 
 onBeforeMount(async () => {
   await getMetadata()

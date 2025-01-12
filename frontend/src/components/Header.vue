@@ -3,7 +3,7 @@ import { useDark, useSessionStorage, useToggle } from '@vueuse/core'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import TooltipIcon from '../components/TooltipIcon.vue'
-import { getRandomSlug } from '../composables/getRandomSlug'
+import { getRandomSlug } from '../composables/slugs'
 
 defineProps({
   showAdd: { type: Boolean, default: false },
@@ -46,8 +46,7 @@ function navigateAlbums() {
 }
 
 async function navigateRandom() {
-  const result = await getRandomSlug(1)
-  const slug = result ? result[0] : ''
+  const slug = await getRandomSlug()
   router.push(`/${slug}`)
 }
 

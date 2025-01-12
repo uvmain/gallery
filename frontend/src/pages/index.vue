@@ -3,8 +3,8 @@ import { useElementVisibility, useSessionStorage } from '@vueuse/core'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
-import { getAllSlugs } from '../composables/getAllSlugs'
 import { getThumbnailPath } from '../composables/logic'
+import { getAllSlugs } from '../composables/slugs'
 
 const router = useRouter()
 const startObserver = ref<HTMLDivElement | null>(null)
