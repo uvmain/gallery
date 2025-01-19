@@ -3,7 +3,6 @@ import type { Album } from '../composables/albums'
 import { onBeforeMount, ref } from 'vue'
 import { getAlbumCoverSlugThumbnailAddress } from '../composables/albums'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
-import { niceDate } from '../composables/logic'
 
 const props = defineProps<{
   album: Album
@@ -43,9 +42,6 @@ onBeforeMount(async () => {
         </div>
         <div class="[text-shadow:_0_0px_4px_rgb(0_0_0_/_0.8)]">
           {{ imageCount }} photos
-        </div>
-        <div class="[text-shadow:_0_0px_4px_rgb(0_0_0_/_0.8)]">
-          Created: {{ niceDate(album.DateCreated) }}
         </div>
       </div>
     </div>
