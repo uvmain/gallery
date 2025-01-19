@@ -130,10 +130,12 @@ async function confirmDeleteAlbum() {
 }
 
 function hideDeleteDialog() {
+  selectedSlugs.value = []
   deleteDialog.value?.hide()
 }
 
 function hideCoverDialog() {
+  selectedSlugs.value = []
   coverDialog.value?.hide()
 }
 
