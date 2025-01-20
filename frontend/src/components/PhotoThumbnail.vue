@@ -20,15 +20,15 @@ const confirm = ref(false)
 const sizeClass = computed(() => {
   if (props.square) {
     if (props.large) {
-      return 'size-80'
+      return 'lg:size-80'
     }
-    return 'size-60'
+    return 'lg:size-60'
   }
   else {
     if (props.large) {
-      return 'h-50 w-100'
+      return 'lg:h-50 lg:w-100'
     }
-    return 'h-40 w-80'
+    return 'lg:h-40 lg:w-80'
   }
 })
 
@@ -51,7 +51,7 @@ function navigateToSlug(slug: string) {
       :src="getThumbnailPath(slug)"
       :alt="slug"
       onerror="this.onerror=null;this.src='/default-image.jpg';"
-      class="cursor-pointer border-2 border-white border-solid object-cover dark:border-neutral-500"
+      class="h-full w-full cursor-pointer border-2 border-white border-solid object-cover dark:border-neutral-500"
       :class="sizeClass"
       @click="navigateToSlug(slug)"
     />

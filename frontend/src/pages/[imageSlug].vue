@@ -201,9 +201,9 @@ onBeforeMount(async () => {
         <icon-tabler-checkbox class="text-2xl text-green-700" />
       </div>
     </Header>
-    <div id="main" class="flex flex-col justify-center gap-6 p-6 lg:flex-row">
+    <div class="flex flex-col justify-center gap-2 p-2 lg:flex-row lg:gap-6 lg:p-6">
       <div class="flex items-center align-middle">
-        <img v-if="imageSource" :src="imageSource" class="max-h-80vh max-w-70vw border-6 border-white border-solid object-contain dark:border-neutral-500" />
+        <img v-if="imageSource" :src="imageSource" class="mx-auto max-h-80vh max-w-90vw border-6 border-white border-solid object-contain lg:max-w-70vw dark:border-neutral-500" />
       </div>
       <div v-if="metadata" class="flex flex-col gap-4 p-6 text-sm lg:max-w-1/3">
         <div class="font-semibold lg:text-lg">
@@ -217,7 +217,7 @@ onBeforeMount(async () => {
 
         <div v-if="camera" class="flex items-center space-x-3">
           <div class="group">
-            <icon-tabler-camera class="text-3xl" />
+            <icon-tabler-camera class="text-2xl" />
             <span class="tooltip">
               Camera Model
             </span>
@@ -231,56 +231,56 @@ onBeforeMount(async () => {
         <div>
           <div v-if="inEditingMode" class="flex gap-x-2">
             <TooltipIcon tooltip-text="Date Taken">
-              <icon-tabler-calendar class="text-2xl" />
+              <icon-tabler-calendar class="text-xl" />
             </TooltipIcon>
             <input id="dateTaken" v-model="metadata.dateTaken" type="datetime-local" class="text-lg input">
           </div>
           <div v-else>
             <TooltipIcon v-if="dateTaken" tooltip-text="Date Taken" :content="dateTaken">
-              <icon-tabler-calendar class="text-2xl" />
+              <icon-tabler-calendar class="text-xl" />
             </TooltipIcon>
           </div>
         </div>
 
         <TooltipIcon v-if="dateUploaded" tooltip-text="Date Uploaded" :content="dateUploaded">
-          <icon-tabler-upload class="text-2xl" />
+          <icon-tabler-upload class="text-xl" />
         </TooltipIcon>
 
         <TooltipIcon v-if="metadata.exposureMode && metadata.exposureMode !== 'unknown'" tooltip-text="Exposure Mode" :content="metadata.exposureMode">
-          <icon-tabler-settings class="text-2xl" />
+          <icon-tabler-settings class="text-xl" />
         </TooltipIcon>
 
         <TooltipIcon v-if="fStop" tooltip-text="fStop" :content="fStop">
-          <icon-tabler-aperture class="text-2xl" />
+          <icon-tabler-aperture class="text-xl" />
         </TooltipIcon>
 
         <TooltipIcon v-if="focalLength" tooltip-text="Focal Length" :content="focalLength">
-          <icon-tabler-eye-pin class="text-2xl" />
+          <icon-tabler-eye-pin class="text-xl" />
         </TooltipIcon>
 
         <TooltipIcon v-if="metadata.exposureTime && metadata.exposureTime !== 'unknown'" tooltip-text="Shutter Speed" :content="metadata.exposureTime">
-          <icon-tabler-clock class="text-2xl" />
+          <icon-tabler-clock class="text-xl" />
         </TooltipIcon>
 
         <TooltipIcon v-if="metadata.iso && metadata.iso !== 'unknown'" tooltip-text="ISO" :content="metadata.iso">
-          <icon-carbon-iso-outline class="text-2xl" />
+          <icon-carbon-iso-outline class="text-xl" />
         </TooltipIcon>
 
         <TooltipIcon v-if="metadata.flashStatus && metadata.flashStatus !== 'unknown'" tooltip-text="Flash Status" :content="metadata.flashStatus">
-          <icon-tabler-bolt class="text-2xl" />
+          <icon-tabler-bolt class="text-xl" />
         </TooltipIcon>
 
         <TooltipIcon v-if="whiteBalance" tooltip-text="White Balance" :content="whiteBalance">
-          <icon-tabler-sun class="text-2xl" />
+          <icon-tabler-sun class="text-xl" />
         </TooltipIcon>
 
         <br>
         <div class="flex cursor-pointer items-center space-x-3" @click="loadOriginal()">
-          <icon-tabler-arrow-autofit-up id="load-original" class="text-2xl" :class="loadOriginalIconColour" />
+          <icon-tabler-arrow-autofit-up id="load-original" class="text-xl" :class="loadOriginalIconColour" />
           <label for="load-original">{{ loadOriginalText }}</label>
         </div>
         <div class="flex cursor-pointer items-center space-x-3" @click="downloadOriginal()">
-          <icon-tabler-download id="download-original" class="text-2xl" />
+          <icon-tabler-download id="download-original" class="text-xl" />
           <label for="download-original">Download original</label>
         </div>
         <PhotoAlbums v-model:in-editing-mode="inEditingMode" :image-slug="slug" @add-to-album="addToAlbum()" />

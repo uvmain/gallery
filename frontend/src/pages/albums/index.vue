@@ -89,7 +89,7 @@ onBeforeMount(async () => {
       </template>
     </Header>
 
-    <div id="main" class="grid grid-cols-1 mx-auto gap-2 p-6 lg:grid-cols-7 md:grid-cols-4 lg:max-w-8/10 lg:gap-8">
+    <div id="main" class="grid mx-auto gap-4 p-6 lg:grid-cols-7 md:grid-cols-4 sm:grid-cols-1 lg:max-w-8/10 lg:gap-8">
       <div v-for="(album, index) in albums" :key="index" class="relative">
         <AlbumCoverLarge :album="album" :in-edit-mode="inEditingMode" @trash="trashAlbum(album)" @navigate="navigateToAlbum(album.Slug)" />
       </div>
