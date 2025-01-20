@@ -48,6 +48,7 @@ func Initialise() *sql.DB {
 	createMetadataTable(db)
 	InitialiseAlbums(db)
 	InitialiseLinks(db)
+	InitialiseTags(db)
 	Database = db
 	return db
 }

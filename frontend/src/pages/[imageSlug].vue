@@ -284,6 +284,7 @@ onBeforeMount(async () => {
           <label for="download-original">Download original</label>
         </div>
         <PhotoAlbums v-model:in-editing-mode="inEditingMode" :image-slug="slug" @add-to-album="addToAlbum()" />
+        <Tags v-model:in-editing-mode="inEditingMode" :image-slug="slug" />
       </div>
     </div>
   </div>

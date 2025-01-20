@@ -56,6 +56,9 @@ func StartServer() {
 	router.HandleFunc("GET /api/albums", handleGetAllAlbums)
 	router.HandleFunc("GET /api/links/album/{albumSlug}", handleGetAlbumLinks)
 	router.HandleFunc("GET /api/links/image/{imageSlug}", handleGetImageLinks)
+	router.HandleFunc("GET /api/tags", handleGetTags)
+	router.HandleFunc("GET /api/tags/{imageSlug}", handleGetTagsBySlug)
+	router.HandleFunc("GET /api/slugs/{tag}", handleGetSlugsByTag)
 
 	// authenticated routes
 	router.Handle("PATCH /api/metadata/{slug}", auth.AuthMiddleware(http.HandlerFunc(handlePatchMetadataBySlug)))
@@ -64,9 +67,11 @@ func StartServer() {
 	router.Handle("POST /api/albums", auth.AuthMiddleware(http.HandlerFunc(handlePostAlbumRow)))
 	router.Handle("DELETE /api/albums/{albumSlug}", auth.AuthMiddleware(http.HandlerFunc(handleDeleteAlbumRow)))
 	router.Handle("POST /api/link", auth.AuthMiddleware(http.HandlerFunc(handlePostLinkRow)))
-	router.Handle("DELETE /api/link", auth.AuthMiddleware(http.HandlerFunc(handleDeleteLinkRow)))
+	router.Handle("DELETE /api/link", auth.AuthMiddleware(http.HandlerFunc(handleDeleteAlbumLinkRow)))
 	router.Handle("POST /api/links", auth.AuthMiddleware(http.HandlerFunc(handlePostLinkRows)))
 	router.Handle("POST /api/upload", auth.AuthMiddleware(http.HandlerFunc(handlePostNewImage)))
+	router.Handle("POST /api/tags", auth.AuthMiddleware(http.HandlerFunc(handlePostNewTags)))
+	router.Handle("DELETE /api/tags", auth.AuthMiddleware(http.HandlerFunc(handleDeleteTagRow)))
 
 	handler := cors.AllowAll().Handler(router)
 
@@ -219,7 +224,7 @@ func handlePostLinkRow(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
-	if err := database.InsertLinkRow(updates); err != nil {
+	if err := database.InsertAlbumLinkRow(updates); err != nil {
 		http.Error(w, "Failed to insert link", http.StatusInternalServerError)
 		return
 	}
@@ -227,13 +232,13 @@ func handlePostLinkRow(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Link row inserted successfully"))
 }
 
-func handleDeleteLinkRow(w http.ResponseWriter, r *http.Request) {
+func handleDeleteAlbumLinkRow(w http.ResponseWriter, r *http.Request) {
 	var updates types.Link
 	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
-	if err := database.DeleteLinkRow(updates); err != nil {
+	if err := database.DeleteAlbumLinkRow(updates); err != nil {
 		http.Error(w, "Failed to insert link", http.StatusInternalServerError)
 		return
 	}
@@ -254,7 +259,7 @@ func handlePostLinkRows(w http.ResponseWriter, r *http.Request) {
 			AlbumSlug: updates.AlbumSlug,
 			ImageSlug: imageSlug,
 		}
-		if err := database.InsertLinkRow(update); err != nil {
+		if err := database.InsertAlbumLinkRow(update); err != nil {
 			http.Error(w, "Failed to insert link: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -358,4 +363,84 @@ func handlePostNewImage(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(slug); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
+}
+
+func handleGetTags(w http.ResponseWriter, r *http.Request) {
+	tags, err := database.GetAllTags()
+
+	if err != nil {
+		http.Error(w, "Failed to retrieve tags", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(tags); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+}
+
+func handleGetTagsBySlug(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("imageSlug")
+	tags, err := database.GetTagsForSlug(slug)
+
+	if err != nil {
+		http.Error(w, "Failed to retrieve tags for slug", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(tags); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+}
+
+func handleGetSlugsByTag(w http.ResponseWriter, r *http.Request) {
+	tag := r.PathValue("tag")
+	slugs, err := database.GetSlugsForTag(tag)
+
+	if err != nil {
+		http.Error(w, "Failed to retrieve slugs for tag", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(slugs); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+}
+
+func handlePostNewTags(w http.ResponseWriter, r *http.Request) {
+	var updates types.Tags
+
+	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
+		http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
+		return
+	}
+
+	for _, imageSlug := range updates.ImageSlugs {
+		update := types.Tag{
+			Tag:       updates.Tag,
+			ImageSlug: imageSlug,
+		}
+		if err := database.InsertTagsRow(update); err != nil {
+			http.Error(w, "Failed to insert tag: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("tag rows inserted successfully"))
+}
+
+func handleDeleteTagRow(w http.ResponseWriter, r *http.Request) {
+	var updates types.Tag
+
+	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
+		http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
+		return
+	}
+
+	if err := database.DeleteTagsRow(updates); err != nil {
+		http.Error(w, "Failed to delete tag row", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Tag deleted successfully"))
 }

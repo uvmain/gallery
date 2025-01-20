@@ -113,3 +113,17 @@ type Links struct {
 	AlbumSlug  string
 	ImageSlugs []string
 }
+
+type Tag struct {
+	Tag       string
+	ImageSlug string
+}
+type Tags struct {
+	Tag        string
+	ImageSlugs []string
+}
+
+type TagsUpload struct {
+	Tags      []string
+	ImageSlug string
+}
