@@ -11,6 +11,7 @@ func main() {
 	logic.LoadEnv()
 	database.Initialise()
 	database.InitialiseMetadata()
+	database.InitialiseTags()
 	thumbnails.InitialiseThumbnails()
 	optimised.InitialiseOptimised()
 	StartServer()

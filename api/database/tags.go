@@ -1,7 +1,6 @@
 package database
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"math"
@@ -11,7 +10,7 @@ import (
 	"strings"
 )
 
-func createTagsTable(db *sql.DB) {
+func createTagsTable() {
 	query := `CREATE TABLE IF NOT EXISTS tags (
 		tag TEXT,
 		imageSlug TEXT,
@@ -22,12 +21,12 @@ func createTagsTable(db *sql.DB) {
 	checkQuery := "SELECT name FROM sqlite_master WHERE type='table' AND name='tags'"
 
 	var name string
-	checkError := db.QueryRow(checkQuery).Scan(&name)
+	checkError := Database.QueryRow(checkQuery).Scan(&name)
 
 	if checkError == nil {
 		log.Println("tags table already exists")
 	} else {
-		_, err := db.Exec(query)
+		_, err := Database.Exec(query)
 		if err != nil {
 			log.Printf("Error creating tags table: %s", err)
 		} else {
@@ -148,16 +147,8 @@ func CreateTagsOnUpload(tags types.TagsUpload) error {
 	var iso string
 	var exposureMode string
 	err := Database.QueryRow(checkQuery, tags.ImageSlug).Scan(
-		&title,
-		&cameraMake,
-		&cameraModel,
-		&lensMake,
-		&lensModel,
-		&fStop,
-		&flashStatus,
-		&focalLength,
-		&iso,
-		&exposureMode,
+		&title, &cameraMake, &cameraModel, &lensMake, &lensModel,
+		&fStop, &flashStatus, &focalLength, &iso, &exposureMode,
 	)
 
 	if err != nil {
@@ -168,22 +159,19 @@ func CreateTagsOnUpload(tags types.TagsUpload) error {
 	var newTags []string
 	newTags = append(newTags, tags.Tags...)
 	newTags = append(newTags, strings.Split(title, " ")...)
-	newTags = append(newTags, cameraMake)
-	newTags = append(newTags, cameraModel)
-	newTags = append(newTags, lensMake)
-	newTags = append(newTags, lensModel)
+	newTags = append(newTags, cameraMake, cameraModel, lensMake, lensModel)
 
 	fStop = getFStopOrFocalLength(fStop, "fStop")
 	newTags = append(newTags, fStop)
 
 	if strings.Contains(flashStatus, "Fired") {
-		newTags = append(newTags, "flash:fired")
+		newTags = append(newTags, "flash fired")
 	}
 	focalLength = getFStopOrFocalLength(focalLength, "focalLength")
 	newTags = append(newTags, focalLength)
 
 	if iso != "unknown" {
-		iso = fmt.Sprintf("iso:%s", iso)
+		iso = fmt.Sprintf("iso %s", iso)
 		newTags = append(newTags, iso)
 	}
 
@@ -206,8 +194,62 @@ func CreateTagsOnUpload(tags types.TagsUpload) error {
 	return nil
 }
 
-func InitialiseTags(db *sql.DB) {
-	createTagsTable(db)
+func InitialiseTags() {
+	createTagsTable()
+	populateTags()
+}
+
+func populateTags() {
+	slugs, err := GetAllSlugs()
+
+	if err != nil {
+		log.Printf("Query failed: %v", err)
+		return
+	}
+
+	existingSlugs, err := GetTaggedSlugs()
+
+	if err != nil {
+		log.Printf("Query failed: %v", err)
+		return
+	}
+
+	slugsToInsert := []string{}
+	for _, slug := range slugs {
+		if !slices.Contains(existingSlugs, slug) {
+			slugsToInsert = append(slugsToInsert, slug)
+		}
+	}
+
+	for _, slug := range slugsToInsert {
+		var newTag = types.TagsUpload{
+			Tags:      []string{},
+			ImageSlug: slug,
+		}
+		CreateTagsOnUpload(newTag)
+	}
+}
+
+func GetTaggedSlugs() ([]string, error) {
+	var slugs []string
+	query := `SELECT DISTINCT imageSlug FROM tags;`
+	rows, err := Database.Query(query)
+	if err != nil {
+		log.Printf("Query failed: %v", err)
+		return []string{}, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var imageSlug string
+		err = rows.Scan(&imageSlug)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		slugs = append(slugs, imageSlug)
+	}
+	return slugs, nil
 }
 
 func getFStopOrFocalLength(value string, kind string) string {
@@ -238,7 +280,6 @@ func getFStopOrFocalLength(value string, kind string) string {
 		return fmt.Sprintf("ƒ/%.1f", result)
 	}
 	if kind == "focalLength" {
-		// Round the result and return as an integer
 		return fmt.Sprintf("%dmm", int(result))
 	}
 	return ""

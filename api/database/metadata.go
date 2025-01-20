@@ -268,3 +268,31 @@ func PopulateMetadataForUpload(fileName string) (string, error) {
 		return imageMetadata.Slug, nil
 	}
 }
+
+func GetAllSlugs() ([]string, error) {
+	var slugs []string
+
+	query := `SELECT slug FROM metadata;`
+	rows, err := Database.Query(query)
+	if err != nil {
+		log.Printf("Query failed: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var slug string
+		if err := rows.Scan(&slug); err != nil {
+			log.Printf("Failed to scan row: %v", err)
+			return nil, err
+		}
+		slugs = append(slugs, slug)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Printf("Rows iteration error: %v", err)
+		return nil, err
+	}
+
+	return slugs, nil
+}

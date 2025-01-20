@@ -39,7 +39,7 @@ onMounted(() => {
     <div class="flex flex-wrap gap-4">
       <div
         v-for="(tag, index) in tags" :key="index"
-        class="tag text-nowrap"
+        class="text-nowrap tag"
       >
         {{ tag }}
       </div>
