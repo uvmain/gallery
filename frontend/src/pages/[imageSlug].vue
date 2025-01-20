@@ -194,18 +194,20 @@ onBeforeMount(async () => {
 <template>
   <div class="min-h-screen">
     <Header :show-edit="!inEditingMode" @edit="enableEditing">
-      <div v-if="inEditingMode" class="p-2 hover:cursor-pointer" @click="disableEditing">
-        <icon-tabler-edit-off class="text-2xl text-red-700" />
-      </div>
-      <div v-if="inEditingMode" class="p-2 hover:cursor-pointer" @click="saveMetadata">
-        <icon-tabler-checkbox class="text-2xl text-green-700" />
-      </div>
+      <template #2>
+        <div v-if="inEditingMode" class="p-2 hover:cursor-pointer" @click="disableEditing">
+          <icon-tabler-edit-off class="text-2xl text-red-700" />
+        </div>
+        <div v-if="inEditingMode" class="p-2 hover:cursor-pointer" @click="saveMetadata">
+          <icon-tabler-checkbox class="text-2xl text-green-700" />
+        </div>
+      </template>
     </Header>
     <div class="flex flex-col justify-center gap-2 p-2 lg:flex-row lg:gap-6 lg:p-6">
       <div class="flex items-center align-middle">
         <img v-if="imageSource" :src="imageSource" class="mx-auto max-h-80vh max-w-90vw border-6 border-white border-solid object-contain lg:max-w-70vw dark:border-neutral-500" />
       </div>
-      <div v-if="metadata" class="flex flex-col gap-4 p-6 text-sm lg:max-w-1/3">
+      <div v-if="metadata" class="flex flex-col gap-3 p-6 text-sm lg:max-w-1/3">
         <div class="font-semibold lg:text-lg">
           <div v-if="inEditingMode">
             <input id="imageTitle" v-model="metadata.title" type="text" class="input" @keypress.enter="saveMetadata">

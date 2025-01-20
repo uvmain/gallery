@@ -238,7 +238,8 @@ func getFStopOrFocalLength(value string, kind string) string {
 		return fmt.Sprintf("ƒ/%.1f", result)
 	}
 	if kind == "focalLength" {
-		return fmt.Sprintf("%f", result)
+		// Round the result and return as an integer
+		return fmt.Sprintf("%dmm", int(result))
 	}
 	return ""
 }
