@@ -14,9 +14,23 @@ const slugs = ref<string[]>([])
 const startObserverIsVisible = useElementVisibility(startObserver)
 
 async function getSlugs() {
+  slugs.value = []
   try {
-    const response = await backendFetchRequest(`slugs/${tag.value}`)
-    slugs.value = await response.json() as string[]
+    let response = await backendFetchRequest(`slugs/${tag.value}`)
+    const responseArray = await response.json() as string[]
+    if (responseArray != null) {
+      slugs.value = slugs.value.concat(responseArray)
+    }
+
+    response = await backendFetchRequest('albums')
+    const albums = await response.json()
+    for (const album of albums) {
+      if (album.Name === tag.value) {
+        const slugsRequest = await backendFetchRequest(`links/album/${album.Slug}`)
+        const slugsToAdd = await slugsRequest.json() as string[]
+        slugs.value = slugs.value.concat(slugsToAdd)
+      }
+    }
   }
   catch (error) {
     console.error('Failed to fetch slugs for tag:', error)

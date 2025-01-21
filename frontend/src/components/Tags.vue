@@ -17,11 +17,20 @@ async function getTags() {
   const dimensionsRequest = await backendFetchRequest(`dimensions/${props.imageSlug}`)
   const dimensionsResponse = await dimensionsRequest.json()
 
+  const albumsRequest = await backendFetchRequest(`links/image/${props.imageSlug}`)
+  const albumSlugs: string[] = await albumsRequest.json()
+  for (const albumSlug of albumSlugs) {
+    const albumRequest: any = await backendFetchRequest(`albums/${albumSlug}`)
+    const album = await albumRequest.json()
+    console.log(album.Name)
+    returnArray.push(album.Name)
+  }
+
   if (dimensionsResponse.Panoramic === true) {
     returnArray.push('panoramic')
   }
   returnArray.push(dimensionsResponse.Orientation)
-  tags.value = returnArray
+  tags.value = [...new Set(returnArray)] as string[]
 }
 
 async function addTag() {
