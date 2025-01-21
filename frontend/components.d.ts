@@ -49,6 +49,7 @@ declare module 'vue' {
     PhotoThumbnail: typeof import('./src/components/PhotoThumbnail.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Tag: typeof import('./src/components/Tag.vue')['default']
     Tags: typeof import('./src/components/Tags.vue')['default']
     TooltipIcon: typeof import('./src/components/TooltipIcon.vue')['default']
   }

@@ -31,7 +31,7 @@ const imageSource = computed(() => {
 const fStop = computed(() => {
   const [first, second] = metadata.value ? metadata.value.fStop.split('/').map(Number) : [1, 1]
   const result = (first / second)
-  return Number.isNaN(result) ? undefined : `ƒ/${result.toFixed(1)}`
+  return Number.isNaN(result) ? undefined : `f${result.toFixed(1)}`
 })
 
 const focalLength = computed(() => {

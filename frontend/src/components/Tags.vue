@@ -37,11 +37,8 @@ onMounted(() => {
       Tags
     </div>
     <div class="flex flex-wrap gap-4">
-      <div
-        v-for="(tag, index) in tags" :key="index"
-        class="text-nowrap tag"
-      >
-        {{ tag }}
+      <div v-for="(tag, index) in tags" :key="index">
+        <Tag :tag="tag" />
       </div>
       <div v-if="inEditingMode">
         <div class="hover:cursor-pointer" @click="addTag()">

@@ -71,3 +71,10 @@ func GetDirContents(directoryPath string) ([]string, error) {
 	log.Printf("Found: %d images in %s", len(foundFiles), directoryPath)
 	return foundFiles, err
 }
+
+func TernaryString(condition bool, trueValue string, falseValue string) string {
+	if condition {
+		return trueValue
+	}
+	return falseValue
+}

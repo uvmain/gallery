@@ -54,6 +54,10 @@ async function navigateUpload() {
   if (userLoginState.value)
     router.push('/upload')
 }
+
+async function navigateTags() {
+  router.push('/tags')
+}
 </script>
 
 <template>
@@ -69,6 +73,12 @@ async function navigateUpload() {
           albums
         </div>
         <icon-tabler-vinyl class="p-2 text-2xl lg:hidden" @click="navigateAlbums" />
+        <div @click="navigateTags">
+          <div class="hidden p-2 text-2xl lg:block hover:cursor-pointer">
+            tags
+          </div>
+          <icon-tabler-arrows-shuffle class="p-2 text-2xl lg:hidden" />
+        </div>
 
         <div class="hidden p-2 text-2xl lg:block hover:cursor-pointer" @click="navigateRandom">
           random

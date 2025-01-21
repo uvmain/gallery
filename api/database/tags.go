@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"photogallery/logic"
 	"photogallery/types"
 	"slices"
 	"strconv"
@@ -80,7 +81,7 @@ func GetTagsForSlug(slug string) ([]string, error) {
 
 func GetSlugsForTag(tag string) ([]string, error) {
 	var slugs []string
-	query := `SELECT tag FROM tags where tag = ?`
+	query := `SELECT imageSlug FROM tags where tag = ?`
 	rows, err := Database.Query(query, tag)
 	if err != nil {
 		log.Printf("Query failed: %v", err)
@@ -159,6 +160,12 @@ func CreateTagsOnUpload(tags types.TagsUpload) error {
 	var newTags []string
 	newTags = append(newTags, tags.Tags...)
 	newTags = append(newTags, strings.Split(title, " ")...)
+
+	cameraMake = logic.TernaryString(cameraMake == "none", "", cameraMake)
+	cameraModel = logic.TernaryString(cameraModel == "none" || len(cameraModel) < 4, "", cameraModel)
+	lensMake = logic.TernaryString(lensMake == "none", "", lensMake)
+	lensModel = logic.TernaryString(lensModel == "none" || len(lensMake) < 4, "", lensModel)
+
 	newTags = append(newTags, cameraMake, cameraModel, lensMake, lensModel)
 
 	fStop = getFStopOrFocalLength(fStop, "fStop")
@@ -253,23 +260,23 @@ func GetTaggedSlugs() ([]string, error) {
 }
 
 func getFStopOrFocalLength(value string, kind string) string {
+	if value == "unknown" {
+		return ""
+	}
+
 	var first, second float64
 
-	if value != "unknown" {
-		parts := strings.Split(value, "/")
-		if len(parts) == 2 {
-			var err error
-			first, err = strconv.ParseFloat(parts[0], 64)
-			if err != nil {
-				return ""
-			}
-			second, err = strconv.ParseFloat(parts[1], 64)
-			if err != nil {
-				return ""
-			}
+	parts := strings.Split(value, "/")
+	if len(parts) == 2 {
+		var err error
+		first, err = strconv.ParseFloat(parts[0], 64)
+		if err != nil {
+			return ""
 		}
-	} else {
-		first, second = 1, 1
+		second, err = strconv.ParseFloat(parts[1], 64)
+		if err != nil {
+			return ""
+		}
 	}
 
 	result := first / second
@@ -277,10 +284,10 @@ func getFStopOrFocalLength(value string, kind string) string {
 		return ""
 	}
 	if kind == "fStop" {
-		return fmt.Sprintf("ƒ/%.1f", result)
+		return logic.TernaryString(int(result) > 0, fmt.Sprintf("f%.1f", result), "")
 	}
 	if kind == "focalLength" {
-		return fmt.Sprintf("%dmm", int(result))
+		return logic.TernaryString(int(result) > 0, fmt.Sprintf("%dmm", int(result)), "")
 	}
 	return ""
 }
