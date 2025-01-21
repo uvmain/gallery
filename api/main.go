@@ -12,6 +12,7 @@ func main() {
 	database.Initialise()
 	database.InitialiseMetadata()
 	database.InitialiseTags()
+	database.InitialiseDimensions()
 	thumbnails.InitialiseThumbnails()
 	optimised.InitialiseOptimised()
 	StartServer()

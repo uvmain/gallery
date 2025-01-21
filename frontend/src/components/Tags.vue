@@ -11,8 +11,17 @@ const tags = ref<string[]>([])
 
 async function getTags() {
   tags.value = []
-  const response = await backendFetchRequest(`tags/${props.imageSlug}`)
-  tags.value = await response.json() || []
+  const tagsRequest = await backendFetchRequest(`tags/${props.imageSlug}`)
+  const returnArray = await tagsRequest.json() || []
+
+  const dimensionsRequest = await backendFetchRequest(`dimensions/${props.imageSlug}`)
+  const dimensionsResponse = await dimensionsRequest.json()
+
+  if (dimensionsResponse.Panoramic === true) {
+    returnArray.push('panoramic')
+  }
+  returnArray.push(dimensionsResponse.Orientation)
+  tags.value = returnArray
 }
 
 async function addTag() {

@@ -11,6 +11,11 @@ import (
 	"strings"
 )
 
+func InitialiseTags() {
+	createTagsTable()
+	populateTags()
+}
+
 func createTagsTable() {
 	query := `CREATE TABLE IF NOT EXISTS tags (
 		tag TEXT,
@@ -60,7 +65,7 @@ func GetAllTags() ([]string, error) {
 
 func GetTagsForSlug(slug string) ([]string, error) {
 	var tags []string
-	query := `SELECT tag FROM tags where imageSlug = ?`
+	query := `SELECT tag FROM tags where imageSlug = ?;`
 	rows, err := Database.Query(query, slug)
 	if err != nil {
 		log.Printf("Query failed: %v", err)
@@ -81,7 +86,7 @@ func GetTagsForSlug(slug string) ([]string, error) {
 
 func GetSlugsForTag(tag string) ([]string, error) {
 	var slugs []string
-	query := `SELECT imageSlug FROM tags where tag = ?`
+	query := `SELECT imageSlug FROM tags where tag = ?;`
 	rows, err := Database.Query(query, tag)
 	if err != nil {
 		log.Printf("Query failed: %v", err)
@@ -96,6 +101,42 @@ func GetSlugsForTag(tag string) ([]string, error) {
 			log.Fatal(err)
 		}
 		slugs = append(slugs, slug)
+	}
+
+	query = `SELECT imageSlug FROM dimensions where orientation = ?;`
+	rows, err = Database.Query(query, tag)
+	if err != nil {
+		log.Printf("Query failed: %v", err)
+		return []string{}, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var slug string
+		err = rows.Scan(&slug)
+		if err != nil {
+			log.Fatal(err)
+		}
+		slugs = append(slugs, slug)
+	}
+
+	if tag == "panoramic" {
+		query = `SELECT imageSlug FROM dimensions where panoramic = 1;`
+		rows, err = Database.Query(query)
+		if err != nil {
+			log.Printf("Query failed: %v", err)
+			return []string{}, err
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var slug string
+			err = rows.Scan(&slug)
+			if err != nil {
+				log.Fatal(err)
+			}
+			slugs = append(slugs, slug)
+		}
 	}
 	return slugs, nil
 }
@@ -190,6 +231,7 @@ func CreateTagsOnUpload(tags types.TagsUpload) error {
 	newTags = slices.Compact(newTags)
 
 	for _, tag := range newTags {
+		tag = strings.TrimSpace(tag)
 		if len(tag) > 2 {
 			var newTag = types.Tag{
 				Tag:       strings.ToLower(tag),
@@ -199,11 +241,6 @@ func CreateTagsOnUpload(tags types.TagsUpload) error {
 		}
 	}
 	return nil
-}
-
-func InitialiseTags() {
-	createTagsTable()
-	populateTags()
 }
 
 func populateTags() {

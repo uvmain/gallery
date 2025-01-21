@@ -59,6 +59,7 @@ func StartServer() {
 	router.HandleFunc("GET /api/tags", handleGetTags)
 	router.HandleFunc("GET /api/tags/{imageSlug}", handleGetTagsBySlug)
 	router.HandleFunc("GET /api/slugs/{tag}", handleGetSlugsByTag)
+	router.HandleFunc("GET /api/dimensions/{imageSlug}", handleGetDimensionsBySlug)
 
 	// authenticated routes
 	router.Handle("PATCH /api/metadata/{slug}", auth.AuthMiddleware(http.HandlerFunc(handlePatchMetadataBySlug)))
@@ -443,4 +444,18 @@ func handleDeleteTagRow(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Tag deleted successfully"))
+}
+
+func handleGetDimensionsBySlug(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("imageSlug")
+	dimensions, err := database.GetDimensionForSlug(slug)
+
+	if err != nil {
+		http.Error(w, "Failed to retrieve dimensions for slug", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(dimensions); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
 }

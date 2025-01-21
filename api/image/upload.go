@@ -31,6 +31,7 @@ func UploadImage(file multipart.File, fileHeader *multipart.FileHeader) string {
 		ImageSlug: slug,
 	}
 	database.CreateTagsOnUpload(tags)
+	database.CreateDimsensionsOnUpload(slug)
 	return slug
 }
 

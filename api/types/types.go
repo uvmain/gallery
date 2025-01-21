@@ -91,6 +91,14 @@ type ImageMetadata struct {
 	WhiteBalanceMode string    `json:"whiteBalanceMode"`
 }
 
+type DimensionsRow struct {
+	ImageSlug   string
+	Width       int
+	Height      int
+	Orientation string
+	Panoramic   bool
+}
+
 type MetadataFile struct {
 	Slug     string
 	FilePath string
