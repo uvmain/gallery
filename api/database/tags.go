@@ -232,7 +232,7 @@ func CreateTagsOnUpload(tags types.TagsUpload) error {
 
 	for _, tag := range newTags {
 		tag = strings.TrimSpace(tag)
-		if len(tag) > 2 {
+		if len(tag) > 2 && tag != "unknown" {
 			var newTag = types.Tag{
 				Tag:       strings.ToLower(tag),
 				ImageSlug: tags.ImageSlug,
