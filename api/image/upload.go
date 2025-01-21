@@ -10,15 +10,28 @@ import (
 	"photogallery/logic"
 	"photogallery/optimised"
 	"photogallery/thumbnails"
+	"photogallery/types"
+	"strings"
 )
 
 func UploadImage(file multipart.File, fileHeader *multipart.FileHeader) string {
 	fileName := fileHeader.Filename
+	ext := filepath.Ext(fileName)
+	fileName = strings.TrimSuffix(fileName, ext) + strings.ToLower(ext)
+
+	log.Printf("Uploading: %s", fileName)
 	saveOriginalImage(file, fileName)
 	filePath := filepath.Join(logic.ImageDirectory, fileName)
 	slug, _ := database.PopulateMetadataForUpload(fileName)
 	thumbnails.GenerateThumbnail(filePath, slug)
 	optimised.GenerateOptimised(filePath, slug)
+
+	tags := types.TagsUpload{
+		Tags:      []string{},
+		ImageSlug: slug,
+	}
+	database.CreateTagsOnUpload(tags)
+	database.CreateDimsensionsOnUpload(slug)
 	return slug
 }
 

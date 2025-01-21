@@ -75,36 +75,7 @@ func GetImageLinks(slug string) ([]string, error) {
 	return links, nil
 }
 
-func GetAllLinks() []types.Link {
-	var links []types.Link
-
-	query := `SELECT albumSlug, imageSlug FROM album_links;`
-	rows, err := Database.Query(query)
-	if err != nil {
-		log.Printf("Query failed: %v", err)
-		return []types.Link{}
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var albumSlug string
-		var imageSlug string
-		err = rows.Scan(&albumSlug, &imageSlug)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		rowResult := types.Link{
-			AlbumSlug: albumSlug,
-			ImageSlug: imageSlug,
-		}
-
-		links = append(links, rowResult)
-	}
-	return links
-}
-
-func InsertLinkRow(link types.Link) error {
+func InsertAlbumLinkRow(link types.Link) error {
 	stmt, err := Database.Prepare(`INSERT INTO album_links (
 		albumSlug, imageSlug
 	) VALUES (?, ?);`)
@@ -125,7 +96,7 @@ func InsertLinkRow(link types.Link) error {
 	return nil
 }
 
-func DeleteLinkRow(link types.Link) error {
+func DeleteAlbumLinkRow(link types.Link) error {
 	stmt, err := Database.Prepare(`DELETE FROM album_links where albumSlug = ? and imageSlug = ?;`)
 	if err != nil {
 		return err
@@ -134,11 +105,11 @@ func DeleteLinkRow(link types.Link) error {
 
 	_, err = stmt.Exec(link.AlbumSlug, link.ImageSlug)
 	if err != nil {
-		log.Printf("error deleting album row: %s", err)
+		log.Printf("error deleting album link row: %s", err)
 		return err
 	}
 
-	log.Printf("Album row deleted successfully for %s %s", link.AlbumSlug, link.ImageSlug)
+	log.Printf("Album link row deleted successfully for %s %s", link.AlbumSlug, link.ImageSlug)
 	return nil
 }
 

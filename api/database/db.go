@@ -45,10 +45,11 @@ func Initialise() *sql.DB {
 		log.Println("Database file opened")
 	}
 
+	Database = db
+
 	createMetadataTable(db)
 	InitialiseAlbums(db)
 	InitialiseLinks(db)
-	Database = db
 	return db
 }
 
@@ -98,6 +99,8 @@ func GetExistingMetadataFilePaths() []types.MetadataFile {
 	if err != nil {
 		log.Printf("Failed to fetch rows from metadata table: %s", err)
 	}
+
+	defer rows.Close()
 
 	for rows.Next() {
 		var slug string
