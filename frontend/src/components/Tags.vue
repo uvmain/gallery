@@ -14,26 +14,7 @@ const tags = ref<string[]>([])
 async function getTags() {
   tags.value = []
   const tagsRequest = await backendFetchRequest(`tags/${props.imageSlug}`)
-  const returnArray = await tagsRequest.json() || []
-
-  const dimensionsRequest = await backendFetchRequest(`dimensions/${props.imageSlug}`)
-  const dimensionsResponse = await dimensionsRequest.json()
-
-  const albumsRequest = await backendFetchRequest(`links/image/${props.imageSlug}`)
-  if (albumsRequest != null) {
-    const albumSlugs: string[] = await albumsRequest.json() || []
-    for (const albumSlug of albumSlugs) {
-      const albumRequest: any = await backendFetchRequest(`albums/${albumSlug}`)
-      const album = await albumRequest.json()
-      returnArray.push(album.Name)
-    }
-  }
-
-  if (dimensionsResponse.Panoramic === true) {
-    returnArray.push('panoramic')
-  }
-  returnArray.push(dimensionsResponse.Orientation)
-  tags.value = [...new Set(returnArray)] as string[]
+  tags.value = await tagsRequest.json() || []
 }
 
 async function addTag() {

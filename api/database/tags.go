@@ -127,6 +127,8 @@ func getAllAlbumTags() []string {
 
 func GetTagsForSlug(slug string) ([]string, error) {
 	var tags []string
+
+	// image tags|metadata
 	query := `SELECT tag FROM tags where imageSlug = ?;`
 	rows, err := Database.Query(query, slug)
 	if err != nil {
@@ -143,6 +145,7 @@ func GetTagsForSlug(slug string) ([]string, error) {
 		tags = append(tags, tag)
 	}
 
+	// image title
 	checkQuery := `SELECT title FROM metadata WHERE slug = ?;`
 	var title string
 	err = Database.QueryRow(checkQuery, slug).Scan(&title)
@@ -154,7 +157,46 @@ func GetTagsForSlug(slug string) ([]string, error) {
 		tags = append(tags, titleArray...)
 	}
 
-	tags = logic.StringArraySortUnique(tags)
+	// albums
+	query = "select name from albums join album_links on albums.slug == album_links.albumSlug where imageSlug = ?"
+	var albumTitles []string
+	rows, err = Database.Query(query, slug)
+	if err != nil {
+		log.Printf("Query failed: %v", err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var albumTitle string
+		err = rows.Scan(&albumTitle)
+		if err != nil {
+			log.Printf("Row scan failed: %v", err)
+		}
+		albumTitle = strings.ToLower(albumTitle)
+		albumTitleSplit := strings.Split(albumTitle, " ")
+
+		albumTitles = append(albumTitles, albumTitleSplit...)
+	}
+	tags = append(tags, albumTitles...)
+
+	// dimensions
+	query = "select orientation, panoramic from dimensions where imageSlug = ?"
+	rows, err = Database.Query(query, slug)
+	if err != nil {
+		log.Printf("Query failed: %v", err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var orientation string
+		var panoramic bool
+		err = rows.Scan(&orientation, &panoramic)
+		if err != nil {
+			log.Printf("Row scan failed: %v", err)
+		}
+		tags = append(tags, orientation)
+		if panoramic {
+			tags = append(tags, "panoramic")
+		}
+	}
 
 	foundTags := []string{}
 	for _, tag := range tags {
@@ -163,6 +205,8 @@ func GetTagsForSlug(slug string) ([]string, error) {
 			foundTags = append(foundTags, tag)
 		}
 	}
+
+	foundTags = logic.StringArraySortUnique(foundTags)
 
 	return foundTags, nil
 }
