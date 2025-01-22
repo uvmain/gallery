@@ -67,6 +67,9 @@ func GetAllTags() ([]string, error) {
 	titles := getAllTitleTags()
 	tags = append(tags, titles...)
 
+	albums := getAllAlbumTags()
+	tags = append(tags, albums...)
+
 	slices.Sort(tags)
 	tags = slices.Compact(tags)
 
@@ -94,11 +97,35 @@ func getAllTitleTags() []string {
 			}
 		}
 	}
-
 	slices.Sort(titles)
 	titles = slices.Compact(titles)
-
 	return titles
+}
+
+func getAllAlbumTags() []string {
+	checkQuery := `SELECT DISTINCT name FROM albums;`
+	var names []string
+	rows, _ := Database.Query(checkQuery)
+	defer rows.Close()
+
+	for rows.Next() {
+		var name string
+		err := rows.Scan(&name)
+		if err != nil {
+			log.Println(err)
+		} else {
+			nameRegexp := regexp.MustCompile(`[ \-_]+`) // Matches [" ", "-", "_"]
+			nameArray := nameRegexp.Split(name, -1)
+			for _, nameTag := range nameArray {
+				if len(nameTag) > 2 {
+					names = append(names, nameTag)
+				}
+			}
+		}
+	}
+	slices.Sort(names)
+	names = slices.Compact(names)
+	return names
 }
 
 func GetTagsForSlug(slug string) ([]string, error) {
@@ -146,6 +173,8 @@ func GetTagsForSlug(slug string) ([]string, error) {
 
 func GetSlugsForTag(tag string) ([]string, error) {
 	var slugs []string
+
+	// tags|metadata
 	query := `SELECT imageSlug FROM tags where tag = ?;`
 	rows, err := Database.Query(query, tag)
 	if err != nil {
@@ -162,6 +191,7 @@ func GetSlugsForTag(tag string) ([]string, error) {
 		slugs = append(slugs, slug)
 	}
 
+	// image titles
 	likeQuery := `SELECT slug FROM metadata where lower(title) like lower(?);`
 	likePattern := fmt.Sprintf("%%%s%%", tag) // Add % wildcards around tag
 	rows, err = Database.Query(likeQuery, likePattern)
@@ -169,7 +199,6 @@ func GetSlugsForTag(tag string) ([]string, error) {
 		log.Printf("Query failed: %v", err)
 	}
 	defer rows.Close()
-
 	for rows.Next() {
 		var slug string
 		err = rows.Scan(&slug)
@@ -179,6 +208,25 @@ func GetSlugsForTag(tag string) ([]string, error) {
 		slugs = append(slugs, slug)
 	}
 
+	// albums
+	likeQuery = `SELECT slug FROM albums where lower(name) like lower(?);`
+	likePattern = fmt.Sprintf("%%%s%%", tag) // Add % wildcards around tag
+	rows, err = Database.Query(likeQuery, likePattern)
+	if err != nil {
+		log.Printf("Query failed: %v", err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var albumSlug string
+		err = rows.Scan(&albumSlug)
+		if err != nil {
+			log.Printf("Row scan failed: %v", err)
+		}
+		albumSlugs, _ := GetAlbumLinks(albumSlug)
+		slugs = append(slugs, albumSlugs...)
+	}
+
+	// dimensions
 	query = `SELECT imageSlug FROM dimensions where orientation = ?;`
 	rows, err = Database.Query(query, tag)
 	if err != nil {
@@ -195,6 +243,7 @@ func GetSlugsForTag(tag string) ([]string, error) {
 		slugs = append(slugs, slug)
 	}
 
+	// panoramic
 	if tag == "panoramic" {
 		query = `SELECT imageSlug FROM dimensions where panoramic = 1;`
 		rows, err = Database.Query(query)
