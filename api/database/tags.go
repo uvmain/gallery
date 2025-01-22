@@ -70,8 +70,7 @@ func GetAllTags() ([]string, error) {
 	albums := getAllAlbumTags()
 	tags = append(tags, albums...)
 
-	slices.Sort(tags)
-	tags = slices.Compact(tags)
+	tags = logic.StringArraySortUnique(tags)
 
 	return tags, nil
 }
@@ -97,8 +96,7 @@ func getAllTitleTags() []string {
 			}
 		}
 	}
-	slices.Sort(titles)
-	titles = slices.Compact(titles)
+	titles = logic.StringArraySortUnique(titles)
 	return titles
 }
 
@@ -123,8 +121,7 @@ func getAllAlbumTags() []string {
 			}
 		}
 	}
-	slices.Sort(names)
-	names = slices.Compact(names)
+	names = logic.StringArraySortUnique(names)
 	return names
 }
 
@@ -157,8 +154,7 @@ func GetTagsForSlug(slug string) ([]string, error) {
 		tags = append(tags, titleArray...)
 	}
 
-	slices.Sort(tags)
-	tags = slices.Compact(tags)
+	tags = logic.StringArraySortUnique(tags)
 
 	foundTags := []string{}
 	for _, tag := range tags {
@@ -261,6 +257,8 @@ func GetSlugsForTag(tag string) ([]string, error) {
 			slugs = append(slugs, slug)
 		}
 	}
+
+	slugs = logic.StringArraySortUnique(slugs)
 	return slugs, nil
 }
 
@@ -348,8 +346,7 @@ func CreateTagsOnUpload(tags types.TagsUpload) error {
 		newTags = append(newTags, exposureMode)
 	}
 
-	slices.Sort(newTags)
-	newTags = slices.Compact(newTags)
+	newTags = logic.StringArraySortUnique(newTags)
 
 	for _, tag := range newTags {
 		tag = strings.TrimSpace(tag)

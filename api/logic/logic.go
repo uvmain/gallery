@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"time"
 
@@ -77,4 +78,10 @@ func TernaryString(condition bool, trueValue string, falseValue string) string {
 		return trueValue
 	}
 	return falseValue
+}
+
+func StringArraySortUnique(arrayToSort []string) []string {
+	slices.Sort(arrayToSort)
+	arrayToSort = slices.Compact(arrayToSort)
+	return arrayToSort
 }
