@@ -16,7 +16,7 @@ const startObserverIsVisible = useElementVisibility(startObserver)
 async function getSlugs() {
   slugs.value = []
   try {
-    let response = await backendFetchRequest(`slugs/${tag.value}`)
+    let response = await backendFetchRequest(`slugs/tag/${tag.value}`)
     const responseArray = await response.json() as string[]
     if (responseArray != null) {
       slugs.value = slugs.value.concat(responseArray)

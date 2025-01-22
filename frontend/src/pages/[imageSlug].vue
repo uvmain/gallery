@@ -4,6 +4,7 @@ import { onKeyStroke, useSessionStorage } from '@vueuse/core'
 import dayjs from 'dayjs'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import Tags from '../components/Tags.vue'
 import TooltipIcon from '../components/TooltipIcon.vue'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
 import { getNextSlug, getPreviousSlug, getRandomSlug, getSlugPosition } from '../composables/slugs'
@@ -15,10 +16,10 @@ const slug = ref(route.params.imageSlug as string)
 const slugPosition = ref<number>()
 const prevSlug = ref<string>()
 const nextSlug = ref<string>()
-
 const imageSize = ref<string>('optimised')
 const loadOriginalText = ref()
 const metadata = ref<ImageMetadata | undefined>()
+const tags = ref<typeof Tags>()
 const inEditingMode = ref(false)
 
 const userLoginState = useSessionStorage('login-state', false)
@@ -138,6 +139,7 @@ async function saveMetadata() {
       }
       await backendFetchRequest(`metadata/${slug.value}`, options)
       await getMetadata()
+      await tags.value?.getTags()
     }
     catch (error) {
       console.error('Failed to update Metadata:', error)
@@ -286,7 +288,7 @@ onBeforeMount(async () => {
           <label for="download-original">Download original</label>
         </div>
         <PhotoAlbums v-model:in-editing-mode="inEditingMode" :image-slug="slug" @add-to-album="addToAlbum()" />
-        <Tags v-model:in-editing-mode="inEditingMode" :image-slug="slug" />
+        <Tags ref="tags" v-model:in-editing-mode="inEditingMode" :image-slug="slug" />
       </div>
     </div>
   </div>

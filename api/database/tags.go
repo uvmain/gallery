@@ -6,6 +6,7 @@ import (
 	"math"
 	"photogallery/logic"
 	"photogallery/types"
+	"regexp"
 	"slices"
 	"strconv"
 	"strings"
@@ -47,7 +48,6 @@ func GetAllTags() ([]string, error) {
 	rows, err := Database.Query(query)
 	if err != nil {
 		log.Printf("Query failed: %v", err)
-		return []string{}, err
 	}
 	defer rows.Close()
 
@@ -55,7 +55,7 @@ func GetAllTags() ([]string, error) {
 		var tag string
 		err = rows.Scan(&tag)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 
 		tags = append(tags, tag)
@@ -69,7 +69,6 @@ func GetTagsForSlug(slug string) ([]string, error) {
 	rows, err := Database.Query(query, slug)
 	if err != nil {
 		log.Printf("Query failed: %v", err)
-		return []string{}, err
 	}
 	defer rows.Close()
 
@@ -77,11 +76,34 @@ func GetTagsForSlug(slug string) ([]string, error) {
 		var tag string
 		err = rows.Scan(&tag)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 		tags = append(tags, tag)
 	}
-	return tags, nil
+
+	checkQuery := `SELECT title FROM metadata WHERE slug = ?;`
+	var title string
+	err = Database.QueryRow(checkQuery, slug).Scan(&title)
+	if err != nil {
+		log.Printf("Query failed: %v", err)
+	} else {
+		titleRegexp := regexp.MustCompile(`[ \-_]+`) // Matches [" ", "-", "_"]
+		titleArray := titleRegexp.Split(title, -1)
+		tags = append(tags, titleArray...)
+	}
+
+	slices.Sort(tags)
+	tags = slices.Compact(tags)
+
+	foundTags := []string{}
+	for _, tag := range tags {
+		tag = strings.TrimSpace(tag)
+		if len(tag) > 2 && tag != "unknown" {
+			foundTags = append(foundTags, tag)
+		}
+	}
+
+	return foundTags, nil
 }
 
 func GetSlugsForTag(tag string) ([]string, error) {
@@ -90,7 +112,6 @@ func GetSlugsForTag(tag string) ([]string, error) {
 	rows, err := Database.Query(query, tag)
 	if err != nil {
 		log.Printf("Query failed: %v", err)
-		return []string{}, err
 	}
 	defer rows.Close()
 
@@ -98,7 +119,24 @@ func GetSlugsForTag(tag string) ([]string, error) {
 		var slug string
 		err = rows.Scan(&slug)
 		if err != nil {
-			log.Fatal(err)
+			log.Printf("Query failed: %v", err)
+		}
+		slugs = append(slugs, slug)
+	}
+
+	likeQuery := `SELECT slug FROM metadata where lower(title) like lower(?);`
+	likePattern := fmt.Sprintf("%%%s%%", tag) // Add % wildcards around tag
+	rows, err = Database.Query(likeQuery, likePattern)
+	if err != nil {
+		log.Printf("Query failed: %v", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var slug string
+		err = rows.Scan(&slug)
+		if err != nil {
+			log.Printf("Row scan failed: %v", err)
 		}
 		slugs = append(slugs, slug)
 	}
@@ -107,7 +145,6 @@ func GetSlugsForTag(tag string) ([]string, error) {
 	rows, err = Database.Query(query, tag)
 	if err != nil {
 		log.Printf("Query failed: %v", err)
-		return []string{}, err
 	}
 	defer rows.Close()
 
@@ -115,7 +152,7 @@ func GetSlugsForTag(tag string) ([]string, error) {
 		var slug string
 		err = rows.Scan(&slug)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 		slugs = append(slugs, slug)
 	}
@@ -125,7 +162,6 @@ func GetSlugsForTag(tag string) ([]string, error) {
 		rows, err = Database.Query(query)
 		if err != nil {
 			log.Printf("Query failed: %v", err)
-			return []string{}, err
 		}
 		defer rows.Close()
 
@@ -133,7 +169,7 @@ func GetSlugsForTag(tag string) ([]string, error) {
 			var slug string
 			err = rows.Scan(&slug)
 			if err != nil {
-				log.Fatal(err)
+				log.Println(err)
 			}
 			slugs = append(slugs, slug)
 		}
@@ -177,8 +213,7 @@ func DeleteTagsRow(tag types.Tag) error {
 
 func CreateTagsOnUpload(tags types.TagsUpload) error {
 	log.Printf("adding tags for %s", tags.ImageSlug)
-	checkQuery := `SELECT title, cameraMake, cameraModel, lensMake, lensModel, fStop, flashStatus, focalLength, iso, exposureMode FROM metadata where slug = ?;`
-	var title string
+	checkQuery := `SELECT cameraMake, cameraModel, lensMake, lensModel, fStop, flashStatus, focalLength, iso, exposureMode FROM metadata where slug = ?;`
 	var cameraMake string
 	var cameraModel string
 	var lensMake string
@@ -189,7 +224,7 @@ func CreateTagsOnUpload(tags types.TagsUpload) error {
 	var iso string
 	var exposureMode string
 	err := Database.QueryRow(checkQuery, tags.ImageSlug).Scan(
-		&title, &cameraMake, &cameraModel, &lensMake, &lensModel,
+		&cameraMake, &cameraModel, &lensMake, &lensModel,
 		&fStop, &flashStatus, &focalLength, &iso, &exposureMode,
 	)
 
@@ -200,7 +235,6 @@ func CreateTagsOnUpload(tags types.TagsUpload) error {
 
 	var newTags []string
 	newTags = append(newTags, tags.Tags...)
-	newTags = append(newTags, strings.Split(title, " ")...)
 
 	cameraMake = logic.TernaryString(cameraMake == "none", "", cameraMake)
 	cameraModel = logic.TernaryString(cameraModel == "none" || len(cameraModel) < 4, "", cameraModel)
@@ -251,12 +285,7 @@ func populateTags() {
 		return
 	}
 
-	existingSlugs, err := GetTaggedSlugs()
-
-	if err != nil {
-		log.Printf("Query failed: %v", err)
-		return
-	}
+	existingSlugs := GetTaggedSlugs()
 
 	slugsToInsert := []string{}
 	for _, slug := range slugs {
@@ -274,13 +303,12 @@ func populateTags() {
 	}
 }
 
-func GetTaggedSlugs() ([]string, error) {
+func GetTaggedSlugs() []string {
 	var slugs []string
 	query := `SELECT DISTINCT imageSlug FROM tags;`
 	rows, err := Database.Query(query)
 	if err != nil {
 		log.Printf("Query failed: %v", err)
-		return []string{}, err
 	}
 	defer rows.Close()
 
@@ -288,12 +316,12 @@ func GetTaggedSlugs() ([]string, error) {
 		var imageSlug string
 		err = rows.Scan(&imageSlug)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 
 		slugs = append(slugs, imageSlug)
 	}
-	return slugs, nil
+	return slugs
 }
 
 func getFStopOrFocalLength(value string, kind string) string {

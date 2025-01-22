@@ -103,7 +103,7 @@ func GetDimensionedSlugs() ([]string, error) {
 		var imageSlug string
 		err = rows.Scan(&imageSlug)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 
 		slugs = append(slugs, imageSlug)
@@ -184,7 +184,7 @@ func GetAllDimensions() ([]types.DimensionsRow, error) {
 		var dimension types.DimensionsRow
 		err = rows.Scan(&dimension.ImageSlug, &dimension.Width, &dimension.Height, &dimension.Orientation, &dimension.Panoramic)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 		dimensions = append(dimensions, dimension)
 	}

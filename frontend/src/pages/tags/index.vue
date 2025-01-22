@@ -9,7 +9,6 @@ const tags = ref<string[]>([])
 async function getAllTags() {
   try {
     const response = await backendFetchRequest('/tags')
-    console.log(response)
     tags.value = await response.json() as string[]
   }
   catch (error) {

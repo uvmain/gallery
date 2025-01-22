@@ -46,7 +46,7 @@ func GetAlbumLinks(slug string) ([]string, error) {
 		var imageSlug string
 		err = rows.Scan(&imageSlug)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 		links = append(links, imageSlug)
 	}
@@ -67,7 +67,7 @@ func GetImageLinks(slug string) ([]string, error) {
 		var albumSlug string
 		err = rows.Scan(&albumSlug)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 
 		links = append(links, albumSlug)

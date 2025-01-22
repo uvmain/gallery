@@ -66,7 +66,7 @@ func GetAllAlbums() []types.Album {
 		var coverSlug string
 		err = rows.Scan(&slug, &name, &dateCreated, &coverSlug)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 
 		rowResult := types.Album{

@@ -7,6 +7,8 @@ const props = defineProps({
   inEditingMode: { type: Boolean, default: false },
 })
 
+defineExpose({ getTags })
+
 const tags = ref<string[]>([])
 
 async function getTags() {
@@ -23,7 +25,6 @@ async function getTags() {
     for (const albumSlug of albumSlugs) {
       const albumRequest: any = await backendFetchRequest(`albums/${albumSlug}`)
       const album = await albumRequest.json()
-      console.log(album.Name)
       returnArray.push(album.Name)
     }
   }

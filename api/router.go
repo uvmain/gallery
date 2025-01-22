@@ -58,7 +58,7 @@ func StartServer() {
 	router.HandleFunc("GET /api/links/image/{imageSlug}", handleGetImageLinks)
 	router.HandleFunc("GET /api/tags", handleGetTags)
 	router.HandleFunc("GET /api/tags/{imageSlug}", handleGetTagsBySlug)
-	router.HandleFunc("GET /api/slugs/{tag}", handleGetSlugsByTag)
+	router.HandleFunc("GET /api/slugs/tag/{tag}", handleGetSlugsByTag)
 	router.HandleFunc("GET /api/dimensions/{imageSlug}", handleGetDimensionsBySlug)
 
 	// authenticated routes
@@ -385,7 +385,6 @@ func handleGetTagsBySlug(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		http.Error(w, "Failed to retrieve tags for slug", http.StatusInternalServerError)
-		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(tags); err != nil {
@@ -397,11 +396,12 @@ func handleGetSlugsByTag(w http.ResponseWriter, r *http.Request) {
 	tag := r.PathValue("tag")
 	slugs, err := database.GetSlugsForTag(tag)
 
-	if err != nil {
-		http.Error(w, "Failed to retrieve slugs for tag", http.StatusInternalServerError)
-		return
-	}
 	w.Header().Set("Content-Type", "application/json")
+
+	if err != nil || slugs == nil {
+		slugs = []string{}
+	}
+
 	if err := json.NewEncoder(w).Encode(slugs); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}

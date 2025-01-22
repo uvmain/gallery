@@ -108,7 +108,7 @@ func GetExistingMetadataFilePaths() []types.MetadataFile {
 		var fileName string
 		err = rows.Scan(&slug, &filePath, &fileName)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 
 		rowResult := types.MetadataFile{

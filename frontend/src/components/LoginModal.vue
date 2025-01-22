@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { onClickOutside, useSessionStorage } from '@vueuse/core'
 import { onBeforeMount, ref } from 'vue'
 
