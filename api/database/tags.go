@@ -60,7 +60,45 @@ func GetAllTags() ([]string, error) {
 
 		tags = append(tags, tag)
 	}
+
+	dimensionTags := []string{"landscape", "portrait", "square", "panoramic"}
+	tags = append(tags, dimensionTags...)
+
+	titles := getAllTitleTags()
+	tags = append(tags, titles...)
+
+	slices.Sort(tags)
+	tags = slices.Compact(tags)
+
 	return tags, nil
+}
+
+func getAllTitleTags() []string {
+	checkQuery := `SELECT DISTINCT title FROM metadata;`
+	var titles []string
+	rows, _ := Database.Query(checkQuery)
+	defer rows.Close()
+
+	for rows.Next() {
+		var title string
+		err := rows.Scan(&title)
+		if err != nil {
+			log.Println(err)
+		} else {
+			titleRegexp := regexp.MustCompile(`[ \-_]+`) // Matches [" ", "-", "_"]
+			titleArray := titleRegexp.Split(title, -1)
+			for _, titleTag := range titleArray {
+				if len(titleTag) > 2 {
+					titles = append(titles, titleTag)
+				}
+			}
+		}
+	}
+
+	slices.Sort(titles)
+	titles = slices.Compact(titles)
+
+	return titles
 }
 
 func GetTagsForSlug(slug string) ([]string, error) {
