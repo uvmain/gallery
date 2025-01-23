@@ -73,12 +73,11 @@ async function navigateTags() {
           albums
         </div>
         <icon-tabler-vinyl class="p-2 text-2xl lg:hidden" @click="navigateAlbums" />
-        <div @click="navigateTags">
-          <div class="hidden p-2 text-2xl lg:block hover:cursor-pointer">
-            tags
-          </div>
-          <icon-tabler-arrows-shuffle class="p-2 text-2xl lg:hidden" />
+
+        <div class="hidden p-2 text-2xl lg:block hover:cursor-pointer" @click="navigateTags">
+          tags
         </div>
+        <icon-tabler-tags class="p-2 text-2xl lg:hidden" @click="navigateTags" />
 
         <div class="hidden p-2 text-2xl lg:block hover:cursor-pointer" @click="navigateRandom">
           random
