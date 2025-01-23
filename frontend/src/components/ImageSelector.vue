@@ -9,7 +9,7 @@ const props = defineProps({
   definedSlugs: { type: Array, required: false },
 })
 
-const emit = defineEmits(['closeModal'])
+const emits = defineEmits(['closeModal'])
 
 const slugs = ref()
 
@@ -34,7 +34,7 @@ function toggleSelected(slug: string) {
   else {
     selectedSlugs.value.push(slug)
     if (props.singleSelect === true) {
-      emit('closeModal', slug)
+      emits('closeModal', slug)
     }
   }
 }

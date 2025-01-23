@@ -99,7 +99,7 @@ onMounted(() => {
           <icon-tabler-library-plus class="text-4xl text-green" />
           <div class="flex flex-row items-center gap-2">
             <label for="newtag">New Tag:</label>
-            <input id="newtag" v-model="newTagString" type="text" name="newtag">
+            <input id="newtag" v-model="newTagString" type="text" name="newtag" @keydown.enter="confirmAddTag()">
           </div>
           <div class="flex justify-center gap-4">
             <button aria-label="cancel" class="button" @click="hideAddDialog()">

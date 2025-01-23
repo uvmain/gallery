@@ -11,7 +11,7 @@ const props = defineProps({
   large: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['deleteImage', 'editImage'])
+const emits = defineEmits(['deleteImage', 'editImage'])
 
 const router = useRouter()
 
@@ -42,10 +42,10 @@ function navigateToSlug(slug: string) {
   <div class="relative">
     <div v-if="deleteMode" class="grad absolute right-0 top-0 size-20 hover:cursor-pointer">
       <icon-tabler-trash-x v-if="!confirm" class="group absolute right-1 top-1 text-xl text-white hover:text-red" @click="confirm = true" />
-      <icon-tabler-circle-dashed-check v-else class="group absolute right-1 top-1 text-xl text-white hover:text-green" @click="emit('deleteImage')" />
+      <icon-tabler-circle-dashed-check v-else class="group absolute right-1 top-1 text-xl text-white hover:text-green" @click="emits('deleteImage')" />
     </div>
     <div v-if="editMode" class="grad absolute right-0 top-0 size-20 hover:cursor-pointer">
-      <icon-tabler-camera-rotate class="group absolute right-1 top-1 text-xl text-white hover:text-green" @click="emit('editImage')" />
+      <icon-tabler-camera-rotate class="group absolute right-1 top-1 text-xl text-white hover:text-green" @click="emits('editImage')" />
     </div>
     <img
       :src="getThumbnailPath(slug)"

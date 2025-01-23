@@ -8,7 +8,7 @@ defineProps({
   isOpen: Boolean,
 })
 
-const emit = defineEmits(['modalClose'])
+const emits = defineEmits(['modalClose'])
 const username = ref('')
 const password = ref('')
 const isLoggedIn = ref(false)
@@ -27,11 +27,11 @@ async function login() {
   })
   isLoggedIn.value = (response.status !== 401)
   userLoginState.value = (response.status !== 401)
-  emit('modalClose')
+  emits('modalClose')
 }
 
 function cancel() {
-  emit('modalClose')
+  emits('modalClose')
 }
 
 async function logout() {
@@ -41,7 +41,7 @@ async function logout() {
   })
   isLoggedIn.value = (response.status !== 401)
   userLoginState.value = (response.status !== 401)
-  emit('modalClose')
+  emits('modalClose')
 }
 
 async function checkIfLoggedIn() {
@@ -67,7 +67,7 @@ onBeforeMount(() => {
   checkIfLoggedIn()
 })
 
-onClickOutside(target, () => emit('modalClose'))
+onClickOutside(target, () => emits('modalClose'))
 </script>
 
 <template>

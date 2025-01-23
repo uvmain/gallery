@@ -4,8 +4,10 @@ import { onKeyStroke, useSessionStorage } from '@vueuse/core'
 import dayjs from 'dayjs'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import PhotoAlbums from '../components/PhotoAlbums.vue'
 import Tags from '../components/Tags.vue'
 import TooltipIcon from '../components/TooltipIcon.vue'
+import { addImageToAlbum } from '../composables/albums'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
 import { getNextSlug, getPreviousSlug, getRandomSlug, getSlugPosition } from '../composables/slugs'
 
@@ -21,10 +23,11 @@ const loadOriginalText = ref()
 const metadata = ref<ImageMetadata | undefined>()
 const tags = ref<typeof Tags>()
 const inEditingMode = ref(false)
+const selectedAlbums = ref<string[]>([])
 const addToAlbumDialog = ref()
+const photoalbums = ref<typeof PhotoAlbums>()
 
 const userLoginState = useSessionStorage('login-state', false)
-const selectedImage = useSessionStorage('selected-image', '')
 
 const imageSource = computed(() => {
   return `/api/${imageSize.value}/${slug.value}`
@@ -152,12 +155,19 @@ async function saveMetadata() {
 }
 
 function addToAlbum() {
-  selectedImage.value = route.params.imageSlug as string
-  router.push('/albums')
+  addToAlbumDialog.value?.show()
 }
 
 function hideAddToAlbumDialog() {
   addToAlbumDialog.value?.hide()
+}
+
+async function ConfirmAddToAlbum(albumSlugArray: string[]) {
+  addToAlbumDialog.value?.hide()
+  for (const albumSlug of albumSlugArray) {
+    await addImageToAlbum(albumSlug, slug.value)
+  }
+  photoalbums.value?.getAlbumsList()
 }
 
 watch(
@@ -292,12 +302,24 @@ onBeforeMount(async () => {
           <icon-tabler-download id="download-original" class="text-xl" />
           <label for="download-original">Download original</label>
         </div>
-        <PhotoAlbums v-model:in-editing-mode="inEditingMode" :image-slug="slug" @add-to-album="addToAlbum()" />
+        <PhotoAlbums ref="photoalbums" v-model:in-editing-mode="inEditingMode" :image-slug="slug" @add-to-album="addToAlbum()" />
         <Tags ref="tags" v-model:in-editing-mode="inEditingMode" :image-slug="slug" />
       </div>
     </div>
-    <Dialog ref="addToAlbumDialog" :close-button="false" class="size-90%" @keydown.escape="hideAddToAlbumDialog()">
-      <AlbumSelector :single-select="false" @close-modal="null" />
+    {{ selectedAlbums }}
+    <Dialog v-if="metadata" ref="addToAlbumDialog" :close-button="false" class="size-90%" @keydown.escape="hideAddToAlbumDialog()">
+      <div class="flex flex-col items-center justify-center gap-4 lg:flex-row">
+        <img
+          :src="imageSource"
+          :alt="slug"
+          onerror="this.onerror=null;this.src='/default-image.jpg';"
+          class="h-40 w-80 cursor-pointer border-2 border-white border-solid object-cover dark:border-neutral-500"
+        />
+        <div class="text-lg">
+          {{ metadata.title }}
+        </div>
+      </div>
+      <AlbumSelector v-model:selected-albums="selectedAlbums" :single-select="false" :in-editing-mode="inEditingMode" @cancel="hideAddToAlbumDialog()" @confirm="ConfirmAddToAlbum" />
     </Dialog>
   </div>
 </template>

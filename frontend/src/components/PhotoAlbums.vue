@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { Album } from '../composables/albums'
 import { onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { type Album, removeImageFromAlbum } from '../composables/albums'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
 import AlbumCoverSmall from './AlbumCoverSmall.vue'
 
@@ -11,9 +12,10 @@ const props = defineProps({
 
 const emits = defineEmits(['addToAlbum'])
 
+const router = useRouter()
 const imageAlbums = ref<Album[]>([])
 
-async function getAllAlbumsList() {
+async function getAlbumsList() {
   imageAlbums.value = []
   const response = await backendFetchRequest(`links/image/${props.imageSlug}`)
   const albumSlugs: string[] = await response.json() || []
@@ -24,15 +26,28 @@ async function getAllAlbumsList() {
   })
 }
 
+function navigateToAlbum(albumSlug: string) {
+  router.push(`/albums/${albumSlug}`)
+}
+
+async function removeAlbumLink(album: Album) {
+  console.log(`album: ${album.Slug}`)
+  console.log(`image: ${props.imageSlug}`)
+  await removeImageFromAlbum(album.Slug, props.imageSlug)
+  getAlbumsList()
+}
+
 watch(
   () => props.imageSlug,
   () => {
-    getAllAlbumsList()
+    getAlbumsList()
   },
 )
 
+defineExpose({ getAlbumsList })
+
 onMounted(() => {
-  getAllAlbumsList()
+  getAlbumsList()
 })
 </script>
 
@@ -43,7 +58,7 @@ onMounted(() => {
     </div>
     <div v-if="inEditingMode || imageAlbums.length" class="grid grid-cols-2 gap-4 lg:grid-cols-4 md:grid-cols-3">
       <div v-for="(album, index) in imageAlbums" :key="index">
-        <AlbumCoverSmall :album="album" />
+        <AlbumCoverSmall :album="album" :in-editing-mode="inEditingMode" :allow-delete="true" @image-click="navigateToAlbum(album.Slug)" @delete-click="removeAlbumLink" />
       </div>
       <div v-if="inEditingMode">
         <div class="hover:cursor-pointer" @click="emits('addToAlbum')">

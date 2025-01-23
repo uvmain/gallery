@@ -10,7 +10,7 @@ defineProps({
   showEdit: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['add', 'edit'])
+const emits = defineEmits(['add', 'edit'])
 
 const isModalOpened = ref(false)
 const isDark = useDark()
@@ -30,7 +30,7 @@ const userLoginState = useSessionStorage('login-state', false)
 
 function enableEdit() {
   if (userLoginState.value) {
-    emit('edit')
+    emits('edit')
   }
   else {
     console.warn('Unable to enter edit mode, please log in')
@@ -90,7 +90,7 @@ async function navigateTags() {
           <icon-tabler-upload class="text-2xl" />
         </TooltipIcon>
         <slot name="1" />
-        <TooltipIcon v-if="showAdd && userLoginState" tooltip-text="Add" class="hover:cursor-pointer" @click="emit('add')">
+        <TooltipIcon v-if="showAdd && userLoginState" tooltip-text="Add" class="hover:cursor-pointer" @click="emits('add')">
           <icon-tabler-library-plus class="text-2xl" />
         </TooltipIcon>
         <slot name="2" />
