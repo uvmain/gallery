@@ -21,7 +21,7 @@ defineExpose({ show, hide })
 </script>
 
 <template>
-  <dialog ref="dialog" class="modal p-2 md:p-4" @keydown.escape="dialog?.close()">
+  <dialog ref="dialog" class="p-2 modal md:p-4" @keydown.escape="dialog?.close()">
     <div :class="unpadded ? '' : 'p-4'">
       <slot />
     </div>

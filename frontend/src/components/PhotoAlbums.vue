@@ -37,7 +37,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-if="imageAlbums.length > 0" class="mt-4 max-w-120 flex flex-col gap-4 border-1 border-gray-400 rounded-sm border-solid p-4 dark:border-gray-600">
+  <div v-if="imageAlbums.length > 0 || inEditingMode" class="mt-4 max-w-120 flex flex-col gap-4 border-1 border-gray-400 rounded-sm border-solid p-4 dark:border-gray-600">
     <div class="text-left text-lg">
       This photo is in {{ imageAlbums.length }} {{ imageAlbums.length === 1 ? 'album' : 'albums' }}
     </div>

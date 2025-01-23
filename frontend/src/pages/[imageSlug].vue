@@ -21,6 +21,7 @@ const loadOriginalText = ref()
 const metadata = ref<ImageMetadata | undefined>()
 const tags = ref<typeof Tags>()
 const inEditingMode = ref(false)
+const addToAlbumDialog = ref()
 
 const userLoginState = useSessionStorage('login-state', false)
 const selectedImage = useSessionStorage('selected-image', '')
@@ -153,6 +154,10 @@ async function saveMetadata() {
 function addToAlbum() {
   selectedImage.value = route.params.imageSlug as string
   router.push('/albums')
+}
+
+function hideAddToAlbumDialog() {
+  addToAlbumDialog.value?.hide()
 }
 
 watch(
@@ -291,5 +296,8 @@ onBeforeMount(async () => {
         <Tags ref="tags" v-model:in-editing-mode="inEditingMode" :image-slug="slug" />
       </div>
     </div>
+    <Dialog ref="addToAlbumDialog" :close-button="false" class="size-90%" @keydown.escape="hideAddToAlbumDialog()">
+      <AlbumSelector :single-select="false" @close-modal="null" />
+    </Dialog>
   </div>
 </template>

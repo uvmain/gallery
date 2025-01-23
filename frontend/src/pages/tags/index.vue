@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { backendFetchRequest } from '../../composables/fetchFromBackend'
 
-// const router = useRouter()
 const tags = ref<string[]>([])
 
 async function getAllTags() {

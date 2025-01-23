@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useElementVisibility } from '@vueuse/core'
-import { computed, onBeforeMount, ref, watch } from 'vue'
+import { computed, onBeforeMount, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { backendFetchRequest } from '../../composables/fetchFromBackend'
 import { getThumbnailPath } from '../../composables/logic'

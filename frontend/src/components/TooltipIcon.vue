@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-
 defineProps({
   tooltipText: { type: String, required: true },
   content: { type: String, required: false },

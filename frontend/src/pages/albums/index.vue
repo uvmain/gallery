@@ -4,17 +4,22 @@ import type { Album } from '../../composables/albums'
 import { useSessionStorage } from '@vueuse/core'
 import { onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { getAllAlbums } from '../../composables/albums'
 import { backendFetchRequest } from '../../composables/fetchFromBackend'
 
 const router = useRouter()
-const albums = ref()
+const albums = ref<Album[]>([])
 const addDialog = ref<typeof Dialog>()
 const deleteDialog = ref<typeof Dialog>()
 const selectedAlbum = ref()
 const newAlbumName = ref<string>()
 const userLoginState = useSessionStorage('login-state', false)
 const inEditingMode = ref(false)
+
+async function getAllAlbums() {
+  albums.value = []
+  const response = await backendFetchRequest('albums')
+  albums.value = await response.json()
+}
 
 function addAlbum() {
   addDialog.value?.show()
@@ -33,13 +38,9 @@ async function confirmAddAlbum() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
   }
-  const response = await backendFetchRequest('albums', options)
-
+  await backendFetchRequest('albums', options)
   hideAddDialog()
-
-  if (response.status === 200) {
-    albums.value = await getAllAlbums()
-  }
+  await getAllAlbums()
 }
 
 async function deleteAlbum() {
@@ -52,7 +53,7 @@ async function deleteAlbum() {
   catch (error) {
     console.error('Failed to fetch Albums:', error)
   }
-  albums.value = await getAllAlbums()
+  await getAllAlbums()
   hideDeleteDialog()
 }
 
@@ -75,7 +76,7 @@ function navigateToAlbum(albumName: string) {
 }
 
 onBeforeMount(async () => {
-  albums.value = await getAllAlbums()
+  await getAllAlbums()
 })
 </script>
 

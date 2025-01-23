@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AlbumCoverLarge: typeof import('./src/components/AlbumCoverLarge.vue')['default']
     AlbumCoverSmall: typeof import('./src/components/AlbumCoverSmall.vue')['default']
+    AlbumSelector: typeof import('./src/components/AlbumSelector.vue')['default']
     copy: typeof import('./src/components/PhotoAlbums copy.vue')['default']
     Dialog: typeof import('./src/components/Dialog.vue')['default']
     Header: typeof import('./src/components/Header.vue')['default']
