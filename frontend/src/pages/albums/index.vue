@@ -95,13 +95,13 @@ onBeforeMount(async () => {
         <AlbumCoverLarge :album="album" :in-edit-mode="inEditingMode" @trash="trashAlbum(album)" @navigate="navigateToAlbum(album.Slug)" />
       </div>
     </div>
-    <Dialog ref="addDialog" :close-button="false" class="modal">
+    <Dialog ref="addDialog" :close-button="false" class="modal" @keydown.escape="hideAddDialog()">
       <div class="p-6">
         <div class="flex flex-col items-center gap-6">
           <icon-tabler-library-plus class="text-4xl text-green" />
           <div class="flex flex-row items-center gap-2">
             <label for="albumname">Album Name:</label>
-            <input id="albumname" v-model="newAlbumName" type="text" name="albumname" autocomplete="albumname">
+            <input id="albumname" v-model="newAlbumName" type="text" name="albumname" autocomplete="albumname" @keydown.enter="confirmAddAlbum()">
           </div>
           <div class="flex justify-center gap-4">
             <button aria-label="cancel" class="button" @click="hideAddDialog()">
