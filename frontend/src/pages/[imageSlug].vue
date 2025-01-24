@@ -222,7 +222,7 @@ onBeforeMount(async () => {
     </Header>
     <div class="flex flex-col justify-center gap-2 p-2 lg:flex-row lg:gap-6 lg:p-6">
       <div class="flex items-center align-middle">
-        <img v-if="imageSource" :src="imageSource" class="mx-auto max-h-80vh max-w-90vw border-6 border-white border-solid object-contain lg:max-w-70vw dark:border-neutral-500" />
+        <img v-if="imageSource" :src="imageSource" loading="lazy" class="mx-auto max-h-80vh max-w-90vw border-6 border-white border-solid object-contain lg:max-w-70vw dark:border-neutral-500" />
       </div>
       <div v-if="metadata" class="flex flex-col gap-3 p-6 text-sm lg:max-w-1/3">
         <div class="font-semibold lg:text-lg">
@@ -312,6 +312,7 @@ onBeforeMount(async () => {
         <img
           :src="imageSource"
           :alt="slug"
+          loading="lazy"
           onerror="this.onerror=null;this.src='/default-image.jpg';"
           class="h-40 w-80 cursor-pointer border-2 border-white border-solid object-cover dark:border-neutral-500"
         />

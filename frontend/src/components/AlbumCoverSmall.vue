@@ -28,6 +28,7 @@ onBeforeMount(async () => {
     </div>
     <img
       :src="albumThumbnailAddress"
+      loading="lazy"
       onerror="this.onerror=null;this.src='/default-image.jpg';"
       class="size-20 border-2 border-white border-solid hover:cursor-pointer dark:border-neutral-500"
       @click="emits('image-click', album)"

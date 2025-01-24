@@ -220,6 +220,7 @@ onBeforeMount(async () => {
         <img
           :src="getThumbnailPath(albumData.CoverSlug)"
           :alt="albumData.CoverSlug"
+          loading="lazy"
           onerror="this.onerror=null;this.src='/default-image.jpg';"
           class="h-40 w-80 cursor-pointer border-2 border-white border-solid object-cover dark:border-neutral-500"
         />
