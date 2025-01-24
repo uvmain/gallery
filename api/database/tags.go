@@ -58,7 +58,7 @@ func GetAllTags() ([]string, error) {
 			log.Println(err)
 		}
 
-		tags = append(tags, tag)
+		tags = append(tags, strings.ToLower(tag))
 	}
 
 	dimensionTags := []string{"landscape", "portrait", "square", "panoramic"}
@@ -91,7 +91,7 @@ func getAllTitleTags() []string {
 			titleArray := titleRegexp.Split(title, -1)
 			for _, titleTag := range titleArray {
 				if len(titleTag) > 2 {
-					titles = append(titles, titleTag)
+					titles = append(titles, strings.ToLower(titleTag))
 				}
 			}
 		}
@@ -116,7 +116,7 @@ func getAllAlbumTags() []string {
 			nameArray := nameRegexp.Split(name, -1)
 			for _, nameTag := range nameArray {
 				if len(nameTag) > 2 {
-					names = append(names, nameTag)
+					names = append(names, strings.ToLower(nameTag))
 				}
 			}
 		}
@@ -313,7 +313,7 @@ func InsertTagsRow(tag types.Tag) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(tag.Tag, tag.ImageSlug)
+	_, err = stmt.Exec(strings.ToLower(tag.Tag), tag.ImageSlug)
 	if err != nil {
 		log.Printf("error inserting tag row: %s", err)
 		return err
