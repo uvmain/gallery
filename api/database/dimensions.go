@@ -37,9 +37,9 @@ func GetSourceDimensionsForSlug(slug string) (types.DimensionsRow, error) {
 	width, height := source.Bounds().Max.X, source.Bounds().Max.Y
 
 	var orientation string
-	if float64(source.Bounds().Max.X) > float64(source.Bounds().Max.Y)*1.1 {
+	if float64(source.Bounds().Max.X) > float64(source.Bounds().Max.Y)*1.05 {
 		orientation = "landscape"
-	} else if float64(source.Bounds().Max.Y) > float64(source.Bounds().Max.X)*1.1 {
+	} else if float64(source.Bounds().Max.Y) > float64(source.Bounds().Max.X)*1.05 {
 		orientation = "portrait"
 	} else {
 		orientation = "square"
