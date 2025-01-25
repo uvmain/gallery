@@ -148,11 +148,11 @@ func GetMetadataBySlug(slug string) (types.ImageMetadata, error) {
 	return row, nil
 }
 
-func GetSlugsOrderedByDateTaken(offset int, limit int) ([]string, error) {
+func GetSlugsOrderedByDateTaken() ([]string, error) {
 	var slugs []string
 
-	query := `SELECT slug FROM metadata ORDER BY dateTaken DESC LIMIT ? OFFSET ?;`
-	rows, err := Database.Query(query, limit, offset)
+	query := `SELECT slug FROM metadata ORDER BY dateTaken DESC;`
+	rows, err := Database.Query(query)
 	if err != nil {
 		log.Printf("Query failed: %v", err)
 		return nil, err
@@ -176,11 +176,11 @@ func GetSlugsOrderedByDateTaken(offset int, limit int) ([]string, error) {
 	return slugs, nil
 }
 
-func GetSlugsOrderedRandom(limit int) ([]string, error) {
+func GetSlugsOrderedRandom() ([]string, error) {
 	var slugs []string
 
-	query := `SELECT slug FROM metadata ORDER BY RANDOM() DESC LIMIT ?;`
-	rows, err := Database.Query(query, limit)
+	query := `SELECT slug FROM metadata ORDER BY RANDOM() DESC;`
+	rows, err := Database.Query(query)
 	if err != nil {
 		log.Printf("Query failed: %v", err)
 		return nil, err

@@ -11,7 +11,6 @@ import (
 	"photogallery/optimised"
 	"photogallery/thumbnails"
 	"photogallery/types"
-	"strconv"
 	"time"
 
 	"github.com/rs/cors"
@@ -89,17 +88,7 @@ func StartServer() {
 }
 
 func handleGetSlugs(w http.ResponseWriter, r *http.Request) {
-	v := r.URL.Query().Get("offset")
-	if v == "" {
-		v = "0"
-	}
-	offset, _ := strconv.Atoi(v)
-	v = r.URL.Query().Get("limit")
-	if v == "" {
-		v = "1000"
-	}
-	limit, _ := strconv.Atoi(v)
-	slugs, _ := database.GetSlugsOrderedByDateTaken(offset, limit)
+	slugs, _ := database.GetSlugsOrderedByDateTaken()
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(slugs); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -107,12 +96,7 @@ func handleGetSlugs(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleGetRandomSlugs(w http.ResponseWriter, r *http.Request) {
-	v := r.URL.Query().Get("limit")
-	if v == "" {
-		v = "1000"
-	}
-	limit, _ := strconv.Atoi(v)
-	slugs, _ := database.GetSlugsOrderedRandom(limit)
+	slugs, _ := database.GetSlugsOrderedRandom()
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(slugs); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
