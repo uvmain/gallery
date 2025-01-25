@@ -99,6 +99,12 @@ type DimensionsRow struct {
 	Panoramic   bool
 }
 
+type SlugWithDimensions struct {
+	Slug   string `json:"slug"`
+	Width  int    `json:"width"`
+	Height int    `json:"height"`
+}
+
 type MetadataFile struct {
 	Slug     string
 	FilePath string

@@ -42,6 +42,7 @@ declare module 'vue' {
     IconTablerSquareMinus: typeof import('~icons/tabler/square-minus')['default']
     IconTablerSquarePlus: typeof import('~icons/tabler/square-plus')['default']
     IconTablerSun: typeof import('~icons/tabler/sun')['default']
+    IconTablerTags: typeof import('~icons/tabler/tags')['default']
     IconTablerTrashX: typeof import('~icons/tabler/trash-x')['default']
     IconTablerUpload: typeof import('~icons/tabler/upload')['default']
     IconTablerUser: typeof import('~icons/tabler/user')['default']

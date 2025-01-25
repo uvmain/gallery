@@ -148,6 +148,31 @@ func GetMetadataBySlug(slug string) (types.ImageMetadata, error) {
 	return row, nil
 }
 
+func GetSlugsWithDimensions() ([]types.SlugWithDimensions, error) {
+	var slugsWithDimensions []types.SlugWithDimensions
+	slugs, err := GetSlugsOrderedByDateTaken()
+	if err != nil {
+		log.Printf("Failed to get slugs: %v", err)
+		return []types.SlugWithDimensions{}, err
+	}
+
+	for _, slug := range slugs {
+		dimension, err := GetDimensionForSlug(slug)
+		if err != nil {
+			log.Printf("Failed to get dimensions: %v", err)
+		} else {
+			slugWithDimensions := types.SlugWithDimensions{
+				Slug:   slug,
+				Width:  dimension.Width,
+				Height: dimension.Height,
+			}
+			slugsWithDimensions = append(slugsWithDimensions, slugWithDimensions)
+		}
+	}
+
+	return slugsWithDimensions, nil
+}
+
 func GetSlugsOrderedByDateTaken() ([]string, error) {
 	var slugs []string
 
