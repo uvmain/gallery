@@ -117,11 +117,11 @@ func populateMetadata() {
 	}
 }
 
-func GetMetadataBySlug(slug string) (types.ImageMetadata, error) {
-	var row types.ImageMetadata
-	checkQuery := `SELECT slug, filePath, fileName, title, dateTaken, dateUploaded, cameraMake, cameraModel, lensMake, lensModel, fStop, exposureTime, flashStatus, focalLength, iso, exposureMode, whiteBalance, whiteBalanceMode FROM metadata WHERE slug = ?;`
+func GetMetadataBySlug(slug string) (types.ImageMetadataWithDimensions, error) {
+	var row types.ImageMetadataWithDimensions
+	query := `SELECT slug, filePath, fileName, title, dateTaken, dateUploaded, cameraMake, cameraModel, lensMake, lensModel, fStop, exposureTime, flashStatus, focalLength, iso, exposureMode, whiteBalance, whiteBalanceMode FROM metadata WHERE slug = ?;`
 
-	err := Database.QueryRow(checkQuery, slug).Scan(
+	err := Database.QueryRow(query, slug).Scan(
 		&row.Slug,
 		&row.FilePath,
 		&row.FileName,
@@ -142,17 +142,50 @@ func GetMetadataBySlug(slug string) (types.ImageMetadata, error) {
 		&row.WhiteBalanceMode,
 	)
 	if err != nil {
-		return types.ImageMetadata{}, err
+		return types.ImageMetadataWithDimensions{}, err
+	}
+
+	dimensions, err := GetDimensionForSlug(slug)
+	if err == nil {
+		row.Width = dimensions.Width
+		row.Height = dimensions.Height
+		row.Orientation = dimensions.Orientation
+		row.Panoramic = dimensions.Panoramic
 	}
 
 	return row, nil
 }
 
-func GetSlugsOrderedByDateTaken(offset int, limit int) ([]string, error) {
+func GetSlugsWithDimensions() ([]types.SlugWithDimensions, error) {
+	var slugsWithDimensions []types.SlugWithDimensions
+	slugs, err := GetSlugsOrderedByDateTaken()
+	if err != nil {
+		log.Printf("Failed to get slugs: %v", err)
+		return []types.SlugWithDimensions{}, err
+	}
+
+	for _, slug := range slugs {
+		dimension, err := GetDimensionForSlug(slug)
+		if err != nil {
+			log.Printf("Failed to get dimensions: %v", err)
+		} else {
+			slugWithDimensions := types.SlugWithDimensions{
+				Slug:   slug,
+				Width:  dimension.Width,
+				Height: dimension.Height,
+			}
+			slugsWithDimensions = append(slugsWithDimensions, slugWithDimensions)
+		}
+	}
+
+	return slugsWithDimensions, nil
+}
+
+func GetSlugsOrderedByDateTaken() ([]string, error) {
 	var slugs []string
 
-	query := `SELECT slug FROM metadata ORDER BY dateTaken DESC LIMIT ? OFFSET ?;`
-	rows, err := Database.Query(query, limit, offset)
+	query := `SELECT slug FROM metadata ORDER BY dateTaken DESC;`
+	rows, err := Database.Query(query)
 	if err != nil {
 		log.Printf("Query failed: %v", err)
 		return nil, err
@@ -176,11 +209,11 @@ func GetSlugsOrderedByDateTaken(offset int, limit int) ([]string, error) {
 	return slugs, nil
 }
 
-func GetSlugsOrderedRandom(limit int) ([]string, error) {
+func GetSlugsOrderedRandom() ([]string, error) {
 	var slugs []string
 
-	query := `SELECT slug FROM metadata ORDER BY RANDOM() DESC LIMIT ?;`
-	rows, err := Database.Query(query, limit)
+	query := `SELECT slug FROM metadata ORDER BY RANDOM() DESC;`
+	rows, err := Database.Query(query)
 	if err != nil {
 		log.Printf("Query failed: %v", err)
 		return nil, err

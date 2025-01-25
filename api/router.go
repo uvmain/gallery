@@ -11,7 +11,6 @@ import (
 	"photogallery/optimised"
 	"photogallery/thumbnails"
 	"photogallery/types"
-	"strconv"
 	"time"
 
 	"github.com/rs/cors"
@@ -48,6 +47,7 @@ func StartServer() {
 	// standard routes
 	router.HandleFunc("GET /api/slugs", handleGetSlugs)
 	router.HandleFunc("GET /api/slugs/random", handleGetRandomSlugs)
+	router.HandleFunc("GET /api/slugs/with-dimensions", handleGetSlugsWithDimensions)
 	router.HandleFunc("GET /api/metadata/{slug}", handleGetMetadataBySlug)
 	router.HandleFunc("GET /api/thumbnail/{slug}", handleGetThumbnailBySlug)
 	router.HandleFunc("GET /api/optimised/{slug}", handleGetOptimisedBySlug)
@@ -89,17 +89,15 @@ func StartServer() {
 }
 
 func handleGetSlugs(w http.ResponseWriter, r *http.Request) {
-	v := r.URL.Query().Get("offset")
-	if v == "" {
-		v = "0"
+	slugs, _ := database.GetSlugsOrderedByDateTaken()
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(slugs); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
-	offset, _ := strconv.Atoi(v)
-	v = r.URL.Query().Get("limit")
-	if v == "" {
-		v = "1000"
-	}
-	limit, _ := strconv.Atoi(v)
-	slugs, _ := database.GetSlugsOrderedByDateTaken(offset, limit)
+}
+
+func handleGetSlugsWithDimensions(w http.ResponseWriter, r *http.Request) {
+	slugs, _ := database.GetSlugsWithDimensions()
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(slugs); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -107,12 +105,7 @@ func handleGetSlugs(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleGetRandomSlugs(w http.ResponseWriter, r *http.Request) {
-	v := r.URL.Query().Get("limit")
-	if v == "" {
-		v = "1000"
-	}
-	limit, _ := strconv.Atoi(v)
-	slugs, _ := database.GetSlugsOrderedRandom(limit)
+	slugs, _ := database.GetSlugsOrderedRandom()
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(slugs); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

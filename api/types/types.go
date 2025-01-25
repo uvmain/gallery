@@ -91,12 +91,43 @@ type ImageMetadata struct {
 	WhiteBalanceMode string    `json:"whiteBalanceMode"`
 }
 
+type ImageMetadataWithDimensions struct {
+	Slug             string    `json:"slug"`
+	FilePath         string    `json:"filePath"`
+	FileName         string    `json:"fileName"`
+	Title            string    `json:"title"`
+	DateTaken        time.Time `json:"dateTaken"`
+	DateUploaded     time.Time `json:"dateUploaded"`
+	CameraMake       string    `json:"cameraMake"`
+	CameraModel      string    `json:"cameraModel"`
+	LensMake         string    `json:"lensMake"`
+	LensModel        string    `json:"lensModel"`
+	FStop            string    `json:"fStop"`
+	ExposureTime     string    `json:"exposureTime"`
+	FlashStatus      string    `json:"flashStatus"`
+	FocalLength      string    `json:"focalLength"`
+	ISO              string    `json:"iso"`
+	ExposureMode     string    `json:"exposureMode"`
+	WhiteBalance     string    `json:"whiteBalance"`
+	WhiteBalanceMode string    `json:"whiteBalanceMode"`
+	Width            int       `json:"width"`
+	Height           int       `json:"height"`
+	Orientation      string    `json:"orientation"`
+	Panoramic        bool      `json:"panoramic"`
+}
+
 type DimensionsRow struct {
 	ImageSlug   string
 	Width       int
 	Height      int
 	Orientation string
 	Panoramic   bool
+}
+
+type SlugWithDimensions struct {
+	Slug   string `json:"slug"`
+	Width  int    `json:"width"`
+	Height int    `json:"height"`
 }
 
 type MetadataFile struct {
