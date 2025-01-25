@@ -1,22 +1,21 @@
 <script setup lang="ts">
-import { useElementVisibility, useSessionStorage } from '@vueuse/core'
+import type { SlugWithDimensions } from '../types/main'
+import { useElementVisibility } from '@vueuse/core'
 import { computed, onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
 import { getThumbnailPath } from '../composables/logic'
-import { getAllSlugs } from '../composables/slugs'
 
 const router = useRouter()
 const startObserver = ref<HTMLDivElement | null>(null)
-const slugs = ref<string[]>([])
+const slugs = ref<SlugWithDimensions[]>([])
 
 const startObserverIsVisible = useElementVisibility(startObserver)
-const selectedImage = useSessionStorage('selected-image', '')
 
 async function getSlugs() {
   try {
-    const response = await backendFetchRequest('slugs')
-    slugs.value = await response.json() as string[]
+    const response = await backendFetchRequest('/slugs/with-dimensions')
+    slugs.value = await response.json() as SlugWithDimensions[]
   }
   catch (error) {
     console.error('Failed to fetch thumbnails:', error)
@@ -34,9 +33,7 @@ const headerShadowClass = computed(() => {
 })
 
 onBeforeMount(async () => {
-  selectedImage.value = undefined
   await getSlugs()
-  getAllSlugs()
 })
 </script>
 
@@ -47,9 +44,9 @@ onBeforeMount(async () => {
       <div ref="startObserver" />
       <div class="flex flex-col gap-4 lg:max-w-8/10 lg:flex-row lg:flex-wrap lg:gap-x-2 lg:gap-y-1">
         <div v-for="(slug, index) in slugs" :key="index" class="flex-1 basis-auto">
-          <img :src="getThumbnailPath(slug)" :alt="slug" loading="lazy" class="h-full min-h-20vh w-full cursor-pointer object-cover lg:max-h-25vh lg:max-w-40vw" @click="navigateToSlug(slug)">
+          <img :src="getThumbnailPath(slug.slug)" :alt="slug.slug" loading="lazy" :width="slug.width" :height="slug.height" class="h-full min-h-20vh w-full cursor-pointer object-cover lg:max-h-25vh lg:max-w-40vw" @click="navigateToSlug(slug.slug)">
         </div>
-        <div class="flex-2 flex" />
+        <div class="flex grow-2" />
       </div>
     </div>
   </div>

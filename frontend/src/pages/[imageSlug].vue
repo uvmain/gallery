@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ImageMetadata } from '../composables/imageMetadataInterface'
+import type { ImageMetadata } from '../types/main'
 import { onKeyStroke, useSessionStorage } from '@vueuse/core'
 import dayjs from 'dayjs'
 import { computed, onBeforeMount, ref, watch } from 'vue'
@@ -220,9 +220,15 @@ onBeforeMount(async () => {
         </div>
       </template>
     </Header>
-    <div class="flex flex-col justify-center gap-2 p-2 lg:flex-row lg:gap-6 lg:p-6">
-      <div class="flex items-center align-middle">
-        <img v-if="imageSource" :src="imageSource" loading="lazy" class="mx-auto max-h-80vh max-w-90vw border-6 border-white border-solid object-contain lg:max-w-70vw dark:border-neutral-500" />
+    <div class="flex flex-col justify-center gap-2 p-2 lg:flex-row">
+      <div class="flex items-center justify-center">
+        <img
+          v-if="imageSource"
+          :src="imageSource"
+          :width="metadata?.width"
+          :height="metadata?.height"
+          class="box-border h-auto max-h-90vh max-w-90% w-auto border-8 border-white border-solid object-contain dark:border-neutral-500"
+        />
       </div>
       <div v-if="metadata" class="flex flex-col gap-3 p-6 text-sm lg:max-w-1/3">
         <div class="font-semibold lg:text-lg">
@@ -306,7 +312,6 @@ onBeforeMount(async () => {
         <Tags ref="tags" v-model:in-editing-mode="inEditingMode" :image-slug="slug" />
       </div>
     </div>
-    {{ selectedAlbums }}
     <Dialog v-if="metadata" ref="addToAlbumDialog" :close-button="false" class="size-90%" @keydown.escape="hideAddToAlbumDialog()">
       <div class="flex flex-col items-center justify-center gap-4 lg:flex-row">
         <img

@@ -4,7 +4,6 @@ import { computed, onBeforeMount, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { backendFetchRequest } from '../../composables/fetchFromBackend'
 import { getThumbnailPath } from '../../composables/logic'
-import { getAllSlugs } from '../../composables/slugs'
 
 const route = useRoute()
 const router = useRouter()
@@ -38,7 +37,6 @@ const headerShadowClass = computed(() => {
 
 onBeforeMount(async () => {
   await getSlugs()
-  getAllSlugs()
 })
 </script>
 

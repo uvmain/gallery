@@ -117,11 +117,11 @@ func populateMetadata() {
 	}
 }
 
-func GetMetadataBySlug(slug string) (types.ImageMetadata, error) {
-	var row types.ImageMetadata
-	checkQuery := `SELECT slug, filePath, fileName, title, dateTaken, dateUploaded, cameraMake, cameraModel, lensMake, lensModel, fStop, exposureTime, flashStatus, focalLength, iso, exposureMode, whiteBalance, whiteBalanceMode FROM metadata WHERE slug = ?;`
+func GetMetadataBySlug(slug string) (types.ImageMetadataWithDimensions, error) {
+	var row types.ImageMetadataWithDimensions
+	query := `SELECT slug, filePath, fileName, title, dateTaken, dateUploaded, cameraMake, cameraModel, lensMake, lensModel, fStop, exposureTime, flashStatus, focalLength, iso, exposureMode, whiteBalance, whiteBalanceMode FROM metadata WHERE slug = ?;`
 
-	err := Database.QueryRow(checkQuery, slug).Scan(
+	err := Database.QueryRow(query, slug).Scan(
 		&row.Slug,
 		&row.FilePath,
 		&row.FileName,
@@ -142,7 +142,15 @@ func GetMetadataBySlug(slug string) (types.ImageMetadata, error) {
 		&row.WhiteBalanceMode,
 	)
 	if err != nil {
-		return types.ImageMetadata{}, err
+		return types.ImageMetadataWithDimensions{}, err
+	}
+
+	dimensions, err := GetDimensionForSlug(slug)
+	if err == nil {
+		row.Width = dimensions.Width
+		row.Height = dimensions.Height
+		row.Orientation = dimensions.Orientation
+		row.Panoramic = dimensions.Panoramic
 	}
 
 	return row, nil

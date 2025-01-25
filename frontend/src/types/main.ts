@@ -1,3 +1,9 @@
+export interface SlugWithDimensions {
+  slug: string
+  width: number
+  height: number
+}
+
 export interface ImageMetadata {
   filePath: string
   fileName: string
@@ -16,4 +22,8 @@ export interface ImageMetadata {
   exposureMode: string
   whiteBalance: string
   whiteBalanceMode: string
+  width: number
+  height: number
+  orientation: string
+  panoramic: boolean
 }
