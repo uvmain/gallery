@@ -66,7 +66,7 @@ export default defineConfig({
     script: 'async',
     format: 'cjs',
     formatting: 'minify',
-    crittersOptions: {
+    beastiesOptions: {
       reduceInlineStyles: false,
     },
   },

@@ -38,7 +38,7 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div>
+  <div class="min-h-screen">
     <Header class="sticky top-0 z-10" :class="headerShadowClass" />
     <div class="flex flex-col items-center p-6">
       <div ref="startObserver" />
