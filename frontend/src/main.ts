@@ -12,8 +12,7 @@ const scrollBehavior: RouterScrollBehavior = async (to, from, savedPosition) => 
   }
 
   if (savedPosition) {
-    console.log('Restoring saved position:', savedPosition)
-    await new Promise(resolve => setTimeout(resolve, 50))
+    await new Promise(resolve => setTimeout(resolve, 500))
     window.scrollTo(savedPosition.left, savedPosition.top)
     return savedPosition
   }
