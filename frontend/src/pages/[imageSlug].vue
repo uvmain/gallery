@@ -220,17 +220,17 @@ onBeforeMount(async () => {
         </div>
       </template>
     </Header>
-    <div class="flex flex-col justify-center gap-2 p-2 lg:flex-row">
-      <div class="flex items-center justify-center">
+    <div class="flex flex-col justify-center gap-x-8 p-2 lg:flex-row">
+      <div class="lg:pt-4">
         <img
           v-if="imageSource"
           :src="imageSource"
           :width="metadata?.width"
           :height="metadata?.height"
-          class="box-border h-auto max-h-90vh max-w-90% w-auto border-8 border-white border-solid object-contain dark:border-neutral-500"
+          class="box-border h-auto max-h-80vh max-w-70vw w-auto border-8 border-white border-solid object-contain dark:border-neutral-500"
         />
       </div>
-      <div v-if="metadata" class="flex flex-col gap-3 p-6 text-sm lg:max-w-1/3">
+      <div v-if="metadata" class="flex flex-col gap-3 text-sm lg:max-w-1/3">
         <div class="font-semibold lg:text-lg">
           <div v-if="inEditingMode">
             <input id="imageTitle" v-model="metadata.title" type="text" class="input" @keypress.enter="saveMetadata">

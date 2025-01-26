@@ -80,10 +80,10 @@ onMounted(() => {
 
 <template>
   <div class="mt-4 max-w-120 flex flex-col gap-4 border-1 border-gray-400 rounded-sm border-solid p-4 dark:border-gray-600">
-    <div class="text-left text-lg">
-      Tags
-    </div>
     <div class="flex flex-wrap gap-4">
+      <div class="text-left text-lg">
+        Tags
+      </div>
       <div v-for="(tag, index) in tags" :key="index">
         <Tag :tag="tag" :in-editing-mode="inEditingMode" @delete="deleteTag(tag)" />
       </div>
