@@ -191,6 +191,7 @@ func handlePatchMetadataBySlug(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := database.UpdateMetadataBySlug(slug, updates); err != nil {
+		log.Printf("Failed to update metadata: %s", err)
 		http.Error(w, "Failed to update metadata", http.StatusInternalServerError)
 		return
 	}

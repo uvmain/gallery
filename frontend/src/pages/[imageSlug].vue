@@ -132,12 +132,34 @@ function disableEditing() {
   getMetadata()
 }
 
+const patchMetadata = computed(() => {
+  return {
+    filePath: metadata.value?.filePath,
+    fileName: metadata.value?.fileName,
+    title: metadata.value?.title,
+    dateTaken: metadata.value?.dateTaken,
+    dateUploaded: metadata.value?.dateUploaded,
+    cameraMake: metadata.value?.cameraMake,
+    cameraModel: metadata.value?.cameraModel,
+    lensMake: metadata.value?.lensMake,
+    lensModel: metadata.value?.lensModel,
+    fStop: metadata.value?.fStop,
+    exposureTime: metadata.value?.exposureTime,
+    flashStatus: metadata.value?.flashStatus,
+    focalLength: metadata.value?.focalLength,
+    iso: metadata.value?.iso,
+    exposureMode: metadata.value?.exposureMode,
+    whiteBalance: metadata.value?.whiteBalance,
+    whiteBalanceMode: metadata.value?.whiteBalance,
+  }
+})
+
 async function saveMetadata() {
   if (userLoginState.value) {
     inEditingMode.value = false
     try {
       const options = {
-        body: JSON.stringify(metadata.value),
+        body: JSON.stringify(patchMetadata.value),
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
       }
