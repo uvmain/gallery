@@ -47,6 +47,13 @@ func Initialise() *sql.DB {
 
 	Database = db
 
+	_, err = db.Exec("pragma journal_mode = wal;")
+	if err != nil {
+		log.Printf("Error entering WAL mode: %s", err)
+	} else {
+		log.Println("Database is in WAL mode")
+	}
+
 	createMetadataTable(db)
 	InitialiseAlbums(db)
 	InitialiseLinks(db)
