@@ -49,6 +49,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     Tag: typeof import('./src/components/Tag.vue')['default']
     Tags: typeof import('./src/components/Tags.vue')['default']
+    TextInput: typeof import('./src/components/TextInput.vue')['default']
     TooltipIcon: typeof import('./src/components/TooltipIcon.vue')['default']
   }
 }
