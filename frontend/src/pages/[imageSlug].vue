@@ -266,16 +266,11 @@ onBeforeMount(async () => {
         </div>
 
         <div>
-          <div v-if="inEditingMode" class="flex gap-x-2">
+          <div class="flex gap-x-2">
             <TooltipIcon tooltip-text="Date Taken">
               <icon-tabler-calendar class="text-xl" />
             </TooltipIcon>
-            <input id="dateTaken" v-model="metadata.dateTaken" type="datetime-local" class="text-lg input">
-          </div>
-          <div v-else>
-            <TooltipIcon v-if="dateTaken" tooltip-text="Date Taken" :content="dateTaken">
-              <icon-tabler-calendar class="text-xl" />
-            </TooltipIcon>
+            <DateInput v-model="metadata.dateTaken" :in-editing-mode="inEditingMode" :display-value="dateTaken" class="py-2" @keypress.enter="saveMetadata" />
           </div>
         </div>
 

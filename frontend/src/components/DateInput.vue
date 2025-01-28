@@ -4,6 +4,10 @@ defineProps({
     type: String,
     required: true,
   },
+  displayValue: {
+    type: String,
+    required: false,
+  },
   inEditingMode: {
     type: Boolean,
     default: false,
@@ -18,20 +22,20 @@ function handleInput(event: any) {
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="">
     <input
       v-show="inEditingMode"
       :placeholder="modelValue"
       :value="modelValue"
-      type="text"
-      class="w-full border-1 border-white border-dashed p-1 standard"
+      type="datetime-local"
+      class="border-1 border-white border-dashed p-1 outline-none standard"
       @input="handleInput"
     >
     <span
       v-show="!inEditingMode"
       class="py-2"
     >
-      {{ modelValue }}
+      {{ displayValue }}
     </span>
   </div>
 </template>
