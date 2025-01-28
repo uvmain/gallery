@@ -1,4 +1,3 @@
-import type { Component } from 'vue'
 import type { RouterScrollBehavior } from 'vue-router'
 import generatedRoutes from 'virtual:generated-pages'
 import { ViteSSG } from 'vite-ssg'

@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { onClickOutside, useSessionStorage } from '@vueuse/core'
-import { onBeforeMount, ref } from 'vue'
-
 import { backendFetchRequest } from '../composables/fetchFromBackend'
 
 defineProps({
@@ -9,11 +7,11 @@ defineProps({
 })
 
 const emits = defineEmits(['modalClose'])
+
 const username = ref('')
 const password = ref('')
 const isLoggedIn = ref(false)
 const target = ref(null)
-
 const userLoginState = useSessionStorage('login-state', isLoggedIn.value)
 
 async function login() {

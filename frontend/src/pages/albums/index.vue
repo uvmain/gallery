@@ -2,8 +2,6 @@
 import type Dialog from '../../components/Dialog.vue'
 import type { Album } from '../../composables/albums'
 import { useSessionStorage } from '@vueuse/core'
-import { onBeforeMount, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { backendFetchRequest } from '../../composables/fetchFromBackend'
 
 const router = useRouter()

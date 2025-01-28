@@ -2,10 +2,6 @@
 import type Dialog from '../../components/Dialog.vue'
 import type { Album } from '../../composables/albums'
 import { useSessionStorage } from '@vueuse/core'
-import { onBeforeMount, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import ImageSelector from '../../components/ImageSelector.vue'
-import PhotoThumbnail from '../../components/PhotoThumbnail.vue'
 import { backendFetchRequest } from '../../composables/fetchFromBackend'
 import { getThumbnailPath, niceDate } from '../../composables/logic'
 

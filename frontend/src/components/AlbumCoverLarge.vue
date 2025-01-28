@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Album } from '../composables/albums'
-import { onBeforeMount, ref } from 'vue'
 import { getAlbumCoverSlugThumbnailAddress } from '../composables/albums'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
 

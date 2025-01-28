@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import type Dialog from './Dialog.vue'
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 
 const props = defineProps({
   tag: { type: String, required: true },

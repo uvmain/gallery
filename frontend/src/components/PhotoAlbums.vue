@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { type Album, removeImageFromAlbum } from '../composables/albums'
+import type { Album } from '../composables/albums'
+import { removeImageFromAlbum } from '../composables/albums'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
-import AlbumCoverSmall from './AlbumCoverSmall.vue'
 
 const props = defineProps({
   imageSlug: { type: String, required: true },

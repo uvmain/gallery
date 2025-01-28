@@ -1,0 +1,3 @@
+{
+  "include": ["frontend/src/**/*", "frontend/components.ts", "frontend/auto-imports.d.ts"],
+}

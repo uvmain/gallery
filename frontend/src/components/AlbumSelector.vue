@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { Album } from '../composables/albums'
-import { onMounted, ref } from 'vue'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
-import AlbumCoverSmall from './AlbumCoverSmall.vue'
 
 defineProps({
   inEditingMode: { type: Boolean, default: false },

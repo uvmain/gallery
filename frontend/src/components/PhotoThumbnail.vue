@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { getThumbnailPath } from '../composables/logic'
 
 const props = defineProps({

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type Dialog from '../components/Dialog.vue'
-import { onMounted, ref, watch } from 'vue'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
 
 const props = defineProps({

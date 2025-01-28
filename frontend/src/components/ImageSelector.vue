@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useSessionStorage } from '@vueuse/core'
-import { computed, onMounted, ref } from 'vue'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
 import { getThumbnailPath } from '../composables/logic'
 

@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { useSessionStorage } from '@vueuse/core'
-import { onBeforeMount, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
 
 const fileSelector = ref<HTMLInputElement | null>(null)
