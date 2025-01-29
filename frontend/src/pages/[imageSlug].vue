@@ -246,7 +246,7 @@ onBeforeMount(async () => {
           :src="imageSource"
           :width="metadata?.width"
           :height="metadata?.height"
-          class="box-border h-auto max-h-80vh max-w-70vw w-auto border-8 border-white border-solid object-contain dark:border-neutral-500"
+          class="box-border h-auto max-h-100vh max-w-95vw w-auto border-8 border-white border-solid object-contain lg:max-h-80vh lg:max-w-70vw dark:border-neutral-500"
         />
       </div>
       <div v-if="metadata" class="flex flex-col gap-3 text-sm lg:max-w-1/3">
