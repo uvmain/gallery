@@ -222,6 +222,14 @@ onKeyStroke('ArrowDown', async (e) => {
   router.push(`/${slug}`)
 })
 
+onKeyStroke('ArrowUp', async (e) => {
+  if (inEditingMode.value) {
+    return
+  }
+  e.preventDefault()
+  router.go(-1)
+})
+
 onBeforeMount(async () => {
   await getMetadata()
 })
