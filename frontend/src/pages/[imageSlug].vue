@@ -241,13 +241,7 @@ onBeforeMount(async () => {
     </Header>
     <div class="flex flex-col justify-center gap-x-8 gap-y-4 p-2 lg:flex-row">
       <div class="mx-auto lg:mx-0 lg:pt-4">
-        <img
-          v-if="imageSource"
-          :src="imageSource"
-          :width="metadata?.width"
-          :height="metadata?.height"
-          class="box-border h-auto max-h-100vh max-w-95vw w-auto border-8 border-white border-solid object-contain lg:max-h-80vh lg:max-w-70vw dark:border-neutral-500"
-        />
+        <ZoomableImage :image-source="imageSource" :width="metadata?.width" :height="metadata?.height" />
       </div>
       <div v-if="metadata" class="flex flex-col gap-3 text-sm lg:max-w-1/3">
         <TextInput v-model="metadata.title" :in-editing-mode="inEditingMode" class="py-2 text-xl font-semibold lg:text-3xl" @keypress.enter="saveMetadata" />
