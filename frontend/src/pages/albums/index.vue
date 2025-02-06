@@ -90,7 +90,7 @@ onBeforeMount(async () => {
 
     <div id="main" class="grid mx-auto gap-4 p-6 lg:grid-cols-7 md:grid-cols-4 sm:grid-cols-1 lg:max-w-8/10 lg:gap-8">
       <div v-for="(album, index) in albums" :key="index" class="relative">
-        <AlbumCoverLarge :album="album" :in-edit-mode="inEditingMode" @trash="trashAlbum(album)" @navigate="navigateToAlbum(album.Slug)" class="hover:cursor-pointer"/>
+        <AlbumCoverLarge :album="album" :in-edit-mode="inEditingMode" class="hover:cursor-pointer" @trash="trashAlbum(album)" @navigate="navigateToAlbum(album.Slug)" />
       </div>
     </div>
     <Dialog ref="addDialog" :close-button="false" class="modal" @keydown.escape="hideAddDialog()">

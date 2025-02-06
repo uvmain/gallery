@@ -29,6 +29,7 @@ function toggleZoomed() {
       :height="height"
       class="z-50 cursor-pointer object-contain"
       :class="zoomedClass"
+      loading="lazy"
       @click="toggleZoomed()"
     />
   </div>
