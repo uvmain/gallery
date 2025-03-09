@@ -21,7 +21,7 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div class="relative">
+  <div class="relative flex flex-wrap justify-center gap-2">
     <div v-if="inEditingMode && allowDelete">
       <icon-tabler-circle-dashed-minus class="absolute right-4 z-100 rounded-2xl bg-white bg-op-60 text-2xl text-red -top-1 hover:cursor-pointer hover-bg-op-100" @click="emits('deleteClick', album)" />
     </div>
@@ -32,7 +32,7 @@ onBeforeMount(async () => {
       class="size-20 border-2 border-white border-solid hover:cursor-pointer dark:border-neutral-500"
       @click="emits('imageClick', album)"
     />
-    <div v-if="showName" class="max-w-20 overflow-hidden text-center">
+    <div v-if="showName" class="max-w-24 text-center">
       {{ album.Name }}
     </div>
   </div>

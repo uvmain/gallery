@@ -34,7 +34,11 @@ func createAlbumLinksTable(db *sql.DB) {
 
 func GetAlbumLinks(slug string) ([]string, error) {
 	var links []string
-	query := `SELECT imageSlug FROM album_links where albumSlug = ?;`
+	query := `SELECT album_links.imageSlug
+		FROM album_links
+		JOIN metadata ON album_links.imageSlug = metadata.slug
+		WHERE album_links.albumSlug = ?
+		ORDER BY metadata.dateTaken DESC;`
 	rows, err := Database.Query(query, slug)
 	if err != nil {
 		log.Printf("Query failed: %v", err)
