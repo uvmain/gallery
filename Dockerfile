@@ -8,7 +8,7 @@ RUN npm install
 COPY frontend/ ./
 RUN npm run build
 
-FROM golang:1.23 AS backend-build
+FROM golang:1.24 AS backend-build
 
 WORKDIR /app
 
