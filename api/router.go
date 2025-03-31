@@ -62,6 +62,7 @@ func StartServer() {
 	router.HandleFunc("GET /api/dimensions/{imageSlug}", handleGetDimensionsBySlug)
 
 	// authenticated routes
+	router.Handle("DELETE /api/slugs/{slug}", auth.AuthMiddleware(http.HandlerFunc(handleDeleteImageBySlug)))
 	router.Handle("PATCH /api/metadata/{slug}", auth.AuthMiddleware(http.HandlerFunc(handlePatchMetadataBySlug)))
 	router.Handle("PATCH /api/albums/cover", auth.AuthMiddleware(http.HandlerFunc(handlePatchAlbumCover)))
 	router.Handle("PATCH /api/albums/name", auth.AuthMiddleware(http.HandlerFunc(handlePatchAlbumName)))
@@ -86,6 +87,32 @@ func StartServer() {
 	}
 
 	http.ListenAndServe(serverAddress, handler)
+}
+
+func handleDeleteImageBySlug(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("slug")
+	log.Printf("deleting slug %s", slug)
+	w.Header().Set("Content-Type", "application/json")
+
+	err := optimised.DeleteOptimisedBySlug(slug)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+
+	err = thumbnails.DeleteThumbnailBySlug(slug)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+
+	filename, err := database.DeleteImageBySlug(slug)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+
+	err = image.DeleteOriginalImage(filename)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
 }
 
 func handleGetSlugs(w http.ResponseWriter, r *http.Request) {

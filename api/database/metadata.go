@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"log"
@@ -156,6 +157,21 @@ func GetMetadataBySlug(slug string) (types.ImageMetadataWithDimensions, error) {
 	return row, nil
 }
 
+func CheckMetadataByFileNameExists(filename string) bool {
+	query := `SELECT slug FROM metadata WHERE fileName = ?;`
+	var slug string
+
+	err := Database.QueryRow(query, filename).Scan(&slug)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false
+		}
+		log.Println("Database error:", err)
+		return false
+	}
+	return true
+}
+
 func GetSlugsWithDimensions() ([]types.SlugWithDimensions, error) {
 	var slugsWithDimensions []types.SlugWithDimensions
 	slugs, err := GetSlugsOrderedByDateTaken()
@@ -278,6 +294,23 @@ func UpdateMetadataBySlug(slug string, updates map[string]interface{}) error {
 
 	if err == nil {
 		log.Printf("Metadata updated for %s, %s", slug, updates)
+	}
+	return err
+}
+
+func DeleteMetadataBySlug(slug string) error {
+	query := "DELETE from metadata WHERE slug = ?"
+
+	stmt, err := Database.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(slug)
+
+	if err == nil {
+		log.Printf("Metadata deleted for %s", slug)
 	}
 	return err
 }

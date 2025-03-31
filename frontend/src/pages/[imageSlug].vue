@@ -189,6 +189,28 @@ async function ConfirmAddToAlbum(albumSlugArray: string[]) {
   photoalbums.value?.getAlbumsList()
 }
 
+async function deleteImage() {
+  if (userLoginState.value) {
+    try {
+      const options = {
+        body: JSON.stringify({ slug: slug.value }),
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+      }
+      const response = await backendFetchRequest(`slugs/${slug.value}`, options)
+      if (response.status === 200) {
+        router.push('/')
+      }
+    }
+    catch (error) {
+      console.error('Failed to delete image:', error)
+    }
+  }
+  else {
+    console.warn('Not authorised to delete image, please log in')
+  }
+}
+
 watch(
   () => route.params.imageSlug,
   () => {
@@ -239,8 +261,11 @@ onBeforeMount(async () => {
   <div class="min-h-screen">
     <Header :show-edit="!inEditingMode" @edit="enableEditing">
       <template #2>
+        <div v-if="inEditingMode" class="p-2 hover:cursor-pointer" @click="deleteImage">
+          <icon-tabler-trash class="text-2xl text-red-700" />
+        </div>
         <div v-if="inEditingMode" class="p-2 hover:cursor-pointer" @click="disableEditing">
-          <icon-tabler-edit-off class="text-2xl text-red-700" />
+          <icon-tabler-edit-off class="text-2xl text-orange-700" />
         </div>
         <div v-if="inEditingMode" class="p-2 hover:cursor-pointer" @click="saveMetadata">
           <icon-tabler-checkbox class="text-2xl text-green-700" />

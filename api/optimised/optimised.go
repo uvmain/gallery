@@ -137,6 +137,22 @@ func deleteOptimisedByFilename(filename string) {
 	log.Printf("Optimised %s deleted", filename)
 }
 
+func DeleteOptimisedBySlug(slug string) error {
+	optimisedPath := filepath.Join(logic.OptimisedDirectory, slug+".jpeg")
+	if _, err := os.Stat(optimisedPath); os.IsNotExist(err) {
+		log.Printf("Optimised file does not exist for slug %s", slug)
+		return err
+	}
+	err := os.Remove(optimisedPath)
+	if err != nil {
+		log.Printf("Error deleting optimised %s: %s", slug, err)
+		return err
+	}
+	log.Printf("Optimised %s deleted", slug)
+
+	return err
+}
+
 func GetOptimisedBySlug(slug string) ([]byte, error) {
 	optimisedPath := filepath.Join(logic.OptimisedDirectory, slug+".jpeg")
 	if _, err := os.Stat(optimisedPath); os.IsNotExist(err) {

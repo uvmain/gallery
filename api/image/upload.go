@@ -53,3 +53,27 @@ func saveOriginalImage(file multipart.File, filename string) {
 
 	log.Printf("Uploaded file to %s", filePath)
 }
+
+func DeleteOriginalImage(filename string) error {
+
+	existing := database.CheckMetadataByFileNameExists(filename)
+	if existing {
+		log.Printf("Original image %s is used by existing metadata, skipping deletion", filename)
+		return nil
+	}
+
+	filePath := filepath.Join(logic.ImageDirectory, filename)
+
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		log.Printf("Original file does not exist for filename %s", filename)
+		return err
+	}
+	err := os.Remove(filePath)
+	if err != nil {
+		log.Printf("Error deleting original image %s: %s", filename, err)
+		return err
+	}
+	log.Printf("Original image %s deleted", filename)
+
+	return err
+}

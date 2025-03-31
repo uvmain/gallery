@@ -135,6 +135,22 @@ func deleteThumbnailByFilename(filename string) {
 	log.Printf("Thumbnail %s deleted", filename)
 }
 
+func DeleteThumbnailBySlug(slug string) error {
+	thumbnailPath := filepath.Join(logic.ThumbnailDirectory, slug+".jpeg")
+	if _, err := os.Stat(thumbnailPath); os.IsNotExist(err) {
+		log.Printf("Thumbnail file does not exist for slug %s", slug)
+		return err
+	}
+	err := os.Remove(thumbnailPath)
+	if err != nil {
+		log.Printf("Error deleting thumbnail %s: %s", slug, err)
+		return err
+	}
+	log.Printf("Thumbnail %s deleted", slug)
+
+	return err
+}
+
 func GetThumbnailBySlug(slug string) ([]byte, error) {
 	thumbnailPath := filepath.Join(logic.ThumbnailDirectory, slug+".jpeg")
 	if _, err := os.Stat(thumbnailPath); os.IsNotExist(err) {

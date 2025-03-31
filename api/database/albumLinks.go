@@ -117,6 +117,24 @@ func DeleteAlbumLinkRow(link types.Link) error {
 	return nil
 }
 
+func DeleteAlbumLinksByImageSlug(slug string) error {
+	stmt, err := Database.Prepare(`DELETE FROM album_links where imageSlug = ?;`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(slug)
+	if err != nil {
+		log.Printf("error deleting album link row: %s", err)
+		return err
+	}
+
+	log.Printf("Album link rows deleted successfully for %s", slug)
+	return nil
+}
+
+
 func InitialiseLinks(db *sql.DB) {
 	createAlbumLinksTable(db)
 }

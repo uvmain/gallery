@@ -484,3 +484,20 @@ func getFStopOrFocalLength(value string, kind string) string {
 	}
 	return ""
 }
+
+func DeleteTagsByImageSlug(slug string) error {
+	stmt, err := Database.Prepare(`DELETE FROM tags where imageSlug = ?;`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(slug)
+	if err != nil {
+		log.Printf("error deleting tags for %s: %s", slug, err)
+		return err
+	}
+
+	log.Printf("tags deleted successfully for %s", slug)
+	return nil
+}

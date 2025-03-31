@@ -129,3 +129,34 @@ func GetExistingMetadataFilePaths() []types.MetadataFile {
 
 	return foundMetadataFiles
 }
+
+func DeleteImageBySlug(slug string) (string, error) {
+	metadata, err := GetMetadataBySlug(slug)
+	if err != nil {
+		return "", err
+	}
+
+	filename := metadata.FileName
+
+	err = DeleteMetadataBySlug(slug)
+	if err != nil {
+		return filename, err
+	}
+
+	err = DeleteAlbumLinksByImageSlug(slug)
+	if err != nil {
+		return filename, err
+	}
+
+	err = DeleteDimensionsRowForSlug(slug)
+	if err != nil {
+		return filename, err
+	}
+
+	err = DeleteTagsByImageSlug(slug)
+	if err != nil {
+		return filename, err
+	}
+
+	return filename, err
+}

@@ -5,6 +5,8 @@ import { backendFetchRequest } from '../composables/fetchFromBackend'
 const fileSelector = ref<HTMLInputElement | null>(null)
 const title = ref()
 const feedback = ref()
+const image = ref()
+const uploadDisabled = ref(false)
 
 const userLoginState = useSessionStorage('login-state', false)
 const router = useRouter()
@@ -33,6 +35,7 @@ async function uploadFile() {
   formData.append('title', title.value)
 
   try {
+    uploadDisabled.value = true
     const response = await backendFetchRequest('upload', {
       body: formData,
       method: 'POST',
@@ -49,6 +52,17 @@ async function uploadFile() {
   }
   catch (error) {
     feedback.value = `Error during upload: ${error}`
+  }
+  finally {
+    uploadDisabled.value = false
+  }
+}
+
+function updateFile() {
+  updateTitle()
+  if (fileSelector.value?.files) {
+    const file = fileSelector.value.files[0]
+    image.value = URL.createObjectURL(file)
   }
 }
 
@@ -73,9 +87,15 @@ onBeforeMount(() => {
             name="avatar"
             accept="image/avif, image/bmp, image/gif, image/jpg, image/jpeg, image/png, image/webp"
             class="border-none input"
-            @change="updateTitle"
+            @change="updateFile"
           />
         </div>
+        <img
+          v-if="image"
+          :src="image"
+          class="max-h-90vh max-w-90vw lg:max-w-60vw"
+          alt="your image"
+        />
         <div class="flex flex-col gap-4">
           <label for="title">Title:</label>
           <input
@@ -85,11 +105,13 @@ onBeforeMount(() => {
             name="title"
             :multiple="false"
             class="border-solid input"
+            @change="updateTitle"
           />
         </div>
         <div>
           <button
-            class="button"
+            :disabled="uploadDisabled"
+            class="disabled:bg-red button"
             @click="uploadFile"
           >
             Upload

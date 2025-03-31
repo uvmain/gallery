@@ -206,3 +206,20 @@ func GetDimensionForSlug(slug string) (types.DimensionsRow, error) {
 	}
 	return dimension, nil
 }
+
+func DeleteDimensionsRowForSlug(slug string) error {
+	stmt, err := Database.Prepare(`delete from dimensions where ImageSlug = ?;`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(slug)
+	if err != nil {
+		log.Printf("error deleting dimensions row for %s: %s", slug, err)
+		return err
+	}
+
+	log.Printf("Dimensions row deleted successfully for %s", slug)
+	return nil
+}
