@@ -72,6 +72,12 @@ func InitialiseMetadata() {
 }
 
 func insertMetadataRow(imageMetadata types.ImageMetadata) error {
+
+	parsedDateTaken, err := logic.FormatTimeToString(imageMetadata.DateTaken.String())
+	if err != nil {
+		return err
+	}
+
 	stmt, err := Database.Prepare(`INSERT INTO metadata (
 		slug, filePath, fileName, title, dateTaken, dateUploaded,
 		cameraMake, cameraModel, lensMake, lensModel, fStop, exposureTime,
@@ -80,11 +86,12 @@ func insertMetadataRow(imageMetadata types.ImageMetadata) error {
 	if err != nil {
 		return err
 	}
+
 	defer stmt.Close()
 
 	_, err = stmt.Exec(
 		imageMetadata.Slug, imageMetadata.FilePath, imageMetadata.FileName,
-		imageMetadata.Title, imageMetadata.DateTaken, imageMetadata.DateUploaded,
+		imageMetadata.Title, parsedDateTaken, imageMetadata.DateUploaded,
 		imageMetadata.CameraMake, imageMetadata.CameraModel, imageMetadata.LensMake,
 		imageMetadata.LensModel, imageMetadata.FStop, imageMetadata.ExposureTime,
 		imageMetadata.FlashStatus, imageMetadata.FocalLength, imageMetadata.ISO,
@@ -200,7 +207,7 @@ func GetSlugsWithDimensions() ([]types.SlugWithDimensions, error) {
 func GetSlugsOrderedByDateTaken() ([]string, error) {
 	var slugs []string
 
-	query := `SELECT slug FROM metadata ORDER BY dateTaken DESC;`
+	query := `SELECT slug FROM metadata order by dateTaken desc`
 	rows, err := Database.Query(query)
 	if err != nil {
 		log.Printf("Query failed: %v", err)

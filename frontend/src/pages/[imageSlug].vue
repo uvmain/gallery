@@ -74,7 +74,7 @@ const whiteBalance = computed(() => {
     result = setting
   }
   if (temp && temp.toLowerCase() !== 'unknown') {
-    result = `${setting}: ${temp}`
+    result = (`${setting}` === `${temp}`) ? `${setting}` : `${setting}: ${temp}`
   }
   return result
 })

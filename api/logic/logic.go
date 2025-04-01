@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -84,4 +85,24 @@ func StringArraySortUnique(arrayToSort []string) []string {
 	slices.Sort(arrayToSort)
 	arrayToSort = slices.Compact(arrayToSort)
 	return arrayToSort
+}
+
+var dateFormats = []string{
+	time.RFC3339,                    // "2025-01-24T18:15:21Z"
+	"2006-01-02T15:04",              // "2025-01-29T17:21"
+	"2006-01-02 15:04:05 -0700 MST", // "2018-06-23 16:05:18 +0100 BST"
+	"2006-01-02 15:04:05 -0700",     // "2018-06-23 16:05:18 +0100"
+	"2006-01-02 15:04",              // "2020-01-31T00:00"
+}
+
+func FormatTimeToString(dateString string) (string, error) {
+	for _, layout := range dateFormats {
+		t, err := time.Parse(layout, dateString)
+		if err == nil {
+			formattedTime := t.Format("2006-01-02 15:04:05")
+			return formattedTime, nil
+		}
+	}
+	log.Printf("unsupported date format: %s", dateString)
+	return "0000-00-00 00:00:00", fmt.Errorf("unsupported date format: %s", dateString)
 }
