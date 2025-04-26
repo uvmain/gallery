@@ -46,7 +46,6 @@ declare module 'vue' {
     IconTablerVinyl: typeof import('~icons/tabler/vinyl')['default']
     ImageSelector: typeof import('./src/components/ImageSelector.vue')['default']
     LoginModal: typeof import('./src/components/LoginModal.vue')['default']
-    Map: typeof import('./src/components/Map.vue')['default']
     PhotoAlbums: typeof import('./src/components/PhotoAlbums.vue')['default']
     PhotoThumbnail: typeof import('./src/components/PhotoThumbnail.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
