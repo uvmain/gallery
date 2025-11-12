@@ -73,7 +73,7 @@ onClickOutside(target, () => emits('modalClose'))
     <div v-if="!isLoggedIn" @keydown.escape="cancel">
       <div ref="target" class="mx-auto mb-auto mt-150px w-300px modal px-30px pb-30px pt-20px">
         <div class="w-300 flex flex-col gap-4 p-6">
-          <form class="flex flex-col gap-2">
+          <form id="login" class="flex flex-col gap-2">
             <div class="flex flex-row items-center gap-2">
               <label for="username">Username:</label>
               <input id="username" v-model="username" type="text" name="username" autocomplete="username">

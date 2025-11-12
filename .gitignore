@@ -1,10 +1,10 @@
 node_modules
 data
-api/data
+core/data
 *.db
-api/.env
-api/server
-api/server.exe
+core/.env
+core/server
+core/server.exe
 dist
 frontend/node_modules
 frontend/dist

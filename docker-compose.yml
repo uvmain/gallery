@@ -1,11 +1,11 @@
 services:
-  photogallery:
-    image: photogallery:latest
-    container_name: photogallery
+  gallery:
+    image: gallery:latest
+    container_name: gallery
     env_file:
       - .env
     volumes:
-      - /mnt/main/docker/photogallery:/data
-      - /mnt/barra5/Photography:/images
+      - /mnt/main/docker/gallery:/data
+      - /mnt/main/photos:/images
     ports:
       - "3001:8080"

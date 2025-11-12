@@ -1,9 +1,10 @@
-module photogallery
+module gallery
 
 go 1.25.3
 
 require (
 	github.com/disintegration/imaging v1.6.2
+	github.com/go-swiss/compress v0.0.0-20231015173048-c7b565746931
 	github.com/rs/cors v1.11.1
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	golang.org/x/text v0.31.0
@@ -11,8 +12,10 @@ require (
 )
 
 require (
+	github.com/andybalholm/brotli v1.0.6 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
+	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect

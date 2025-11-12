@@ -1,6 +1,6 @@
-# PhotoGallery Web Application
+# Gallery Web Application
 
-This is a **PhotoGallery Web Application** built with a **Go REST API backend** and a **Vite/Vue frontend**. The application uses **SQLite** to store image metadata and features image thumbnail generation, EXIF data retrieval, and album organization. It is designed to be served on a local or hosted server with a reverse proxy for routing.
+This is a **Gallery Web Application** built with a **Go REST API backend** and a **Vite/Vue frontend**. The application uses **SQLite** to store image metadata and features image thumbnail generation, EXIF data retrieval, and album organization. It is designed to be served on a local or hosted server with a reverse proxy for routing.
 
 ## Features
 
@@ -45,12 +45,7 @@ ADMIN_USER=your_admin_name
 ADMIN_PASSWORD=your_admin_password
 ```
 
-4. **Generate SSL/TLS certificates (optional for local development):**
-```bash
-npm run create-cert
-```
-
-5. **Start development environment::**
+4. **Start development environment::**
 ```bash
 npm run dev
 ```
@@ -59,7 +54,7 @@ This command:
 - Runs the frontend in development mode (MHR)
 - Runs the backend in development mode
 
-Open [photogallery.localhost](https://[photogallery.localhost) in your browser
+Open [gallery.localhost](https://gallery.localhost) in your browser
 
 ## Scripts
 
@@ -72,7 +67,7 @@ Open [photogallery.localhost](https://[photogallery.localhost) in your browser
 ## Deployment
 
 ```
-docker build -t photogallery:latest . && docker compose up -d
+docker build -t gallery:latest . && docker compose up -d
 ```
 
 ## Contributing
