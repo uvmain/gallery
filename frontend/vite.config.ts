@@ -8,12 +8,15 @@ import Unfonts from 'unplugin-fonts/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import Icons from 'unplugin-icons/vite'
 import Components from 'unplugin-vue-components/vite'
+import VueRouter from 'unplugin-vue-router/vite'
 import { defineConfig } from 'vite'
-import Pages from 'vite-plugin-pages'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
+    VueRouter({
+      /* options */
+    }),
     AutoImport({
       imports: [
         'vue',
@@ -24,7 +27,6 @@ export default defineConfig({
     }),
     vue(),
     // https://github.com/hannoeru/vite-plugin-pagesQ
-    Pages(),
     Icons(),
     // https://github.com/antfu/unplugin-vue-components
     Components({

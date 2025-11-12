@@ -1,0 +1,73 @@
+package config
+
+import (
+	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
+
+	"github.com/joho/godotenv"
+)
+
+var DatabaseDirectory string
+var ImageDirectory string
+var ThumbnailDirectory string
+var OptimisedDirectory string
+var ImagePath string
+var ImageExtensions []string
+var ThumbnailMaxPixels int
+var OptimisedMaxPixels int
+var AdminUser string
+var AdminPassword string
+
+func LoadEnv() {
+	godotenv.Load(".env")
+
+	username := os.Getenv("ADMIN_USER")
+	if username == "" {
+		username = "admin"
+	}
+	AdminUser = username
+
+	password := os.Getenv("ADMIN_PASSWORD")
+	if password == "" {
+		password = "admin"
+	}
+	AdminPassword = password
+
+	dataPath := os.Getenv("DATA_PATH")
+	if dataPath == "" {
+		dataPath = "./data"
+	}
+
+	ImagePath = os.Getenv("IMAGE_PATH")
+	if ImagePath == "" {
+		ImagePath = "./images"
+	}
+
+	DatabaseDirectory, _ = filepath.Abs(dataPath)
+	ImageDirectory, _ = filepath.Abs(ImagePath)
+	ThumbnailDirectory, _ = filepath.Abs(filepath.Join(dataPath, "thumbnails"))
+	OptimisedDirectory, _ = filepath.Abs(filepath.Join(dataPath, "optimised"))
+
+	imageExtensions := os.Getenv("IMAGE_EXTENSIONS")
+	if imageExtensions == "" {
+		ImageExtensions = []string{".avif", ".bmp", ".gif", ".jpg", ".jpeg", ".png", ".webp"}
+	} else {
+		ImageExtensions = strings.Split(imageExtensions, ",")
+	}
+
+	thumbnailMaxPixels, err := strconv.Atoi(os.Getenv("THUMBNAIL_MAX_PIXELS"))
+	if err == nil && thumbnailMaxPixels > 0 {
+		ThumbnailMaxPixels = thumbnailMaxPixels
+	} else {
+		ThumbnailMaxPixels = 500
+	}
+
+	optimisedMaxPixels, err := strconv.Atoi(os.Getenv("OPTIMISED_MAX_PIXELS"))
+	if err == nil && optimisedMaxPixels > 0 {
+		OptimisedMaxPixels = optimisedMaxPixels
+	} else {
+		OptimisedMaxPixels = 1280
+	}
+}

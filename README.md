@@ -1,6 +1,6 @@
-# PhotoGallery Web Application
+# Gallery Web Application
 
-This is a **PhotoGallery Web Application** built with a **Go REST API backend** and a **Vite/Vue frontend**. The application uses **SQLite** to store image metadata and features image thumbnail generation, EXIF data retrieval, and album organization. It is designed to be served on a local or hosted server with a reverse proxy for routing.
+This is a **Gallery Web Application** built with a **Go REST API backend** and a **Vite/Vue frontend**. The application uses **SQLite** to store image metadata and features image thumbnail generation, EXIF data retrieval, and album organization. It is designed to be served on a local or hosted server with a reverse proxy for routing.
 
 ## Features
 
@@ -19,8 +19,8 @@ This is a **PhotoGallery Web Application** built with a **Go REST API backend** 
 
 ## Prerequisites
 
-- Go (tested on 1.23)
-- Node.js & npm (tested on Node 20 LTS)
+- Go (tested on 1.25.3)
+- Node.js & npm (tested on Node 22.21)
 
 ## Getting Started
 
@@ -38,19 +38,14 @@ npm run deps
 This command downloads the npm dependencies for the local dev and frontend components, and the go dependencies for the api component.
 
 3. **Set up environment variables:**
-Update the following environment variables in the /package.json (for local dev) and in the docker_compose.yml (or sibling .env file):
-```plaintext
-IMAGE_PATH=path/to/your/images
-ADMIN_USER=your_admin_name
-ADMIN_PASSWORD=your_admin_password
-```
-
-4. **Generate SSL/TLS certificates (optional for local development):**
+Update the following environment variables in the .env file:
 ```bash
-npm run create-cert
+IMAGE_PATH=path/to/your/images # defaults to "./images"
+ADMIN_USER=your_admin_name # defaults to "admin"
+ADMIN_PASSWORD=your_admin_password # defaults to "admin"
 ```
 
-5. **Start development environment::**
+4. **Start development environment::**
 ```bash
 npm run dev
 ```
@@ -59,7 +54,7 @@ This command:
 - Runs the frontend in development mode (MHR)
 - Runs the backend in development mode
 
-Open [photogallery.localhost](https://[photogallery.localhost) in your browser
+Open [gallery.localhost](https://gallery.localhost) in your browser
 
 ## Scripts
 
@@ -72,7 +67,7 @@ Open [photogallery.localhost](https://[photogallery.localhost) in your browser
 ## Deployment
 
 ```
-docker build -t photogallery:latest . && docker compose up -d
+docker build -t gallery:latest . && docker compose up -d
 ```
 
 ## Contributing

@@ -42,7 +42,15 @@ onBeforeMount(async () => {
       <div ref="startObserver" />
       <div class="flex flex-col gap-4 lg:max-w-8/10 lg:flex-row lg:flex-wrap lg:gap-x-2 lg:gap-y-1">
         <div v-for="(slug, index) in slugs" :key="index" class="flex-1 basis-auto">
-          <img :src="getThumbnailPath(slug.slug)" :alt="slug.slug" loading="lazy" :width="slug.width" :height="slug.height" class="h-full min-h-20vh w-full cursor-pointer object-cover lg:max-h-25vh lg:max-w-40vw" @click="navigateToSlug(slug.slug)">
+          <img
+            :src="getThumbnailPath(slug.slug)"
+            :alt="slug.slug"
+            :loading="index < 10 ? 'eager' : 'lazy'"
+            :width="slug.width"
+            :height="slug.height"
+            class="h-full min-h-20vh w-full cursor-pointer object-cover lg:max-h-25vh"
+            @click="navigateToSlug(slug.slug)"
+          />
         </div>
         <div class="flex grow-2" />
       </div>

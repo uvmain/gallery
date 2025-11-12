@@ -24,7 +24,7 @@ function handleInput(event: any) {
       :placeholder="modelValue"
       :value="modelValue"
       type="text"
-      class="w-full border-1 border-white border-dashed p-1 standard"
+      class="w-full border-1 border-white border-dashed standard p-1"
       @input="handleInput"
     >
     <span
