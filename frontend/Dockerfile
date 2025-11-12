@@ -9,7 +9,7 @@ COPY api/ .
 RUN CGO_ENABLED=0 GOOS=linux go build -o backend .
 
 # Stage 2: Build Vite app and serve with Node.js
-FROM node:20-alpine
+FROM node:22-alpine
 WORKDIR /app
 
 # Copy frontend dependencies and install

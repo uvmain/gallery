@@ -19,8 +19,8 @@ This is a **PhotoGallery Web Application** built with a **Go REST API backend** 
 
 ## Prerequisites
 
-- Go (tested on 1.23)
-- Node.js & npm (tested on Node 20 LTS)
+- Go (tested on 1.25.3)
+- Node.js & npm (tested on Node 22.21)
 
 ## Getting Started
 

@@ -1,7 +1,6 @@
 import type { RouterScrollBehavior } from 'vue-router'
-import generatedRoutes from 'virtual:generated-pages'
 import { ViteSSG } from 'vite-ssg'
-
+import { routes } from 'vue-router/auto-routes'
 import App from './App.vue'
 import 'virtual:uno.css'
 
@@ -22,7 +21,7 @@ const scrollBehavior: RouterScrollBehavior = async (to, from, savedPosition) => 
 export const createApp = ViteSSG(
   App as Component,
   {
-    routes: generatedRoutes,
+    routes,
     scrollBehavior,
     base: import.meta.env.BASE_URL,
   },

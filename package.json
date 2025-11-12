@@ -6,9 +6,9 @@
     "frontend"
   ],
   "scripts": {
-    "postinstall": "cd api && go mod download && cd ../ && npm run create-cert",
+    "postinstall": "cd api && go mod download",
     "clean": "rimraf -v -I api/server api/server.exe dist frontend/dist",
-    "clean:full": "rimraf -v -I api/server api/server.exe api/data dist frontend/dist frontend/node_modules node_modules photogallery.localhost.pem photogallery.localhost-key.pem",
+    "clean:full": "rimraf -v -I api/server api/server.exe api/data dist frontend/dist frontend/node_modules node_modules",
     "dev:backend": "cd api && cross-env LOCAL_DEV_ENV=true IMAGE_PATH=E:/photography ADMIN_USER=admin ADMIN_PASSWORD=password go run .",
     "dev:frontend": "cd frontend && npm run dev",
     "dev": "concurrently npm:caddy npm:dev:backend npm:dev:frontend",
@@ -17,19 +17,16 @@
     "build": "cross-env CGO_ENABLED=0 npm run build:frontend && npm run build:backend",
     "preview": "concurrently npm:caddy:preview npm:preview:go",
     "preview:go": "cd api && cross-env LOCAL_DEV_ENV=true IMAGE_PATH=E:/photography ADMIN_USER=admin ADMIN_PASSWORD=password server.exe",
-    "create-cert": "mkcert photogallery.localhost && mkcert --install",
     "caddy": "caddy run --config Caddyfile",
     "caddy:preview": "caddy run --config Caddyfile.preview",
     "cspell": "cspell \"**/*.{go,ts,js,vue}\""
   },
   "devDependencies": {
-    "caddy-baron": "^2.0.1",
-    "concurrently": "^9.0.1",
-    "cpy-cli": "^5.0.0",
-    "cross-env": "^7.0.3",
-    "cspell": "^8.17.5",
-    "env-cmd": "^10.1.0",
-    "node-mkcert-binary": "^2.1.9",
-    "rimraf": "^6.0.1"
+    "caddy-baron": "^4.0.0",
+    "concurrently": "^9.2.1",
+    "cpy-cli": "^6.0.0",
+    "cross-env": "^10.1.0",
+    "cspell": "^9.3.0",
+    "rimraf": "^6.1.0"
   }
 }
