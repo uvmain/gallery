@@ -46,9 +46,9 @@ func GenerateThumbnail(imageFile string, slug string) {
 
 	if source.Bounds().Max.X > source.Bounds().Max.Y {
 		width = 0
-		height = int(config.ThumbnailMaxPixels)
+		height = config.ThumbnailMaxPixels
 	} else {
-		width = int(config.ThumbnailMaxPixels)
+		width = config.ThumbnailMaxPixels
 		height = 0
 	}
 

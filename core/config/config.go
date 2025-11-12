@@ -15,8 +15,8 @@ var ThumbnailDirectory string
 var OptimisedDirectory string
 var ImagePath string
 var ImageExtensions []string
-var ThumbnailMaxPixels uint
-var OptimisedMaxPixels uint
+var ThumbnailMaxPixels int
+var OptimisedMaxPixels int
 var AdminUser string
 var AdminPassword string
 
@@ -57,16 +57,16 @@ func LoadEnv() {
 		ImageExtensions = strings.Split(imageExtensions, ",")
 	}
 
-	u, _ := strconv.ParseUint(os.Getenv("THUMBNAIL_MAX_PIXELS"), 10, 64)
-	if u > 0 {
-		ThumbnailMaxPixels = uint(u)
+	thumbnailMaxPixels, err := strconv.Atoi(os.Getenv("THUMBNAIL_MAX_PIXELS"))
+	if err == nil && thumbnailMaxPixels > 0 {
+		ThumbnailMaxPixels = thumbnailMaxPixels
 	} else {
 		ThumbnailMaxPixels = 500
 	}
 
-	u, _ = strconv.ParseUint(os.Getenv("OPTIMISED_MAX_PIXELS"), 10, 64)
-	if u > 0 {
-		OptimisedMaxPixels = uint(u)
+	optimisedMaxPixels, err := strconv.Atoi(os.Getenv("OPTIMISED_MAX_PIXELS"))
+	if err == nil && optimisedMaxPixels > 0 {
+		OptimisedMaxPixels = optimisedMaxPixels
 	} else {
 		OptimisedMaxPixels = 1280
 	}

@@ -46,9 +46,9 @@ func GenerateOptimised(imageFile string, slug string) error {
 
 	if source.Bounds().Max.X > source.Bounds().Max.Y {
 		width = 0
-		height = int(config.OptimisedMaxPixels)
+		height = config.OptimisedMaxPixels
 	} else {
-		width = int(config.OptimisedMaxPixels)
+		width = config.OptimisedMaxPixels
 		height = 0
 	}
 
