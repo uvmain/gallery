@@ -86,7 +86,7 @@ onBeforeMount(() => {
             type="file"
             name="avatar"
             accept="image/avif, image/bmp, image/gif, image/jpg, image/jpeg, image/png, image/webp"
-            class="border-none input"
+            class="input border-none"
             @change="updateFile"
           />
         </div>
@@ -104,14 +104,14 @@ onBeforeMount(() => {
             type="text"
             name="title"
             :multiple="false"
-            class="border-solid input"
+            class="input border-solid"
             @change="updateTitle"
           />
         </div>
         <div>
           <button
             :disabled="uploadDisabled"
-            class="disabled:bg-red button"
+            class="button disabled:bg-red"
             @click="uploadFile"
           >
             Upload

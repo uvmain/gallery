@@ -28,7 +28,7 @@ function hideDeleteDialog() {
 
 <template>
   <div>
-    <div class="text-nowrap tag" :class="inEditingMode ? 'hover:bg-red hover:dark:bg-red' : ''" @click="onClick">
+    <div class="tag text-nowrap" :class="inEditingMode ? 'hover:bg-red hover:dark:bg-red' : ''" @click="onClick">
       {{ tag }}
     </div>
     <Dialog ref="deleteDialog" :close-button="false" class="modal">
