@@ -3,9 +3,9 @@ package auth
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"gallery/core/config"
 	"log"
 	"net/http"
-	"os"
 )
 
 var sessionToken = make(map[string]bool)
@@ -17,12 +17,11 @@ func generateToken() string {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	username := os.Getenv("ADMIN_USER")
-	password := os.Getenv("ADMIN_PASSWORD")
 	passedUsername := r.FormValue("username")
 	passedPassword := r.FormValue("password")
-	log.Println("User logging in")
-	if passedUsername == username && passedPassword == password {
+	log.Printf("User attempting to log in: %s", passedUsername)
+
+	if passedUsername == config.AdminUser && passedPassword == config.AdminPassword {
 		token := generateToken()
 		sessionToken[token] = true
 		http.SetCookie(w, &http.Cookie{
@@ -34,10 +33,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			Path:     "/",
 			MaxAge:   604800,
 		})
-		log.Println("Login successful")
+		log.Printf("Login successful for user: %s", passedUsername)
 		w.Write([]byte("Login successful"))
 	} else {
-		log.Println("Login unsuccessful, invalid credentials")
+		log.Printf("Login unsuccessful for user: %s", passedUsername)
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 	}
 }
@@ -46,7 +45,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("appSession")
 		if err != nil || !sessionToken[cookie.Value] {
-			log.Println("Unauthorized access attempt")
+			log.Printf("Unauthorized access attempt for user: %s", r.FormValue("username"))
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}

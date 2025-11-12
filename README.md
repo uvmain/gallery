@@ -38,11 +38,11 @@ npm run deps
 This command downloads the npm dependencies for the local dev and frontend components, and the go dependencies for the api component.
 
 3. **Set up environment variables:**
-Update the following environment variables in the /package.json (for local dev) and in the docker_compose.yml (or sibling .env file):
-```plaintext
-IMAGE_PATH=path/to/your/images
-ADMIN_USER=your_admin_name
-ADMIN_PASSWORD=your_admin_password
+Update the following environment variables in the .env file:
+```bash
+IMAGE_PATH=path/to/your/images # defaults to "./images"
+ADMIN_USER=your_admin_name # defaults to "admin"
+ADMIN_PASSWORD=your_admin_password # defaults to "admin"
 ```
 
 4. **Start development environment::**

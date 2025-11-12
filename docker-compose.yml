@@ -1,6 +1,6 @@
 services:
   gallery:
-    image: gallery:latest
+    image: uvmain/gallery:latest
     container_name: gallery
     env_file:
       - .env

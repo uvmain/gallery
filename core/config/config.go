@@ -17,9 +17,23 @@ var ImagePath string
 var ImageExtensions []string
 var ThumbnailMaxPixels uint
 var OptimisedMaxPixels uint
+var AdminUser string
+var AdminPassword string
 
 func LoadEnv() {
 	godotenv.Load(".env")
+
+	username := os.Getenv("ADMIN_USER")
+	if username == "" {
+		username = "admin"
+	}
+	AdminUser = username
+
+	password := os.Getenv("ADMIN_PASSWORD")
+	if password == "" {
+		password = "admin"
+	}
+	AdminPassword = password
 
 	dataPath := os.Getenv("DATA_PATH")
 	if dataPath == "" {
