@@ -88,11 +88,12 @@ onBeforeMount(async () => {
       </template>
     </Header>
 
-    <div id="main" class="grid mx-auto gap-4 p-6 lg:grid-cols-7 md:grid-cols-4 sm:grid-cols-1 lg:max-w-8/10 lg:gap-8">
+    <div class="grid mx-auto gap-4 p-6 lg:grid-cols-7 md:grid-cols-4 sm:grid-cols-1 lg:max-w-8/10 lg:gap-8">
       <div v-for="(album, index) in albums" :key="index" class="relative">
         <AlbumCoverLarge :album="album" :in-edit-mode="inEditingMode" class="hover:cursor-pointer" @trash="trashAlbum(album)" @navigate="navigateToAlbum(album.Slug)" />
       </div>
     </div>
+
     <Dialog ref="addDialog" :close-button="false" class="modal" @keydown.escape="hideAddDialog()">
       <div class="p-6">
         <div class="flex flex-col items-center gap-6">

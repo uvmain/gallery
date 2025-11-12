@@ -48,7 +48,7 @@ onBeforeMount(async () => {
             :loading="index < 10 ? 'eager' : 'lazy'"
             :width="slug.width"
             :height="slug.height"
-            class="h-full min-h-20vh w-full cursor-pointer object-cover lg:max-h-25vh "
+            class="h-full min-h-20vh w-full cursor-pointer object-cover lg:max-h-25vh"
             @click="navigateToSlug(slug.slug)"
           />
         </div>
