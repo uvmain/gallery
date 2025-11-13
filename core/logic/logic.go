@@ -14,12 +14,6 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-func IsLocalDevEnv() bool {
-	localDev := os.Getenv("LOCAL_DEV_ENV")
-	localDevBool, _ := strconv.ParseBool(localDev)
-	return localDevBool
-}
-
 var (
 	bootTime     time.Time
 	bootTimeOnce sync.Once

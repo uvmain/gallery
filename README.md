@@ -9,11 +9,12 @@
 ![Docker Pulls](https://img.shields.io/docker/pulls/uvmain/gallery)
 
 # Gallery
-<img src="./docs/readme1.webp" alt="Gallery screenshot" width="50%">
+<img src="./docs/readme1.webp" alt="Gallery screenshot" width="80%">
 
 ## Self hosted photo gallery
 ### Fast, small, no-nonsense
-- Light and dark mode
+- Tiny (~11Mb) Docker image
+- Light and dark mode toggle
 - Automatic EXIF metadata retrieval
 - Albums, auto-Tags, authentication for editing mode
 - Auto import of existing photos
