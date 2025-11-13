@@ -67,7 +67,6 @@ func deleteExtraneousMetadata() {
 }
 
 func InitialiseMetadata() {
-	GetExistingMetadataFilePaths()
 	populateMetadata()
 	deleteExtraneousMetadata()
 }

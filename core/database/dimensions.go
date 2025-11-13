@@ -170,27 +170,6 @@ func InsertDimensionsRow(dimensions types.DimensionsRow) error {
 	return nil
 }
 
-func GetAllDimensions() ([]types.DimensionsRow, error) {
-	var dimensions []types.DimensionsRow
-	query := `SELECT imageSlug, width, height, orientation, panoramic FROM dimensions;`
-	rows, err := Database.Query(query)
-	if err != nil {
-		log.Printf("Query failed: %v", err)
-		return []types.DimensionsRow{}, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var dimension types.DimensionsRow
-		err = rows.Scan(&dimension.ImageSlug, &dimension.Width, &dimension.Height, &dimension.Orientation, &dimension.Panoramic)
-		if err != nil {
-			log.Println(err)
-		}
-		dimensions = append(dimensions, dimension)
-	}
-	return dimensions, nil
-}
-
 func GetDimensionForSlug(slug string) (types.DimensionsRow, error) {
 	var dimension types.DimensionsRow
 	query := `SELECT imageSlug, width, height, orientation, panoramic FROM dimensions where imageSlug = ?;`
