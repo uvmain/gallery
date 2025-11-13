@@ -14,10 +14,6 @@ import (
 
 var Database *sql.DB
 
-func GetDB() *sql.DB {
-	return Database
-}
-
 func Initialise() *sql.DB {
 	logic.CreateDir(config.DatabaseDirectory)
 

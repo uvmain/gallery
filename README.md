@@ -1,29 +1,69 @@
-# Gallery Web Application
+[![SAST Code Scanning](https://github.com/uvmain/gallery/actions/workflows/sast.yml/badge.svg)](https://github.com/uvmain/gallery/actions/workflows/sast.yml)
+&nbsp;
+[![Dependency Scanning](https://github.com/uvmain/gallery/actions/workflows/dependency-scan.yml/badge.svg)](https://github.com/uvmain/gallery/actions/workflows/dependency-scan.yml)
+&nbsp;
+[![Build](https://github.com/uvmain/gallery/actions/workflows/build.yml/badge.svg)](https://github.com/uvmain/gallery/actions/workflows/build.yml)
+&nbsp;
+![Docker Image Size](https://img.shields.io/docker/image-size/uvmain/gallery)
+&nbsp;
+![Docker Pulls](https://img.shields.io/docker/pulls/uvmain/gallery)
 
-This is a **Gallery Web Application** built with a **Go REST API backend** and a **Vite/Vue frontend**. The application uses **SQLite** to store image metadata and features image thumbnail generation, EXIF data retrieval, and album organization. It is designed to be served on a local or hosted server with a reverse proxy for routing.
+# Gallery
+<img src="./docs/readme1.webp" alt="Gallery screenshot" width="50%">
 
-## Features
+## Self hosted photo gallery
+### Fast, small, no-nonsense
+- Light and dark mode
+- Automatic EXIF metadata retrieval
+- Albums, auto-Tags, authentication for editing mode
+- Auto import of existing photos
 
-- Go REST API backend
-- Vue.js frontend built with Vite
-- SQLite database for image metadata storage
-- Automatic thumbnail generation
-- EXIF metadata retrieval
+#### Albums
+<img src="./docs/readme2.webp" alt="Albums screenshot" width="50%">
+
+#### EXIF
+<img src="./docs/readme3.webp" alt="Photo screenshot with EXIF data" width="50%">
+
+## Stack
+- Go backend
+- Vue.js frontend
+- SQLite database
 - Basic single-user authentication with cookies
-- SSL/TLS certificate generation for local development
 
-## Project Structure
+## Quick Setup
+- create a `.env` file using `.env.example` as a guide
+- copy the `docker-compose.yml` file into the same directory, and update the volume binds as required
+- `docker compose up -d` to pull the image and run the container in the background
 
-- **api/** - Go backend REST API
-- **frontend/** - Vite/Vue3 frontend application
+### example
+> .env
+```
+THUMBNAIL_MAX_PIXELS=500
+OPTIMISED_MAX_PIXELS=1280
+ADMIN_USER=admin
+ADMIN_PASSWORD=password
+IMAGE_PATH=/mnt/nas/photography
+```
+> docker-compose.yml
+```
+services:
+  gallery:
+    image: uvmain/gallery:latest
+    container_name: gallery
+    env_file:
+      - .env
+    volumes:
+      - /mnt/main/docker/gallery:/data
+      - /mnt/nas/photography:/images
+    ports:
+      - "3001:8080"
+```
 
-## Prerequisites
-
+## Local Development: Prerequisites
 - Go (tested on 1.25.3)
 - Node.js & npm (tested on Node 22.21)
 
-## Getting Started
-
+## Local Development: Getting started
 1. **Clone the repository:**
 
 ```bash
@@ -33,9 +73,9 @@ cd gallery
 
 2. **Install dependencies:**
 ```bash
-npm run deps
+npm install && npm run setup
 ```
-This command downloads the npm dependencies for the local dev and frontend components, and the go dependencies for the api component.
+This command downloads the npm dependencies for the local dev and frontend components, and the go dependencies for the backend.
 
 3. **Set up environment variables:**
 Update the following environment variables in the .env file:
@@ -57,7 +97,6 @@ This command:
 Open [gallery.localhost](https://gallery.localhost) in your browser
 
 ## Scripts
-
 - `npm run backend:dev` - Runs the Go backend in development mode.
 - `npm run frontend:dev` - Runs the frontend in development mode.
 - `npm run dev` - Starts Caddy and concurrently runs the frontend and backend.
@@ -65,15 +104,12 @@ Open [gallery.localhost](https://gallery.localhost) in your browser
 - `npm run create-cert` - Generates and installs certificates for local SSL.
 
 ## Deployment
-
 ```
 docker build -t gallery:latest . && docker compose up -d
 ```
 
 ## Contributing
-
 Feel free to submit issues or pull requests for improvements.
 
 ## License
-
 This project is licensed under the MIT License.
