@@ -59,6 +59,7 @@ services:
     ports:
       - "3001:8080"
 ```
+> docker compose up -d
 
 ## Local Development: Prerequisites
 - Go (tested on 1.25.3)
