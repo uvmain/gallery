@@ -1,4 +1,4 @@
-FROM node:22-alpine AS frontend-build
+FROM node:24-alpine AS frontend-build
 
 WORKDIR /frontend
 
@@ -8,7 +8,7 @@ RUN npm install
 
 RUN npm run build
 
-FROM golang:1.25.3 AS backend-build
+FROM golang:1.25.5 AS backend-build
 
 WORKDIR /app
 
