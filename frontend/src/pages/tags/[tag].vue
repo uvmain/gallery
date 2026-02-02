@@ -3,7 +3,7 @@ import { useElementVisibility } from '@vueuse/core'
 import { backendFetchRequest } from '../../composables/fetchFromBackend'
 import { getThumbnailPath } from '../../composables/logic'
 
-const route = useRoute()
+const route = useRoute('/tags/[tag]')
 const router = useRouter()
 const tag = ref(route.params.tag as string)
 const startObserver = ref<HTMLDivElement | null>(null)

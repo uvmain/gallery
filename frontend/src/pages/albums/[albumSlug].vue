@@ -5,7 +5,7 @@ import { useSessionStorage } from '@vueuse/core'
 import { backendFetchRequest } from '../../composables/fetchFromBackend'
 import { getThumbnailPath, niceDate } from '../../composables/logic'
 
-const route = useRoute()
+const route = useRoute('/albums/[albumSlug]')
 const router = useRouter()
 
 const albumData = ref<Album | undefined>()
