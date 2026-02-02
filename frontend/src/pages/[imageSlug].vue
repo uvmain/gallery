@@ -8,7 +8,7 @@ import { addImageToAlbum } from '../composables/albums'
 import { backendFetchRequest } from '../composables/fetchFromBackend'
 import { getNextSlug, getPreviousSlug, getRandomSlug, getSlugPosition } from '../composables/slugs'
 
-const route = useRoute()
+const route = useRoute('/[imageSlug]')
 const router = useRouter()
 
 const slug = ref(route.params.imageSlug as string)
