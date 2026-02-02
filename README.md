@@ -62,7 +62,7 @@ services:
 > docker compose up -d
 
 ## Local Development: Prerequisites
-- Go (tested on 1.25.5)
+- Go (tested on 1.25.6)
 - Node.js & npm (tested on Node 24)
 
 ## Local Development: Getting started
