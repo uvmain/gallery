@@ -61,12 +61,12 @@ func GenerateThumbnail(imageFile string, slug string) {
 	}
 	defer f.Close()
 
-	jpeg.Encode(f, thumbnailImage, nil)
+	err = jpeg.Encode(f, thumbnailImage, nil)
 	if err != nil {
 		log.Printf("Error encoding image: %s", err)
+	} else {
+		log.Printf("Thumbnail created for %s: %s", imageFile, thumbnailPath)
 	}
-
-	log.Printf("Thumbnail created for %s: %s", imageFile, thumbnailPath)
 }
 
 func getThumbnailDirContents() ([]string, error) {

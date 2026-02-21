@@ -62,7 +62,10 @@ func deleteExtraneousMetadata() {
 	for _, file := range metadataToDelete {
 		filePath := file.FilePath
 		fileName := file.FileName
-		deleteMetadataRowByFile(filePath, fileName)
+		err := deleteMetadataRowByFile(filePath, fileName)
+		if err != nil {
+			log.Printf("Error deleting metadata for %s: %s", fileName, err)
+		}
 	}
 }
 
@@ -120,7 +123,10 @@ func populateMetadata() {
 			log.Printf("Metadata row already exists, skipping insert: %s\n", fileName)
 		} else {
 			imageMetadata := exif.GetSourceMetadataForImagePath(file)
-			insertMetadataRow(imageMetadata)
+			err = insertMetadataRow(imageMetadata)
+			if err != nil {
+				log.Printf("Error inserting metadata for %s: %v", fileName, err)
+			}
 		}
 	}
 }
@@ -337,7 +343,12 @@ func PopulateMetadataForUpload(fileName string) (string, error) {
 		return "", errors.New("metadata already exists")
 	} else {
 		imageMetadata := exif.GetSourceMetadataForImagePath(filePath)
-		insertMetadataRow(imageMetadata)
+		err = insertMetadataRow(imageMetadata)
+		if err != nil {
+			log.Printf("Error inserting metadata for %s: %v", fileName, err)
+		} else {
+			log.Printf("Metadata inserted for %s: %v", fileName, imageMetadata)
+		}
 		return imageMetadata.Slug, nil
 	}
 }

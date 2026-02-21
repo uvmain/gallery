@@ -1,6 +1,7 @@
 package config
 
 import (
+	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -21,7 +22,10 @@ var AdminUser string
 var AdminPassword string
 
 func LoadEnv() {
-	godotenv.Load(".env")
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Printf("Error loading .env file, using environment variables")
+	}
 
 	username := os.Getenv("ADMIN_USER")
 	if username == "" {

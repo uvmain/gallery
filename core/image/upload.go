@@ -24,13 +24,19 @@ func UploadImage(file multipart.File, fileHeader *multipart.FileHeader) string {
 	filePath := filepath.Join(config.ImageDirectory, fileName)
 	slug, _ := database.PopulateMetadataForUpload(fileName)
 	thumbnails.GenerateThumbnail(filePath, slug)
-	optimised.GenerateOptimised(filePath, slug)
+	err := optimised.GenerateOptimised(filePath, slug)
+	if err != nil {
+		log.Printf("Error generating optimised image: %s", err)
+	}
 
 	tags := types.TagsUpload{
 		Tags:      []string{},
 		ImageSlug: slug,
 	}
-	database.CreateTagsOnUpload(tags)
+	err = database.CreateTagsOnUpload(tags)
+	if err != nil {
+		log.Printf("Error creating tags on upload: %s", err)
+	}
 	database.CreateDimsensionsOnUpload(slug)
 	return slug
 }
