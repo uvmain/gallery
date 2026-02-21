@@ -117,7 +117,10 @@ func CreateDimsensionsOnUpload(slug string) {
 		log.Printf("%v", err)
 		return
 	}
-	InsertDimensionsRow(dimensions)
+	err = InsertDimensionsRow(dimensions)
+	if err != nil {
+		log.Printf("Error inserting dimensions: %v", err)
+	}
 }
 
 func populateDimensions() {
@@ -148,7 +151,10 @@ func populateDimensions() {
 			log.Printf("%v", err)
 			return
 		}
-		InsertDimensionsRow(dimensions)
+		err = InsertDimensionsRow(dimensions)
+		if err != nil {
+			log.Printf("Error inserting dimensions: %v", err)
+		}
 	}
 }
 

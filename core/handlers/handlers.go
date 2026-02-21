@@ -81,7 +81,7 @@ func HandleGetThumbnailBySlug(w http.ResponseWriter, r *http.Request) {
 	net.EnableCdnCaching(w)
 	w.Header().Set("Content-Type", "image/jpeg")
 	w.WriteHeader(http.StatusOK)
-	w.Write(thumbnail)
+	_, _ = w.Write(thumbnail)
 }
 
 func HandleGetAlbum(w http.ResponseWriter, r *http.Request) {
@@ -114,7 +114,7 @@ func HandleGetOptimisedBySlug(w http.ResponseWriter, r *http.Request) {
 	net.EnableCdnCaching(w)
 	w.Header().Set("Content-Type", "image/jpeg")
 	w.WriteHeader(http.StatusOK)
-	w.Write(optimised)
+	_, _ = w.Write(optimised)
 }
 
 func HandleGetOriginalImageBlobBySlug(w http.ResponseWriter, r *http.Request) {
@@ -129,7 +129,7 @@ func HandleGetOriginalImageBlobBySlug(w http.ResponseWriter, r *http.Request) {
 	net.EnableCdnCaching(w)
 	w.Header().Set("Content-Type", mimeType)
 	w.WriteHeader(http.StatusOK)
-	w.Write(imageBlob)
+	_, _ = w.Write(imageBlob)
 }
 
 func HandlePatchMetadataBySlug(w http.ResponseWriter, r *http.Request) {
@@ -146,7 +146,7 @@ func HandlePatchMetadataBySlug(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Metadata updated successfully"))
+	_, _ = w.Write([]byte("Metadata updated successfully"))
 }
 
 func HandlePostAlbumRow(w http.ResponseWriter, r *http.Request) {
@@ -160,7 +160,7 @@ func HandlePostAlbumRow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Album posted successfully"))
+	_, _ = w.Write([]byte("Album posted successfully"))
 }
 
 func HandlePostLinkRow(w http.ResponseWriter, r *http.Request) {
@@ -174,7 +174,7 @@ func HandlePostLinkRow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Link row inserted successfully"))
+	_, _ = w.Write([]byte("Link row inserted successfully"))
 }
 
 func HandleDeleteAlbumLinkRow(w http.ResponseWriter, r *http.Request) {
@@ -188,7 +188,7 @@ func HandleDeleteAlbumLinkRow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Link row inserted successfully"))
+	_, _ = w.Write([]byte("Link row inserted successfully"))
 }
 
 func HandlePostLinkRows(w http.ResponseWriter, r *http.Request) {
@@ -211,7 +211,7 @@ func HandlePostLinkRows(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Link rows inserted successfully"))
+	_, _ = w.Write([]byte("Link rows inserted successfully"))
 }
 
 func HandlePatchAlbumCover(w http.ResponseWriter, r *http.Request) {
@@ -229,7 +229,7 @@ func HandlePatchAlbumCover(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Cover rows updated successfully"))
+	_, _ = w.Write([]byte("Cover rows updated successfully"))
 }
 
 func HandlePatchAlbumName(w http.ResponseWriter, r *http.Request) {
@@ -247,7 +247,7 @@ func HandlePatchAlbumName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Album Name updated successfully"))
+	_, _ = w.Write([]byte("Album Name updated successfully"))
 }
 
 func HandleDeleteAlbumRow(w http.ResponseWriter, r *http.Request) {
@@ -257,7 +257,7 @@ func HandleDeleteAlbumRow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Album deleted successfully"))
+	_, _ = w.Write([]byte("Album deleted successfully"))
 }
 
 func HandleGetAlbumLinks(w http.ResponseWriter, r *http.Request) {
@@ -371,7 +371,7 @@ func HandlePostNewTags(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("tag rows inserted successfully"))
+	_, _ = w.Write([]byte("tag rows inserted successfully"))
 }
 
 func HandleDeleteTagRow(w http.ResponseWriter, r *http.Request) {
@@ -387,7 +387,7 @@ func HandleDeleteTagRow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Tag deleted successfully"))
+	_, _ = w.Write([]byte("Tag deleted successfully"))
 }
 
 func HandleGetDimensionsBySlug(w http.ResponseWriter, r *http.Request) {

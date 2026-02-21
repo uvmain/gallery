@@ -399,7 +399,10 @@ func CreateTagsOnUpload(tags types.TagsUpload) error {
 				Tag:       strings.ToLower(tag),
 				ImageSlug: tags.ImageSlug,
 			}
-			InsertTagsRow(newTag)
+			err = InsertTagsRow(newTag)
+			if err != nil {
+				log.Printf("Error inserting tag row: %s", err)
+			}
 		}
 	}
 	return nil
@@ -427,7 +430,10 @@ func populateTags() {
 			Tags:      []string{},
 			ImageSlug: slug,
 		}
-		CreateTagsOnUpload(newTag)
+		err = CreateTagsOnUpload(newTag)
+		if err != nil {
+			log.Printf("Error creating tags on upload: %s", err)
+		}
 	}
 }
 

@@ -12,7 +12,7 @@ var sessionToken = make(map[string]bool)
 
 func generateToken() string {
 	b := make([]byte, 32)
-	rand.Read(b)
+	_, _ = rand.Read(b)
 	return base64.URLEncoding.EncodeToString(b)
 }
 
@@ -34,7 +34,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			MaxAge:   604800,
 		})
 		log.Printf("Login successful for user: %s", passedUsername)
-		w.Write([]byte("Login successful"))
+		_, _ = w.Write([]byte("Login successful"))
 	} else {
 		log.Printf("Login unsuccessful for user: %s", passedUsername)
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
@@ -66,7 +66,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 	w.WriteHeader(http.StatusUnauthorized)
-	w.Write([]byte("Logged out"))
+	_, _ = w.Write([]byte("Logged out"))
 }
 
 func CheckSessionHandler(w http.ResponseWriter, r *http.Request) {

@@ -1,0 +1,10 @@
+server
+server.exe
+gallery
+gallery.exe
+node_modules
+data
+docs
+.github
+.vscode
+Caddy*
