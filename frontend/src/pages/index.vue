@@ -12,7 +12,7 @@ const startObserverIsVisible = useElementVisibility(startObserver)
 
 async function getSlugs() {
   try {
-    const response = await backendFetchRequest('/slugs/with-dimensions')
+    const response = await backendFetchRequest('slugs/with-dimensions')
     slugs.value = await response.json() as SlugWithDimensions[]
   }
   catch (error) {
@@ -37,10 +37,10 @@ onBeforeMount(async () => {
 
 <template>
   <div class="min-h-screen">
-    <Header class="sticky top-0 z-10" :class="headerShadowClass" />
-    <div class="flex flex-col items-center p-6">
+    <Header class="top-0 sticky z-10" :class="headerShadowClass" />
+    <div class="p-6 flex flex-col items-center">
       <div ref="startObserver" />
-      <div class="flex flex-col gap-4 lg:max-w-8/10 lg:flex-row lg:flex-wrap lg:gap-x-2 lg:gap-y-1">
+      <div class="flex flex-col gap-4 lg:flex-row lg:flex-wrap lg:gap-x-2 lg:gap-y-1 lg:max-w-8/10">
         <div v-for="(slug, index) in slugs" :key="index" class="flex-1 basis-auto">
           <img
             :src="getThumbnailPath(slug.slug)"

@@ -272,12 +272,12 @@ onBeforeMount(async () => {
         </div>
       </template>
     </Header>
-    <div class="flex flex-col justify-center gap-x-8 gap-y-4 p-2 lg:flex-row">
+    <div class="p-2 flex flex-col gap-x-8 gap-y-4 justify-center lg:px-16 lg:flex-row">
       <div class="mx-auto lg:mx-0 lg:pt-4">
         <ZoomableImage :image-source="imageSource" :width="metadata?.width" :height="metadata?.height" />
       </div>
-      <div v-if="metadata" class="flex flex-col gap-3 text-sm lg:max-w-1/3">
-        <TextInput v-model="metadata.title" :in-editing-mode="inEditingMode" class="py-2 text-xl font-semibold lg:text-3xl" @keypress.enter="saveMetadata" />
+      <div v-if="metadata" class="text-sm flex flex-col gap-3 lg:max-w-1/3">
+        <TextInput v-model="metadata.title" :in-editing-mode="inEditingMode" class="text-xl font-semibold py-2 lg:text-3xl" @keypress.enter="saveMetadata" />
 
         <div v-if="camera" class="flex items-center space-x-3">
           <div class="group">
@@ -286,7 +286,7 @@ onBeforeMount(async () => {
               Camera Model
             </span>
           </div>
-          <div class="flex flex-col gap-1 text-base">
+          <div class="text-base flex flex-col gap-1">
             <span>{{ camera }}</span>
             <span>{{ lens }}</span>
           </div>
@@ -347,13 +347,13 @@ onBeforeMount(async () => {
       </div>
     </div>
     <Dialog v-if="metadata" ref="addToAlbumDialog" :close-button="false" class="size-90%" @keydown.escape="hideAddToAlbumDialog()">
-      <div class="flex flex-col items-center justify-center gap-4 lg:flex-row">
+      <div class="flex flex-col gap-4 items-center justify-center lg:flex-row">
         <img
           :src="imageSource"
           :alt="slug"
           loading="lazy"
           onerror="this.onerror=null;this.src='/default-image.jpg';"
-          class="h-40 w-80 cursor-pointer border-2 border-white border-solid object-cover dark:border-neutral-500"
+          class="border-2 border-white border-solid h-40 w-80 cursor-pointer object-cover dark:border-neutral-500"
         />
         <div class="text-lg">
           {{ metadata.title }}

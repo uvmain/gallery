@@ -1,7 +1,6 @@
 import {
   defineConfig,
-  presetUno,
-  presetWind,
+  presetWind4,
   transformerDirectives,
   transformerVariantGroup,
 } from 'unocss'
@@ -26,8 +25,13 @@ export default defineConfig({
     colors: {},
   },
   presets: [
-    presetUno(),
-    presetWind(),
+    presetWind4(
+      {
+        preflights: {
+          reset: true,
+        },
+      },
+    ),
   ],
   transformers: [
     transformerDirectives(),
