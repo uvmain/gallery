@@ -6,7 +6,7 @@
     "frontend"
   ],
   "scripts": {
-    "setup": "go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest && go mod download",
+    "setup": "go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest && go install golang.org/x/vuln/cmd/govulncheck@latest && go mod download",
     "clean": "rimraf -v -I server frontend/dist",
     "clean:build": "rimraf -v -I server frontend/dist",
     "clean:full": "rimraf -v -I server data frontend/dist frontend/node_modules node_modules",
@@ -21,6 +21,7 @@
     "caddy": "caddy run --config Caddyfile",
     "caddy:preview": "caddy run --config Caddyfile.preview",
     "cspell": "cspell \"**/*.{go,ts,js,vue}\"",
+    "audit": "npm audit && govulncheck ./...",
     "lint:frontend": "npm run lint --workspace frontend",
     "lint:backend": "golangci-lint run",
     "lint": "npm run lint:frontend && npm run lint:backend",
