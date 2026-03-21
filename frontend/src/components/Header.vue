@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useDark, useSessionStorage, useToggle } from '@vueuse/core'
+import { useDark, useSessionStorage } from '@vueuse/core'
 import { getRandomSlug } from '../composables/slugs'
 
 defineProps({
@@ -11,7 +11,18 @@ const emits = defineEmits(['add', 'edit'])
 
 const isModalOpened = ref(false)
 const isDark = useDark()
-const toggleDark = useToggle(isDark)
+
+function toggleDark() {
+  if (!document.startViewTransition) {
+    // Fallback for browsers that don't support view transitions
+    isDark.value = !isDark.value
+    return
+  }
+
+  document.startViewTransition(() => {
+    isDark.value = !isDark.value
+  })
+}
 
 function openModal() {
   isModalOpened.value = true
@@ -58,49 +69,49 @@ async function navigateTags() {
 </script>
 
 <template>
-  <div class="standard px-2 pt-2 lg:px-6">
-    <header class="mx-0 mx-auto flex justify-around pt-2 lg:max-w-8/10 lg:justify-between lg:p-6">
+  <div class="standard">
+    <header class="mx-auto flex justify-between p-2 lg:max-w-8/10 lg:p-4">
       <div class="flex items-center gap-0 gap-4">
         <div class="hidden p-2 text-2xl lg:block hover:cursor-pointer" @click="navigateHome">
           home
         </div>
-        <icon-tabler-home class="p-2 text-2xl lg:hidden" @click="navigateHome" />
+        <icon-tabler-home class="size-6 lg:hidden" @click="navigateHome" />
 
         <div class="hidden p-2 text-2xl lg:block hover:cursor-pointer" @click="navigateAlbums">
           albums
         </div>
-        <icon-tabler-vinyl class="p-2 text-2xl lg:hidden" @click="navigateAlbums" />
+        <icon-tabler-vinyl class="size-6 lg:hidden" @click="navigateAlbums" />
 
         <div class="hidden p-2 text-2xl lg:block hover:cursor-pointer" @click="navigateTags">
           tags
         </div>
-        <icon-tabler-tags class="p-2 text-2xl lg:hidden" @click="navigateTags" />
+        <icon-tabler-tags class="size-6 lg:hidden" @click="navigateTags" />
 
         <div class="hidden p-2 text-2xl lg:block hover:cursor-pointer" @click="navigateRandom">
           random
         </div>
-        <icon-tabler-arrows-shuffle class="p-2 text-2xl lg:hidden" @click="navigateRandom" />
+        <icon-tabler-arrows-shuffle class="size-6 lg:hidden" @click="navigateRandom" />
       </div>
       <div class="flex gap-4">
         <TooltipIcon v-if="userLoginState" tooltip-text="Upload" class="hover:cursor-pointer" @click="navigateUpload">
-          <icon-tabler-upload class="text-2xl" />
+          <icon-tabler-upload class="size-6" />
         </TooltipIcon>
         <slot name="1" />
         <TooltipIcon v-if="showAdd && userLoginState" tooltip-text="Add" class="hover:cursor-pointer" @click="emits('add')">
-          <icon-tabler-library-plus class="text-2xl" />
+          <icon-tabler-library-plus class="size-6" />
         </TooltipIcon>
         <slot name="2" />
         <TooltipIcon v-if="showEdit && userLoginState" tooltip-text="Edit Mode" class="hover:cursor-pointer" @click="enableEdit">
-          <icon-tabler-edit class="text-2xl" />
+          <icon-tabler-edit class="size-6" />
         </TooltipIcon>
         <slot name="3" />
         <TooltipIcon :tooltip-text="isDark ? 'Light Mode' : 'Dark Mode'" class="hover:cursor-pointer" @click="toggleDark()">
-          <icon-tabler-sun v-if="isDark" class="text-2xl" />
-          <icon-tabler-moon-stars v-else class="text-2xl" />
+          <icon-tabler-sun v-if="isDark" class="size-6" />
+          <icon-tabler-moon-stars v-else class="size-6" />
         </TooltipIcon>
         <slot name="4" />
         <TooltipIcon :tooltip-text="userLoginState ? 'Log Out' : 'Log In'" class="hover:cursor-pointer" @click="openModal">
-          <icon-tabler-user class="text-2xl" />
+          <icon-tabler-user class="size-6" />
         </TooltipIcon>
       </div>
       <LoginModal :is-open="isModalOpened" @modal-close="closeModal" @submit="navigateHome" />

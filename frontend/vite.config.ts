@@ -2,7 +2,6 @@ import { fileURLToPath, URL } from 'node:url'
 import vue from '@vitejs/plugin-vue'
 import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
-import Unfonts from 'unplugin-fonts/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import Icons from 'unplugin-icons/vite'
 import Components from 'unplugin-vue-components/vite'
@@ -46,24 +45,22 @@ export default defineConfig({
     // https://github.com/antfu/unocss
     // see uno.config.ts for config
     UnoCSS(),
-    Unfonts({
-      google: {
-        families: [
-          'Montserrat',
-        ],
-      },
-    }),
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '~': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
   assetsInclude: [
     '**/*.md',
   ],
-  ssgOptions: {
-    script: 'async',
-    formatting: 'minify',
+  server: {
+    host: true,
+    allowedHosts: true,
+    port: 5173,
+    strictPort: true,
+    proxy: {
+      '/api': { target: 'http://localhost:8080' },
+    },
   },
 })

@@ -1,3 +1,7 @@
+{
+  admin off
+}
+
 gallery.localhost {
 	handle {
 		reverse_proxy localhost:8080

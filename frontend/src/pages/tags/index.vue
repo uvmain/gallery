@@ -5,7 +5,7 @@ const tags = ref<string[]>([])
 
 async function getAllTags() {
   try {
-    const response = await backendFetchRequest('/tags')
+    const response = await backendFetchRequest('tags')
     tags.value = await response.json() as string[]
   }
   catch (error) {
@@ -21,7 +21,7 @@ onBeforeMount(async () => {
 <template>
   <div class="min-h-screen">
     <Header />
-    <div class="flex flex-wrap gap-4 p-6">
+    <div class="p-6 flex flex-wrap gap-4">
       <div v-for="(tag, index) in tags" :key="index">
         <Tag :tag="tag" />
       </div>
