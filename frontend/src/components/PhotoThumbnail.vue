@@ -38,18 +38,18 @@ function navigateToSlug(slug: string) {
 
 <template>
   <div class="relative">
-    <div v-if="deleteMode" class="grad absolute right-0 top-0 size-20 hover:cursor-pointer">
-      <icon-tabler-trash-x v-if="!confirm" class="group absolute right-1 top-1 text-xl text-white hover:text-red" @click="confirm = true" />
-      <icon-tabler-circle-dashed-check v-else class="group absolute right-1 top-1 text-xl text-white hover:text-green" @click="emits('deleteImage')" />
+    <div v-if="deleteMode" class="grad size-20 right-0 top-0 absolute hover:cursor-pointer">
+      <icon-tabler-trash-x v-if="!confirm" class="group text-xl text-white right-1 top-1 absolute hover:text-red" @click="confirm = true" />
+      <icon-tabler-circle-dashed-check v-else class="group text-xl text-white right-1 top-1 absolute hover:text-green" @click="emits('deleteImage')" />
     </div>
-    <div v-if="editMode" class="grad absolute right-0 top-0 size-20 hover:cursor-pointer">
-      <icon-tabler-camera-rotate class="group absolute right-1 top-1 text-xl text-white hover:text-green" @click="emits('editImage')" />
+    <div v-if="editMode" class="grad size-20 right-0 top-0 absolute hover:cursor-pointer">
+      <icon-tabler-camera-rotate class="group text-xl text-white right-1 top-1 absolute hover:text-green" @click="emits('editImage')" />
     </div>
     <img
       :src="getThumbnailPath(slug)"
       :alt="slug"
       onerror="this.onerror=null;this.src='/default-image.jpg';"
-      class="h-full w-full cursor-pointer border-2 border-white border-solid object-cover dark:border-neutral-500"
+      class="border-2 border-white border-solid h-full w-full cursor-pointer object-cover dark:border-neutral-500"
       :class="sizeClass"
       @click="navigateToSlug(slug)"
     />

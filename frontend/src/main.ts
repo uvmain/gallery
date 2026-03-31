@@ -1,4 +1,4 @@
-import type { RouteRecordRaw, RouterScrollBehavior } from 'vue-router'
+import type { RouterScrollBehavior } from 'vue-router'
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { routes } from 'vue-router/auto-routes'
@@ -23,7 +23,7 @@ const scrollBehavior: RouterScrollBehavior = async (to, from, savedPosition) => 
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: routes as RouteRecordRaw[],
+  routes,
   scrollBehavior,
 })
 

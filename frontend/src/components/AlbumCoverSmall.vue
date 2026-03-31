@@ -21,18 +21,18 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div class="relative flex flex-wrap justify-center gap-2">
+  <div class="flex flex-wrap gap-2 justify-center relative">
     <div v-if="inEditingMode && allowDelete">
-      <icon-tabler-circle-dashed-minus class="absolute right-4 z-100 rounded-2xl bg-white bg-op-60 text-2xl text-red -top-1 hover:cursor-pointer hover-bg-op-100" @click="emits('deleteClick', album)" />
+      <icon-tabler-circle-dashed-minus class="text-2xl text-red rounded-2xl bg-white bg-op-60 right-4 absolute z-100 hover-bg-op-100 hover:cursor-pointer -top-1" @click="emits('deleteClick', album)" />
     </div>
     <img
       :src="albumThumbnailAddress"
       loading="lazy"
       onerror="this.onerror=null;this.src='/default-image.jpg';"
-      class="size-20 border-2 border-white border-solid hover:cursor-pointer dark:border-neutral-500"
+      class="border-2 border-white border-solid size-20 dark:border-neutral-500 hover:cursor-pointer"
       @click="emits('imageClick', album)"
     />
-    <div v-if="showName" class="max-w-24 text-center">
+    <div v-if="showName" class="text-center max-w-24">
       {{ album.Name }}
     </div>
   </div>

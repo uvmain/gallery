@@ -88,7 +88,7 @@ onBeforeMount(async () => {
       </template>
     </Header>
 
-    <div class="grid mx-auto gap-4 p-6 lg:grid-cols-7 md:grid-cols-4 sm:grid-cols-1 lg:max-w-8/10 lg:gap-8">
+    <div class="mx-auto p-6 gap-4 grid lg:gap-8 lg:grid-cols-7 md:grid-cols-4 sm:grid-cols-1 lg:max-w-8/10">
       <div v-for="(album, index) in albums" :key="index" class="relative">
         <AlbumCoverLarge :album="album" :in-edit-mode="inEditingMode" class="hover:cursor-pointer" @trash="trashAlbum(album)" @navigate="navigateToAlbum(album.Slug)" />
       </div>
@@ -96,13 +96,13 @@ onBeforeMount(async () => {
 
     <Dialog ref="addDialog" :close-button="false" class="modal" @keydown.escape="hideAddDialog()">
       <div class="p-6">
-        <div class="flex flex-col items-center gap-6">
+        <div class="flex flex-col gap-6 items-center">
           <icon-tabler-library-plus class="text-4xl text-green" />
-          <div class="flex flex-row items-center gap-2">
+          <div class="flex flex-row gap-2 items-center">
             <label for="albumname">Album Name:</label>
             <input id="albumname" v-model="newAlbumName" type="text" name="albumname" autocomplete="albumname" @keydown.enter="confirmAddAlbum()">
           </div>
-          <div class="flex justify-center gap-4">
+          <div class="flex gap-4 justify-center">
             <button aria-label="cancel" class="button" @click="hideAddDialog()">
               Cancel
             </button>
@@ -114,16 +114,16 @@ onBeforeMount(async () => {
       </div>
     </Dialog>
     <Dialog ref="deleteDialog" :close-button="false" class="modal">
-      <div class="m-6 flex flex-col items-center gap-4">
+      <div class="m-6 flex flex-col gap-4 items-center">
         <icon-tabler-exclamation-circle class="text-4xl text-red" />
-        <p class="text-center font-semibold">
+        <p class="font-semibold text-center">
           Are you sure you want to delete this album?
         </p>
         <div v-if="selectedAlbum">
           {{ selectedAlbum.Name }}
         </div>
       </div>
-      <div class="flex justify-center gap-4">
+      <div class="flex gap-4 justify-center">
         <button aria-label="cancel" class="button" @click="hideDeleteDialog()">
           Cancel
         </button>

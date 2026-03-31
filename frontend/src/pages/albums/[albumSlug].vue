@@ -166,7 +166,7 @@ onBeforeMount(async () => {
       </template>
     </Header>
 
-    <div v-if="albumData" class="flex flex-col items-center justify-center gap-6 p-6 lg:max-w-8/10 lg:flex-row">
+    <div v-if="albumData" class="p-6 flex flex-col gap-6 items-center justify-center lg:flex-row lg:max-w-8/10">
       <PhotoThumbnail :slug="albumData.CoverSlug" :edit-mode="inEditingMode" :large="true" @edit-image="showCoverDialog()" />
       <div class="flex flex-col gap-2">
         <div v-if="inEditingMode">
@@ -185,23 +185,23 @@ onBeforeMount(async () => {
       </div>
     </div>
 
-    <div class="mx-auto max-w-8/10 flex flex-wrap gap-x-2 gap-y-1">
+    <div class="mx-auto flex flex-wrap gap-x-2 gap-y-1 max-w-8/10">
       <div v-for="(slug, index) in albumLinks" :key="index">
         <PhotoThumbnail :slug="slug" :delete-mode="inEditingMode" :square="true" @delete-image="deleteLink(slug)" />
       </div>
     </div>
 
     <Dialog ref="deleteDialog" :close-button="false">
-      <div class="m-6 flex flex-col items-center gap-4">
+      <div class="m-6 flex flex-col gap-4 items-center">
         <icon-tabler-exclamation-circle class="text-4xl text-red" />
-        <p class="text-center font-semibold">
+        <p class="font-semibold text-center">
           Are you sure you want to delete this album?
         </p>
         <div v-if="albumData?.Name">
           {{ albumData.Name }}
         </div>
       </div>
-      <div class="flex justify-center gap-4">
+      <div class="flex gap-4 justify-center">
         <button aria-label="cancel" class="button" @click="hideDeleteDialog()">
           Cancel
         </button>
@@ -212,13 +212,13 @@ onBeforeMount(async () => {
     </Dialog>
 
     <Dialog ref="addToAlbumDialog" :close-button="false" class="size-90%" @keydown.escape="hideAddDialog()">
-      <div v-if="albumData" class="flex flex-col items-center justify-center gap-4 lg:flex-row">
+      <div v-if="albumData" class="flex flex-col gap-4 items-center justify-center lg:flex-row">
         <img
           :src="getThumbnailPath(albumData.CoverSlug)"
           :alt="albumData.CoverSlug"
           loading="lazy"
           onerror="this.onerror=null;this.src='/default-image.jpg';"
-          class="h-40 w-80 cursor-pointer border-2 border-white border-solid object-cover dark:border-neutral-500"
+          class="border-2 border-white border-solid h-40 w-80 cursor-pointer object-cover dark:border-neutral-500"
         />
         <div class="text-lg">
           {{ albumData.Name }}

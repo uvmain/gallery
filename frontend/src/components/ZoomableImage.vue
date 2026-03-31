@@ -21,13 +21,13 @@ function toggleZoomed() {
 
 <template>
   <div v-if="imageSource">
-    <div v-if="zoomed" class="fixed inset-0 z-40 bg-black bg-opacity-75" @click="toggleZoomed()" />
+    <div v-if="zoomed" class="bg-black bg-opacity-75 inset-0 fixed z-40" @click="toggleZoomed()" />
     <img
       ref="image"
       :src="imageSource"
       :width="width"
       :height="height"
-      class="z-50 cursor-pointer object-contain"
+      class="cursor-pointer z-50 object-contain"
       :class="zoomedClass"
       loading="lazy"
       @click="toggleZoomed()"
