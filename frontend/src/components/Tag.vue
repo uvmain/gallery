@@ -33,11 +33,11 @@ function hideDeleteDialog() {
     </div>
     <Dialog ref="deleteDialog" :close-button="false" class="modal">
       <div class="p-6">
-        <div class="flex flex-col items-center gap-6">
+        <div class="flex flex-col gap-6 items-center">
           <p>
             Delete Tag: {{ tag }}
           </p>
-          <div class="flex justify-center gap-4">
+          <div class="flex gap-4 justify-center">
             <button aria-label="cancel" class="button" @click="hideDeleteDialog()">
               Cancel
             </button>

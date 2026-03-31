@@ -70,24 +70,24 @@ async function navigateTags() {
 
 <template>
   <div class="standard">
-    <header class="mx-auto flex justify-between p-2 lg:max-w-8/10 lg:p-4">
-      <div class="flex items-center gap-0 gap-4">
-        <div class="hidden p-2 text-2xl lg:block hover:cursor-pointer" @click="navigateHome">
+    <header class="mx-auto p-2 flex justify-between lg:p-4 lg:max-w-8/10">
+      <div class="flex gap-0 gap-4 items-center">
+        <div class="text-2xl p-2 hidden lg:block hover:cursor-pointer" @click="navigateHome">
           home
         </div>
         <icon-tabler-home class="size-6 lg:hidden" @click="navigateHome" />
 
-        <div class="hidden p-2 text-2xl lg:block hover:cursor-pointer" @click="navigateAlbums">
+        <div class="text-2xl p-2 hidden lg:block hover:cursor-pointer" @click="navigateAlbums">
           albums
         </div>
         <icon-tabler-vinyl class="size-6 lg:hidden" @click="navigateAlbums" />
 
-        <div class="hidden p-2 text-2xl lg:block hover:cursor-pointer" @click="navigateTags">
+        <div class="text-2xl p-2 hidden lg:block hover:cursor-pointer" @click="navigateTags">
           tags
         </div>
         <icon-tabler-tags class="size-6 lg:hidden" @click="navigateTags" />
 
-        <div class="hidden p-2 text-2xl lg:block hover:cursor-pointer" @click="navigateRandom">
+        <div class="text-2xl p-2 hidden lg:block hover:cursor-pointer" @click="navigateRandom">
           random
         </div>
         <icon-tabler-arrows-shuffle class="size-6 lg:hidden" @click="navigateRandom" />

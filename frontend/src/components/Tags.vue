@@ -78,9 +78,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="mt-4 max-w-120 flex flex-col gap-4 border-1 border-gray-400 rounded-sm border-solid p-4 dark:border-gray-600">
+  <div class="mt-4 p-4 border-1 border-gray-400 rounded-sm border-solid flex flex-col gap-4 max-w-120 dark:border-gray-600">
     <div class="flex flex-wrap gap-4">
-      <div class="text-left text-lg">
+      <div class="text-lg text-left">
         Tags
       </div>
       <div v-for="(tag, index) in tags" :key="index">
@@ -94,13 +94,13 @@ onMounted(() => {
     </div>
     <Dialog ref="addDialog" :close-button="false" class="modal">
       <div class="p-6">
-        <div class="flex flex-col items-center gap-6">
+        <div class="flex flex-col gap-6 items-center">
           <icon-tabler-library-plus class="text-4xl text-green" />
-          <div class="flex flex-row items-center gap-2">
+          <div class="flex flex-row gap-2 items-center">
             <label for="newtag">New Tag:</label>
             <input id="newtag" v-model="newTagString" type="text" name="newtag" @keydown.enter="confirmAddTag()">
           </div>
-          <div class="flex justify-center gap-4">
+          <div class="flex gap-4 justify-center">
             <button aria-label="cancel" class="button" @click="hideAddDialog()">
               Cancel
             </button>

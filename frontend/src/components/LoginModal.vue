@@ -69,22 +69,22 @@ onClickOutside(target, () => emits('modalClose'))
 </script>
 
 <template>
-  <div v-if="isOpen" class="fixed left-0 top-0 z-999 size-full text backdrop-blur-xl">
+  <div v-if="isOpen" class="text size-full left-0 top-0 fixed z-999 backdrop-blur-xl">
     <div v-if="!isLoggedIn" @keydown.escape="cancel">
-      <div ref="target" class="mx-auto mb-auto mt-150px w-300px modal px-30px pb-30px pt-20px">
-        <div class="w-300 flex flex-col gap-4 p-6">
+      <div ref="target" class="modal mx-auto mb-auto mt-150px px-30px pb-30px pt-20px w-300px">
+        <div class="p-6 flex flex-col gap-4 w-300">
           <form id="login" class="flex flex-col gap-2">
-            <div class="flex flex-row items-center gap-2">
+            <div class="flex flex-row gap-2 items-center">
               <label for="username">Username:</label>
               <input id="username" v-model="username" type="text" name="username" autocomplete="username">
             </div>
-            <div class="flex flex-row items-center gap-2">
+            <div class="flex flex-row gap-2 items-center">
               <label for="password">Password:</label>
               <input id="password" v-model="password" type="password" name="password" autocomplete="current-password" @keydown.enter="login">
             </div>
           </form>
         </div>
-        <div class="flex justify-center gap-4">
+        <div class="flex gap-4 justify-center">
           <button aria-label="cancel" class="button" @click="cancel">
             Cancel
           </button>
@@ -95,11 +95,11 @@ onClickOutside(target, () => emits('modalClose'))
       </div>
     </div>
     <div v-else @keydown.escape="cancel">
-      <div class="mx-auto mb-auto mt-150px w-300px modal rounded-sm px-30px pb-30px pt-20px">
+      <div class="modal mx-auto mb-auto mt-150px px-30px pb-30px pt-20px rounded-sm w-300px">
         <div class="mb-2 py-4 text-center">
           You are logged in.
         </div>
-        <div class="flex justify-center gap-4">
+        <div class="flex gap-4 justify-center">
           <button aria-label="cancel" class="button" @click="cancel">
             Cancel
           </button>

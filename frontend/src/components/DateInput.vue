@@ -28,7 +28,7 @@ function handleInput(event: any) {
       :placeholder="modelValue"
       :value="modelValue"
       type="datetime-local"
-      class="border-1 border-white border-dashed standard p-1 outline-none"
+      class="standard p-1 outline-none border-1 border-white border-dashed"
       @input="handleInput"
     >
     <span

@@ -27,21 +27,21 @@ onBeforeMount(async () => {
 
 <template>
   <div>
-    <hr class="mx-auto my-2px hidden h-px max-w-60% border-0 bg-gray-400 opacity-60 lg:block">
-    <hr class="mx-auto my-2px hidden h-px max-w-70% border-0 bg-gray-400 opacity-80 lg:block">
-    <hr class="mx-auto my-2px hidden h-px max-w-80% border-0 bg-gray-400 lg:block">
+    <hr class="mx-auto my-2px border-0 bg-gray-400 opacity-60 h-px max-w-60% hidden lg:block">
+    <hr class="mx-auto my-2px border-0 bg-gray-400 opacity-80 h-px max-w-70% hidden lg:block">
+    <hr class="mx-auto my-2px border-0 bg-gray-400 h-px max-w-80% hidden lg:block">
     <img
       :src="albumThumbnailAddress"
       onerror="this.onerror=null;this.src='/default-image.jpg';"
-      class="aspect-ratio-square w-full border-4 border-white border-solid object-cover dark:border-neutral-500"
+      class="border-4 border-white border-solid w-full aspect-ratio-square object-cover dark:border-neutral-500"
       loading="lazy"
       @click="emits('navigate', album.Slug)"
     />
-    <div v-if="inEditMode" class="grad absolute right-4 top-3 p-2 hover:cursor-pointer" @click="emits('trash', album)">
+    <div v-if="inEditMode" class="grad p-2 right-4 top-3 absolute hover:cursor-pointer" @click="emits('trash', album)">
       <icon-tabler-trash-x class="text-xl text-white hover:text-green" />
     </div>
-    <div class="absolute bottom-1 left-1 mb-1 w-8/10 flex flex-col gap-2 rounded-sm from-black from-opacity-50 to-opacity-0 bg-gradient-to-r p-2 text-white">
-      <div class="[text-shadow:_0_0px_4px_rgb(0_0_0_/_0.8)] text-lg font-semibold">
+    <div class="text-white mb-1 p-2 rounded-sm flex flex-col gap-2 w-8/10 bottom-1 left-1 absolute from-black from-opacity-50 to-opacity-0 bg-gradient-to-r">
+      <div class="text-lg font-semibold [text-shadow:_0_0px_4px_rgb(0_0_0_/_0.8)]">
         {{ album.Name }}
       </div>
       <div class="[text-shadow:_0_0px_4px_rgb(0_0_0_/_0.8)]">

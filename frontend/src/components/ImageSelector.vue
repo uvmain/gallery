@@ -50,7 +50,7 @@ onMounted(() => {
 <template>
   <div class="mt-4 flex flex-wrap gap-x-2 gap-y-1">
     <div v-for="(slug, index) in slugsToUse" :key="index" class="relative">
-      <icon-tabler-circle-check-filled v-if="selectedSlugs.includes(slug)" class="absolute right-1 top-1 rounded-2xl bg-white text-2xl text-green" />
+      <icon-tabler-circle-check-filled v-if="selectedSlugs.includes(slug)" class="text-2xl text-green rounded-2xl bg-white right-1 top-1 absolute" />
       <img :src="getThumbnailPath(slug)" :alt="slug" loading="lazy" class="size-40 cursor-pointer" @click="toggleSelected(slug)">
     </div>
   </div>

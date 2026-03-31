@@ -50,11 +50,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-if="imageAlbums.length > 0 || inEditingMode" class="mt-4 max-w-120 flex flex-col gap-4 border-1 border-gray-400 rounded-sm border-solid p-4 dark:border-gray-600">
-    <div class="text-left text-lg">
+  <div v-if="imageAlbums.length > 0 || inEditingMode" class="mt-4 p-4 border-1 border-gray-400 rounded-sm border-solid flex flex-col gap-4 max-w-120 dark:border-gray-600">
+    <div class="text-lg text-left">
       This photo is in {{ imageAlbums.length }} {{ imageAlbums.length === 1 ? 'album' : 'albums' }}
     </div>
-    <div v-if="inEditingMode || imageAlbums.length" class="grid grid-cols-2 gap-4 lg:grid-cols-4 md:grid-cols-3">
+    <div v-if="inEditingMode || imageAlbums.length" class="gap-4 grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3">
       <div v-for="(album, index) in imageAlbums" :key="index">
         <AlbumCoverSmall :album="album" :in-editing-mode="inEditingMode" :allow-delete="true" @image-click="navigateToAlbum(album.Slug)" @delete-click="removeAlbumLink" />
       </div>
