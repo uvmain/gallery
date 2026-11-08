@@ -14,11 +14,15 @@ import type {
   ParamValueZeroOrMore,
   ParamValueZeroOrOne,
 } from 'vue-router'
+import type {
+  _ExtractParamParserType,
+} from 'vue-router/experimental'
 
 declare module 'vue-router' {
   interface TypesConfig {
-    ParamParsers:
-      | never
+    _ParamParsers: {}
+    RouteNamedMap: import('vue-router/auto-routes').RouteNamedMap
+    _RouteFileInfoMap: import('vue-router/auto-routes')._RouteFileInfoMap
   }
 }
 
@@ -94,17 +98,23 @@ declare module 'vue-router/auto-routes' {
         | '/'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/[imageSlug].vue': {
       routes:
         | '/[imageSlug]'
       views:
         | never
+      pathParamNames:
+        | 'imageSlug'
     }
     'src/pages/albums/index.vue': {
       routes:
         | '/albums/'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/albums/[albumSlug].vue': {
@@ -112,11 +122,15 @@ declare module 'vue-router/auto-routes' {
         | '/albums/[albumSlug]'
       views:
         | never
+      pathParamNames:
+        | 'albumSlug'
     }
     'src/pages/tags/index.vue': {
       routes:
         | '/tags/'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/tags/[tag].vue': {
@@ -124,11 +138,15 @@ declare module 'vue-router/auto-routes' {
         | '/tags/[tag]'
       views:
         | never
+      pathParamNames:
+        | 'tag'
     }
     'src/pages/upload.vue': {
       routes:
         | '/upload'
       views:
+        | never
+      pathParamNames:
         | never
     }
   }
