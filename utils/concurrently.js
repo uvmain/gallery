@@ -118,7 +118,7 @@ components.forEach((component) => {
   })
 
   childProcess.on('error', (error) => {
-    colourConsole(colour, name, `Error running npm script: ${error}`)
+    colourConsole(colour, name, `Error running script: ${error}`)
     shutdownAll(name)
   })
 
